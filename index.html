@@ -89,7 +89,23 @@
   </main>
 
   <div class="teacher-access">
-    <a class="teacher-access-btn" href="./admin.html" aria-label="Acesso do professor">Acesso do professor</a>
+    <button id="teacherAccessBtn" class="teacher-access-btn" type="button" aria-label="Acesso do professor">Acesso do professor</button>
+  </div>
+
+  <div id="loginModal" class="login-modal" aria-hidden="true">
+    <div class="login-backdrop" data-close-login></div>
+    <section class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <button class="login-close" type="button" data-close-login aria-label="Fechar">×</button>
+      <span class="eyebrow">ÁREA RESTRITA</span>
+      <h2 id="loginTitle">Acesso da equipe</h2>
+      <p>Entre com seu usuário e senha para acessar o painel da mostra.</p>
+      <form id="staffLoginForm">
+        <label class="field"><span>Usuário</span><input id="staffUser" autocomplete="username" required /></label>
+        <label class="field"><span>Senha</span><input id="staffPassword" type="password" autocomplete="current-password" required /></label>
+        <div id="loginError" class="login-error" role="alert"></div>
+        <button class="primary-btn" type="submit">Entrar</button>
+      </form>
+    </section>
   </div>
 
   <footer class="site-footer">
