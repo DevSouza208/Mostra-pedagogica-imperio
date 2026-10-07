@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#15005c" />
+  <title>Mostra Pedagógica • Império das Letras</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="brandbar">
+      <img src="./logo_imperio.png" alt="Império das Letras" class="brand-logo brand-logo--school" />
+      <div class="brand-copy">
+        <span>Mostra Pedagógica</span>
+        <strong>Ideias que ganham vida ✨</strong>
+      </div>
+      <img src="./logo_codifica.png" alt="Codifica" class="brand-logo brand-logo--codifica" />
+    </header>
+
+    <section id="welcome" class="screen screen--active">
+      <div class="hero-card">
+        <span class="eyebrow">BEM-VINDOS 💙</span>
+        <h1>Conheça cada projeto da nossa mostra.</h1>
+        <p>Você verá uma ideia por vez. Avalie com estrelas, escolha um elogio e siga até conhecer todos os trabalhos.</p>
+        <button id="startBtn" class="primary-btn">Começar a visita →</button>
+        <p class="tiny">Nenhum cadastro é necessário.</p>
+      </div>
+    </section>
+
+    <section id="review" class="screen">
+      <div class="progress-wrap">
+        <div class="progress-row">
+          <span id="progressText">Projeto 1 de 1</span>
+          <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+
+      <article class="project-card">
+        <div class="project-photo-wrap">
+          <img id="projectPhoto" class="project-photo" alt="" />
+          <div id="projectPlaceholder" class="project-placeholder">💡</div>
+          <span id="projectClass" class="class-pill"></span>
+        </div>
+
+        <div class="project-content">
+          <h2 id="projectTitle"></h2>
+          <p id="projectDescription"></p>
+
+          <div class="rating-block">
+            <span class="label">Como você avalia esta ideia?</span>
+            <div id="stars" class="stars" role="radiogroup" aria-label="Avaliação de 1 a 5 estrelas">
+              <button data-value="1" aria-label="1 estrela">★</button>
+              <button data-value="2" aria-label="2 estrelas">★</button>
+              <button data-value="3" aria-label="3 estrelas">★</button>
+              <button data-value="4" aria-label="4 estrelas">★</button>
+              <button data-value="5" aria-label="5 estrelas">★</button>
+            </div>
+            <strong id="ratingLabel" class="rating-label">Escolha de 1 a 5 estrelas</strong>
+          </div>
+
+          <div id="suggestionsWrap" class="suggestions-wrap hidden">
+            <span class="label">Escolha um elogio 💬</span>
+            <div id="suggestions" class="chips"></div>
+          </div>
+
+          <label class="comment-box">
+            <span class="label">Quer deixar uma mensagem? <small>(opcional)</small></span>
+            <textarea id="comment" maxlength="240" placeholder="Deixe uma mensagem positiva para o grupo ✨"></textarea>
+            <span id="charCount" class="char-count">0/240</span>
+          </label>
+
+          <button id="submitBtn" class="primary-btn" disabled>Avaliar e ver próxima →</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="done" class="screen">
+      <div class="hero-card hero-card--done">
+        <div class="done-icon">🎉</div>
+        <span class="eyebrow">VISITA COMPLETA</span>
+        <h1>Você conheceu todos os projetos!</h1>
+        <p>Obrigado por valorizar as ideias, a criatividade e o trabalho dos nossos alunos.</p>
+        <div id="doneCount" class="done-count"></div>
+        <button id="restartBtn" class="secondary-btn">Rever os projetos</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>Império das Letras × Codifica • Mostra Pedagógica</footer>
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
