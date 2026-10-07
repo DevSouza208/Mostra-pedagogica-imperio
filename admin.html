@@ -65,7 +65,7 @@
       <div class="panel admin-content-panel">
         <div class="admin-section-heading">
           <div>
-            <h2>Cadastrar projeto</h2>
+            <h2 id="projectFormTitle">Cadastrar projeto</h2>
           </div>
         </div>
 
@@ -127,7 +127,10 @@
             </div>
           </div>
 
-          <button class="primary-btn" type="submit">Cadastrar projeto</button>
+          <div class="project-form-actions">
+            <button id="projectSubmitBtn" class="primary-btn" type="submit">Cadastrar projeto</button>
+            <button id="cancelProjectEditBtn" class="secondary-btn project-edit-cancel hidden" type="button">Cancelar edição</button>
+          </div>
         </form>
       </div>
     </section>
