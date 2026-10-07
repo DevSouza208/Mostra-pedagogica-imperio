@@ -607,6 +607,47 @@ function renderProjectReviewDetails(project,projectReviews,allReviews,allProject
     stats.appendChild(stat);
   });
 
+  const praiseCounts=new Map();
+  projectReviews.forEach(review=>{
+    if(!review.suggestion)return;
+    String(review.suggestion)
+      .split(" • ")
+      .map(item=>item.trim())
+      .filter(Boolean)
+      .forEach(item=>praiseCounts.set(item,(praiseCounts.get(item)||0)+1));
+  });
+
+  const praiseItems=[...praiseCounts.entries()]
+    .sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],"pt-BR"));
+
+  const praiseSection=document.createElement("section");
+  praiseSection.className="review-praise-section";
+
+  if(praiseItems.length){
+    const praiseTitle=document.createElement("strong");
+    praiseTitle.className="review-praise-title";
+    praiseTitle.textContent="Elogios mais recebidos";
+
+    const praiseList=document.createElement("div");
+    praiseList.className="review-praise-list";
+
+    praiseItems.forEach(([label,count])=>{
+      const chip=document.createElement("span");
+      chip.className="review-praise-chip";
+
+      const text=document.createElement("span");
+      text.textContent=label;
+
+      const total=document.createElement("b");
+      total.textContent=`${count}x`;
+
+      chip.append(text,total);
+      praiseList.appendChild(chip);
+    });
+
+    praiseSection.append(praiseTitle,praiseList);
+  }
+
   const entries=document.createElement("div");
   entries.className="review-detail-entries";
 
@@ -648,7 +689,11 @@ function renderProjectReviewDetails(project,projectReviews,allReviews,allProject
     });
   }
 
-  list.append(top,stats,entries);
+  if(praiseItems.length){
+    list.append(top,stats,praiseSection,entries);
+  }else{
+    list.append(top,stats,entries);
+  }
 }
 
 $("#projectForm").onsubmit=async e=>{
