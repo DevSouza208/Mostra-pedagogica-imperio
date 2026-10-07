@@ -19,7 +19,6 @@ $("#logoutBtn").onclick=()=>{
   window.location.replace("./");
 };
 
-$("#modeNote").textContent="Cloudflare conectado: acesso validado pela tabela D1.";
 
 function showAdminView(view){
   $$(".admin-menu-card").forEach(card=>{
@@ -186,8 +185,7 @@ function render(items){
     list.innerHTML=`
       <div class="admin-empty-state">
         <span>📚</span>
-        <strong>Nenhum projeto cadastrado ainda.</strong>
-        <p>Use a opção “Cadastrar projetos” para adicionar o primeiro trabalho.</p>
+        <strong>Nenhum projeto cadastrado.</strong>
       </div>
     `;
     return;
@@ -249,8 +247,7 @@ function loadReviews(){
     list.innerHTML=`
       <div class="admin-empty-state">
         <span>⭐</span>
-        <strong>Nenhuma avaliação para mostrar ainda.</strong>
-        <p>Quando conectarmos as avaliações ao banco, elas aparecerão organizadas aqui.</p>
+        <strong>Nenhuma avaliação.</strong>
       </div>
     `;
     return;
