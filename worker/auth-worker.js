@@ -299,7 +299,7 @@ export default {
       const projectId=String(body?.project_id||"").trim();
       const visitorId=String(body?.visitor_id||"").trim();
       const stars=Number(body?.stars);
-      const suggestion=body?.suggestion==null?null:String(body.suggestion).trim().slice(0,120);
+      const suggestion=body?.suggestion==null?null:String(body.suggestion).trim().slice(0,320);
       const comment=body?.comment==null?null:String(body.comment).trim().slice(0,240);
 
       if(!projectId||!visitorId||!Number.isInteger(stars)||stars<1||stars>5){
