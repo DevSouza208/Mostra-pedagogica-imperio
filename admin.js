@@ -1,7 +1,5 @@
 const CONFIG=window.MOSTRA_CONFIG||{};
 const API_URL=String(CONFIG.apiUrl||"").replace(/\/$/,"");
-const HAS_SUPABASE=false;
-let supabase=null;
 
 let staffSession=null;
 try{staffSession=JSON.parse(sessionStorage.getItem("mostra_staff_user")||"null")}catch{}
@@ -18,7 +16,6 @@ $("#logoutBtn").onclick=()=>{
   window.location.replace("./");
 };
 
-
 function showAdminView(view){
   $$(".admin-menu-card").forEach(card=>{
     const active=card.dataset.adminView===view;
@@ -30,7 +27,7 @@ function showAdminView(view){
     section.classList.toggle("active",section.dataset.view===view);
   });
 
-  if(view==="projects") load();
+  if(view==="projects") loadProjects();
   if(view==="reviews") loadReviews();
 }
 
@@ -98,7 +95,6 @@ function updatePhotoPreview(){
 function addSelectedPhotos(fileList){
   const files=[...(fileList||[])].filter(file=>file && file.type?.startsWith("image/"));
   if(!files.length)return;
-
   selectedPhotoFiles.push(...files);
   updatePhotoPreview();
 }
@@ -189,27 +185,42 @@ captureCameraBtn.onclick=()=>{
   },"image/jpeg",0.9);
 };
 
-async function fileToDataUrl(file){
-  if(!file)return null;
-  return await new Promise((resolve,reject)=>{
-    const r=new FileReader();
-    r.onload=()=>resolve(r.result);
-    r.onerror=reject;
-    r.readAsDataURL(file);
+async function api(path,options={}){
+  const response=await fetch(`${API_URL}${path}`,options);
+  const data=await response.json().catch(()=>null);
+  if(!response.ok){
+    throw new Error(data?.error||"Erro ao comunicar com o servidor.");
+  }
+  return data;
+}
+
+async function uploadImage(file){
+  return api("/images",{
+    method:"POST",
+    headers:{
+      "Content-Type":file.type||"application/octet-stream",
+      "X-Filename":encodeURIComponent(file.name||"image.jpg")
+    },
+    body:file
   });
 }
 
-async function load(){
-  if(HAS_SUPABASE){
-    const {data}=await supabase.from("projects").select("*").order("created_at",{ascending:false});
-    render(data||[]);
-    return;
-  }
+async function loadProjects(){
+  const list=$("#projectList");
+  const count=$("#projectCount");
+  list.innerHTML='<div class="admin-empty-state"><strong>Carregando...</strong></div>';
 
-  render(JSON.parse(localStorage.getItem("mostra_projects")||"[]"));
+  try{
+    const items=await api("/projects");
+    renderProjects(Array.isArray(items)?items:[]);
+  }catch(error){
+    console.error(error);
+    count.textContent="0 projetos";
+    list.innerHTML='<div class="admin-empty-state"><strong>Erro ao carregar projetos.</strong></div>';
+  }
 }
 
-function render(items){
+function renderProjects(items){
   const list=$("#projectList");
   const count=$("#projectCount");
 
@@ -226,50 +237,73 @@ function render(items){
     return;
   }
 
-  items.forEach(p=>{
+  items.forEach(project=>{
     const el=document.createElement("div");
     el.className="admin-item";
-    el.innerHTML=`
-      ${p.image_url
-        ? `<img class="admin-thumb" src="${p.image_url}" alt="">`
-        : '<div class="admin-thumb admin-thumb--placeholder">💡</div>'}
-      <div class="admin-meta">
-        <strong></strong>
-        <span></span>
-      </div>
-      <button class="danger-btn" type="button">Excluir</button>
-    `;
 
-    el.querySelector("strong").textContent=p.title;
-    el.querySelector("span").textContent=p.class_name||"Sem turma";
-    el.querySelector("button").onclick=()=>remove(
-      p.id,
-      Array.isArray(p.image_paths)&&p.image_paths.length
-        ? p.image_paths
-        : (p.image_path?[p.image_path]:[])
-    );
+    if(project.image_url){
+      const img=document.createElement("img");
+      img.className="admin-thumb";
+      img.src=project.image_url;
+      img.alt="";
+      el.appendChild(img);
+    }else{
+      const placeholder=document.createElement("div");
+      placeholder.className="admin-thumb admin-thumb--placeholder";
+      placeholder.textContent="💡";
+      el.appendChild(placeholder);
+    }
+
+    const meta=document.createElement("div");
+    meta.className="admin-meta";
+
+    const title=document.createElement("strong");
+    title.textContent=project.title;
+
+    const className=document.createElement("span");
+    className.textContent=project.class_name||"Sem turma";
+
+    meta.append(title,className);
+
+    const removeBtn=document.createElement("button");
+    removeBtn.className="danger-btn";
+    removeBtn.type="button";
+    removeBtn.textContent="Excluir";
+    removeBtn.onclick=()=>removeProject(project.id);
+
+    el.append(meta,removeBtn);
     list.appendChild(el);
   });
 }
 
-async function remove(id,imagePaths=[]){
+async function removeProject(id){
   if(!confirm("Excluir este projeto?"))return;
 
-  if(HAS_SUPABASE){
-    if(imagePaths.length) await supabase.storage.from("project-images").remove(imagePaths);
-    await supabase.from("projects").delete().eq("id",id);
-  }else{
-    const items=JSON.parse(localStorage.getItem("mostra_projects")||"[]").filter(p=>p.id!==id);
-    localStorage.setItem("mostra_projects",JSON.stringify(items));
+  try{
+    await api(`/projects/${encodeURIComponent(id)}`,{method:"DELETE"});
+    await loadProjects();
+  }catch(error){
+    alert(error.message);
   }
-
-  load();
 }
 
-function loadReviews(){
-  let reviews=[];
-  try{reviews=JSON.parse(localStorage.getItem("mostra_reviews")||"[]")}catch{}
+async function loadReviews(){
+  const list=$("#reviewsList");
+  list.innerHTML='<div class="admin-empty-state"><strong>Carregando...</strong></div>';
 
+  try{
+    const reviews=await api("/reviews");
+    renderReviews(Array.isArray(reviews)?reviews:[]);
+  }catch(error){
+    console.error(error);
+    $("#reviewTotal").textContent="0";
+    $("#reviewAverage").textContent="—";
+    $("#reviewComments").textContent="0";
+    list.innerHTML='<div class="admin-empty-state"><strong>Erro ao carregar avaliações.</strong></div>';
+  }
+}
+
+function renderReviews(reviews){
   const total=reviews.length;
   const comments=reviews.filter(r=>r.comment?.trim()).length;
   const average=total
@@ -293,22 +327,30 @@ function loadReviews(){
     return;
   }
 
-  reviews
-    .slice()
-    .reverse()
-    .forEach(review=>{
-      const item=document.createElement("div");
-      item.className="review-admin-item";
-      const stars="★".repeat(Number(review.stars||0))+"☆".repeat(Math.max(0,5-Number(review.stars||0)));
-      item.innerHTML=`
-        <div class="review-admin-stars">${stars}</div>
-        <div class="review-admin-body">
-          <strong>${review.suggestion||"Avaliação recebida"}</strong>
-          <p>${review.comment||"Sem comentário."}</p>
-        </div>
-      `;
-      list.appendChild(item);
-    });
+  reviews.forEach(review=>{
+    const item=document.createElement("div");
+    item.className="review-admin-item";
+
+    const stars=document.createElement("div");
+    stars.className="review-admin-stars";
+    stars.textContent="★".repeat(Number(review.stars||0))+"☆".repeat(Math.max(0,5-Number(review.stars||0)));
+
+    const body=document.createElement("div");
+    body.className="review-admin-body";
+
+    const title=document.createElement("strong");
+    title.textContent=review.project_title||"Projeto";
+
+    const meta=document.createElement("p");
+    meta.textContent=[review.project_class,review.suggestion].filter(Boolean).join(" · ")||"Avaliação recebida";
+
+    const comment=document.createElement("p");
+    comment.textContent=review.comment||"Sem comentário.";
+
+    body.append(title,meta,comment);
+    item.append(stars,body);
+    list.appendChild(item);
+  });
 }
 
 $("#projectForm").onsubmit=async e=>{
@@ -318,72 +360,39 @@ $("#projectForm").onsubmit=async e=>{
   btn.disabled=true;
   btn.textContent="Salvando...";
 
-  const files=[...selectedPhotoFiles];
-  let image_urls=[];
-  let image_paths=[];
+  try{
+    const imageKeys=[];
 
-  if(HAS_SUPABASE&&files.length){
-    for(const file of files){
-      const image_path=`${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
-      const {error}=await supabase.storage.from("project-images").upload(image_path,file,{upsert:false});
-
-      if(error){
-        alert("Erro no upload de uma das imagens.");
-        btn.disabled=false;
-        btn.textContent="Cadastrar projeto";
-        return;
-      }
-
-      const image_url=supabase.storage.from("project-images").getPublicUrl(image_path).data.publicUrl;
-      image_paths.push(image_path);
-      image_urls.push(image_url);
+    for(const file of selectedPhotoFiles){
+      const uploaded=await uploadImage(file);
+      if(uploaded?.key) imageKeys.push(uploaded.key);
     }
-  }else if(files.length){
-    for(const file of files){
-      image_urls.push(await fileToDataUrl(file));
-    }
+
+    await api("/projects",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        title:$("#title").value.trim(),
+        class_name:$("#className").value.trim(),
+        description:$("#description").value.trim(),
+        image_keys:imageKeys
+      })
+    });
+
+    e.target.reset();
+    selectedPhotoFiles=[];
+    updatePhotoPreview();
+    await loadProjects();
+    showAdminView("projects");
+  }catch(error){
+    alert(error.message);
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Cadastrar projeto";
   }
-
-  const project={
-    id:crypto.randomUUID(),
-    title:$("#title").value.trim(),
-    class_name:$("#className").value.trim(),
-    description:$("#description").value.trim(),
-    image_url:image_urls[0]||null,
-    image_urls,
-    image_path:image_paths[0]||null,
-    image_paths,
-    active:true,
-    created_at:new Date().toISOString()
-  };
-
-  if(HAS_SUPABASE){
-    const {id,...dbProject}=project;
-    const {error}=await supabase.from("projects").insert(dbProject);
-
-    if(error){
-      alert("Erro ao cadastrar projeto.");
-      btn.disabled=false;
-      btn.textContent="Cadastrar projeto";
-      return;
-    }
-  }else{
-    const items=JSON.parse(localStorage.getItem("mostra_projects")||"[]");
-    items.unshift(project);
-    localStorage.setItem("mostra_projects",JSON.stringify(items));
-  }
-
-  e.target.reset();
-  selectedPhotoFiles=[];
-  updatePhotoPreview();
-  btn.disabled=false;
-  btn.textContent="Cadastrar projeto";
-  await load();
-  showAdminView("projects");
 };
 
-load();
-loadReviews();
+loadProjects();
 showAdminView("create");
 
 document.addEventListener("keydown",event=>{
