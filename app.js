@@ -199,7 +199,7 @@ async function checkForNewProjects({announce=false}={}){
     const result=await refreshProjectQueue();
     if(result.added>0&&announce){
       const currentScreen=Object.entries(screens).find(([,el])=>el?.classList.contains("screen--active"))?.[0];
-      if(["summary","done","welcome"].includes(currentScreen)){
+      if(["summary","done"].includes(currentScreen)){
         const next=firstPendingIndex(0);
         if(next>=0){
           index=next;
