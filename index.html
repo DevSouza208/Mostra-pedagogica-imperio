@@ -2,266 +2,151 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
-  <meta name="theme-color" content="#15005c" />
-  <meta name="application-name" content="Mostra Pedagógica" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d77b8" />
+  <meta name="application-name" content="Meu Uso Tecnológico" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Mostra Pedagógica" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Meu Uso Tecnológico" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" type="image/png" href="./logo_mostra%20pedagogica_bgoff.png" />
-  <link rel="shortcut icon" type="image/png" href="./logo_mostra%20pedagogica_bgoff.png" />
-  <link rel="apple-touch-icon" href="./logo_mostra%20pedagogica_bgoff.png" />
-  <title>Mostra Pedagógica • Império das Letras</title>
+  <link rel="icon" type="image/png" href="./logo_imperio.png" />
+  <link rel="apple-touch-icon" href="./logo_imperio.png" />
+  <title>Meu Uso Tecnológico • Mostra Cultural</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
-<body>
-  <div id="appSplash" class="app-splash" aria-hidden="true">
-    <div class="app-splash-glow"></div>
-    <img class="app-splash-logo" src="./logo_mostra%20pedagogica_bgoff.png" alt="Mostra Pedagógica" />
-    <div class="app-splash-loader" aria-hidden="true"></div>
-  </div>
-  <div id="transitionSplash" class="transition-splash" aria-hidden="true">
-    <div class="transition-splash-glow"></div>
-    <div class="transition-splash-content">
-      <img class="transition-splash-logo" src="./logo_mostra%20pedagogica_bgoff.png" alt="" aria-hidden="true" />
-      <p id="transitionSplashText" class="transition-splash-text"></p>
-    </div>
-  </div>
-  <main class="app-shell">
-    <header class="brandbar">
-      <img src="./logo_mostra%20pedagogica_bgoff.png" alt="Mostra Pedagógica" class="brand-event-logo" />
-      <div class="brand-copy">
-        <span>Mostra Pedagógica</span>
-        <strong>Ideias que ganham vida ✨</strong>
+<body class="kiosk-mode">
+  <main class="kiosk-shell">
+    <header class="kiosk-header">
+      <div class="kiosk-brand">
+        <span class="kiosk-brand-kicker">MOSTRA CULTURAL</span>
+        <strong>Meu Uso Tecnológico</strong>
+      </div>
+      <div class="kiosk-partners" aria-label="Império das Letras e Codifica">
+        <img src="./logo_imperio.png" alt="Império das Letras" />
+        <span>+</span>
+        <img src="./logo_codifica.png" alt="Codifica" />
       </div>
     </header>
 
-    <section id="welcome" class="screen screen--active">
-      <div class="hero-card">
-        <span class="eyebrow">BEM-VINDOS 💙</span>
-        <h1>Conheça cada projeto da nossa mostra.</h1>
-        <p>Você verá uma ideia por vez. Avalie com estrelas, escolha um elogio e siga até conhecer todos os trabalhos.</p>
-        <button id="startBtn" class="primary-btn">Começar a visita →</button>
-        <p class="tiny">Nenhum cadastro é necessário.</p>
-      </div>
-
-      <div class="welcome-partners" aria-label="Parceiros da Mostra Pedagógica">
-        <img src="./Imperio.png" alt="Império das Letras" class="brand-logo brand-logo--school" />
-        <span class="brand-plus" aria-hidden="true">+</span>
-        <img src="./logo_codifica.png" alt="Codifica" class="brand-logo brand-logo--codifica" />
-      </div>
-    </section>
-
-    <section id="notices" class="screen">
-      <div class="flow-card">
-        <span class="eyebrow">ANTES DE COMEÇAR 💙</span>
-        <h1>Alguns avisos rápidos.</h1>
-        <div class="notice-list">
-          <article class="notice-item">
-            <span class="notice-icon">↻</span>
-            <div><strong>Seu progresso fica neste aparelho</strong><p>Você pode atualizar ou fechar a página e continuar depois.</p></div>
-          </article>
-          <article class="notice-item">
-            <span class="notice-icon">◌</span>
-            <div><strong>Evite a navegação privada</strong><p>No modo anônimo ou privado, o progresso pode ser perdido ao fechar o navegador.</p></div>
-          </article>
-          <article class="notice-item">
-            <span class="notice-icon">✓</span>
-            <div><strong>Nenhum dado pessoal é solicitado</strong><p>Não pedimos nome, e-mail, telefone ou cadastro. Usamos apenas um identificador anônimo deste navegador para manter suas avaliações.</p></div>
-          </article>
-          <article class="notice-item">
-            <span class="notice-icon">⌁</span>
-            <div><strong>Trocar de aparelho pode mudar a visita</strong><p>Outro navegador, outro aparelho ou a limpeza dos dados do site podem iniciar uma nova visita.</p></div>
-          </article>
+    <section id="welcomeScreen" class="kiosk-screen kiosk-screen--active">
+      <article class="kiosk-welcome-card">
+        <div class="kiosk-orbit" aria-hidden="true">
+          <span>📱</span><span>🎮</span><span>📚</span><span>💬</span>
         </div>
-        <button id="noticesNextBtn" class="primary-btn">Continuar →</button>
-      </div>
-    </section>
+        <span class="kiosk-pill">10 PERGUNTAS RÁPIDAS</span>
+        <h1>Já parou para pensar em <em>como usa o seu tempo?</em></h1>
+        <p>Conte um pouco sobre a sua rotina. No final, você verá uma estimativa do seu tempo com tecnologia e com atividades fora das telas.</p>
 
-    <section id="tutorial" class="screen">
-      <div class="flow-card">
-        <span class="eyebrow">COMO FUNCIONA ✨</span>
-        <h1>Avalie com carinho e sinceridade.</h1>
-        <p class="flow-intro">Não existe resposta certa. Conheça cada trabalho e registre a impressão da sua família.</p>
-        <div class="tutorial-steps">
-          <article><span>1</span><div><strong>Conheça o projeto</strong><p>Veja as fotos, leia a ideia e converse sobre o trabalho.</p></div></article>
-          <article><span>2</span><div><strong>Escolha de 1 a 5 estrelas</strong><p>Depois, se quiser, selecione um elogio e deixe uma mensagem.</p></div></article>
-          <article><span>3</span><div><strong>Você pode corrigir</strong><p>As avaliações ficam salvas e podem ser revistas antes ou depois de concluir a visita.</p></div></article>
-        </div>
-        <button id="tutorialStartBtn" class="primary-btn">Começar as avaliações →</button>
-      </div>
-    </section>
-
-    <section id="review" class="screen">
-      <button id="reviewHelpBtn" class="review-help-btn" type="button" aria-label="Rever como funciona">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
-          <path d="M12 10.7V16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="12" cy="7.6" r="1" fill="currentColor"/>
-        </svg>
-      </button>
-
-      <div class="progress-wrap">
-        <button id="reviewBackBtn" class="review-back-btn hidden" type="button">← Voltar</button>
-        <div class="progress-row">
-          <span id="progressText">Projeto 1 de 1</span>
-          <span id="progressPct">0%</span>
-        </div>
-        <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
-      </div>
-
-      <article class="project-card">
-        <div id="projectPhotoWrap" class="project-photo-wrap">
-          <img id="projectPhoto" class="project-photo" alt="" />
-          <div id="projectPlaceholder" class="project-placeholder">💡</div>
-
-          <button id="projectPhotoPrev" class="project-photo-nav project-photo-nav--prev hidden" type="button" aria-label="Foto anterior">‹</button>
-          <button id="projectPhotoNext" class="project-photo-nav project-photo-nav--next hidden" type="button" aria-label="Próxima foto">›</button>
-
-          <div id="projectPhotoDots" class="project-photo-dots hidden" aria-label="Fotos do projeto"></div>
-          <span id="projectPhotoCount" class="project-photo-count hidden"></span>
-          <span id="projectClass" class="class-pill"></span>
+        <div class="kiosk-info-row">
+          <div><strong>⏱️ Rápido</strong><span>leva poucos minutos</span></div>
+          <div><strong>🔒 Anônimo</strong><span>não pedimos seu nome</span></div>
+          <div><strong>📊 Visual</strong><span>resultado na hora</span></div>
         </div>
 
-        <div class="project-content">
-          <h2 id="projectTitle"></h2>
-          <p id="projectDescription"></p>
-
-          <div class="rating-block">
-            <span class="label">Como você avalia esta ideia?</span>
-            <div id="stars" class="stars" role="radiogroup" aria-label="Avaliação de 1 a 5 estrelas">
-              <button data-value="1" aria-label="1 estrela">★</button>
-              <button data-value="2" aria-label="2 estrelas">★</button>
-              <button data-value="3" aria-label="3 estrelas">★</button>
-              <button data-value="4" aria-label="4 estrelas">★</button>
-              <button data-value="5" aria-label="5 estrelas">★</button>
-            </div>
-            <strong id="ratingLabel" class="rating-label">Escolha de 1 a 5 estrelas</strong>
-          </div>
-
-          <div id="suggestionsWrap" class="suggestions-wrap hidden">
-            <span class="label">Escolha um elogio 💬</span>
-            <div id="suggestions" class="chips"></div>
-          </div>
-
-          <label class="comment-box">
-            <span class="label">Quer deixar uma mensagem? <small>(opcional)</small></span>
-            <textarea id="comment" maxlength="240" placeholder="Deixe uma mensagem positiva para o grupo ✨"></textarea>
-            <span id="charCount" class="char-count">0/240</span>
-          </label>
-
-          <button id="submitBtn" class="primary-btn" disabled>Avaliar e ver próxima →</button>
-        </div>
+        <button id="startKioskBtn" class="kiosk-primary-btn" type="button">Começar →</button>
+        <small>Não existe resposta certa ou errada. Responda pensando em um dia comum.</small>
       </article>
     </section>
 
-    <section id="summary" class="screen">
-      <div class="flow-card family-summary-card">
-        <span class="eyebrow">REVISÃO FINAL 💙</span>
-        <h1>Confira suas avaliações.</h1>
-        <p class="flow-intro">Toque em qualquer projeto para alterar estrelas, elogio ou comentário.</p>
-        <div id="familyReviewGrid" class="family-review-grid"></div>
-        <button id="finishVisitBtn" class="primary-btn">Encerrar visita →</button>
+    <section id="quizScreen" class="kiosk-screen">
+      <div class="kiosk-progress">
+        <div class="kiosk-progress-copy">
+          <button id="quizBackBtn" class="kiosk-back-btn" type="button" aria-label="Voltar para a pergunta anterior">←</button>
+          <span id="questionCounter">1 de 10</span>
+          <strong id="questionPercent">10%</strong>
+        </div>
+        <div class="kiosk-progress-track"><div id="questionProgressBar"></div></div>
       </div>
+
+      <article class="kiosk-question-card">
+        <div id="questionIcon" class="kiosk-question-icon" aria-hidden="true">📱</div>
+        <span id="questionCategory" class="kiosk-question-category">TECNOLOGIA</span>
+        <h2 id="questionTitle"></h2>
+        <p id="questionHint" class="kiosk-question-hint"></p>
+
+        <div class="kiosk-period-grid">
+          <section class="kiosk-period-card">
+            <div class="kiosk-period-heading">
+              <span>📅</span>
+              <div><strong>De segunda a sexta</strong><small>Em um dia comum</small></div>
+            </div>
+            <div id="weekdayOptions" class="kiosk-time-options" role="radiogroup" aria-label="Tempo de segunda a sexta"></div>
+          </section>
+
+          <section class="kiosk-period-card">
+            <div class="kiosk-period-heading">
+              <span>✨</span>
+              <div><strong>No fim de semana</strong><small>Em um dia comum</small></div>
+            </div>
+            <div id="weekendOptions" class="kiosk-time-options" role="radiogroup" aria-label="Tempo no fim de semana"></div>
+          </section>
+        </div>
+
+        <button id="nextQuestionBtn" class="kiosk-primary-btn" type="button" disabled>Próxima pergunta →</button>
+      </article>
     </section>
 
-    <section id="done" class="screen">
-      <div class="hero-card hero-card--done">
-        <div class="done-icon">🎉</div>
-        <span class="eyebrow">VISITA COMPLETA</span>
-        <h1>Você conheceu todos os projetos!</h1>
-        <p>Obrigado por valorizar as ideias, a criatividade e o trabalho dos nossos alunos.</p>
-        <div id="doneCount" class="done-count"></div>
-        <div class="done-actions">
-          <button id="restartBtn" class="secondary-btn">Rever minhas avaliações</button>
-          <button id="newVisitBtn" class="text-action-btn" type="button">Nova visita neste aparelho</button>
+    <section id="resultScreen" class="kiosk-screen">
+      <article class="kiosk-result-card">
+        <span class="kiosk-pill">SEU RETRATO DE TEMPO</span>
+        <h1>Olha como o seu tempo se distribui 👀</h1>
+        <p class="kiosk-result-intro">Os números abaixo são estimativas baseadas nas respostas que você deu.</p>
+
+        <div class="kiosk-reaction">
+          <div id="reactionEmoji" class="kiosk-reaction-emoji">🙂</div>
+          <div class="kiosk-speech">
+            <strong id="reactionText"></strong>
+            <span id="reflectionText"></span>
+          </div>
         </div>
-      </div>
+
+        <div class="kiosk-result-highlights">
+          <div class="kiosk-highlight-card">
+            <span>📱 Tempo de tela estimado</span>
+            <strong id="screenWeek"></strong>
+            <small>por semana</small>
+          </div>
+          <div class="kiosk-highlight-card">
+            <span>🌱 Atividades fora das telas</span>
+            <strong id="offlineWeek"></strong>
+            <small>declaradas por semana</small>
+          </div>
+        </div>
+
+        <div class="kiosk-time-projection">
+          <div><span>Em um mês</span><strong id="screenMonth"></strong></div>
+          <div><span>Em um ano</span><strong id="screenYear"></strong></div>
+          <div><span>Isso equivale a</span><strong id="screenDays"></strong></div>
+        </div>
+
+        <section class="kiosk-chart-card">
+          <div class="kiosk-section-heading">
+            <div><span class="kiosk-pill kiosk-pill--small">POR ATIVIDADE</span><h2>Sua semana em horas</h2></div>
+          </div>
+          <div id="usageChart" class="kiosk-chart"></div>
+        </section>
+
+        <div class="kiosk-note">
+          <strong>Como calculamos?</strong>
+          <p>Para estimar o tempo de tela, usamos celular + TV/vídeos + computador/tablet. Redes sociais e jogos aparecem separadamente no gráfico para evitar contar o mesmo período duas vezes.</p>
+          <p>Nas opções “5h+”, o cálculo considera 5 horas. Por isso, o resultado pode ser um pouco menor que o tempo real.</p>
+        </div>
+
+        <div class="kiosk-final-message">
+          <span>💙</span>
+          <p><strong>Tecnologia faz parte da nossa vida.</strong><br>O importante é perceber como estamos usando nosso tempo.</p>
+        </div>
+
+        <button id="restartKioskBtn" class="kiosk-primary-btn" type="button">Nova pessoa →</button>
+      </article>
     </section>
   </main>
 
-  <div class="teacher-access">
-    <button id="teacherAccessBtn" class="teacher-access-btn" type="button" aria-label="Acesso do professor">Acesso do professor</button>
-  </div>
-
-  <div id="reviewTutorialModal" class="review-tutorial-modal" aria-hidden="true">
-    <div class="review-tutorial-backdrop" data-close-review-tutorial></div>
-    <section class="review-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="reviewTutorialTitle">
-      <button class="review-tutorial-close" type="button" aria-label="Fechar tutorial" data-close-review-tutorial>×</button>
-      <span class="eyebrow">COMO FUNCIONA ✨</span>
-      <h2 id="reviewTutorialTitle">Avalie com carinho e sinceridade.</h2>
-      <p class="review-tutorial-intro">Não existe resposta certa. Conheça cada trabalho e registre a impressão da sua família.</p>
-
-      <div class="tutorial-steps review-tutorial-steps">
-        <article>
-          <span>1</span>
-          <div><strong>Conheça o projeto</strong><p>Veja as fotos, leia a ideia e converse sobre o trabalho.</p></div>
-        </article>
-        <article>
-          <span>2</span>
-          <div><strong>Escolha de 1 a 5 estrelas</strong><p>Você pode marcar mais de um elogio e, se quiser, deixar uma mensagem.</p></div>
-        </article>
-        <article>
-          <span>3</span>
-          <div><strong>Você pode corrigir</strong><p>As avaliações ficam salvas e podem ser revistas antes ou depois de concluir a visita.</p></div>
-        </article>
-      </div>
-
-      <button id="reviewTutorialBackBtn" class="primary-btn" type="button">Voltar para a avaliação →</button>
-    </section>
-  </div>
-
-  <div id="newVisitModal" class="new-visit-modal" aria-hidden="true">
-    <div class="new-visit-backdrop" data-close-new-visit></div>
-    <section class="new-visit-card" role="dialog" aria-modal="true" aria-labelledby="newVisitTitle">
-      <button id="newVisitCloseBtn" class="new-visit-close" type="button" aria-label="Fechar" data-close-new-visit>×</button>
-      <div class="new-visit-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M12 3.8 21 19H3L12 3.8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-          <path d="M12 9v4.5M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <span class="new-visit-kicker">NOVA VISITA</span>
-      <h2 id="newVisitTitle">Iniciar uma nova visita?</h2>
-      <p>As avaliações anteriores continuarão salvas no sistema, mas este aparelho passará a representar uma nova família.</p>
-      <div class="new-visit-actions">
-        <button id="confirmNewVisitBtn" class="new-visit-danger" type="button">Iniciar nova visita</button>
-        <button class="new-visit-cancel" type="button" data-close-new-visit>Cancelar</button>
-      </div>
-    </section>
-  </div>
-
-  <div id="loginModal" class="login-modal" aria-hidden="true">
-    <div class="login-backdrop" data-close-login></div>
-    <section class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-      <button class="login-close" type="button" data-close-login aria-label="Fechar">×</button>
-      <span class="eyebrow">ÁREA RESTRITA</span>
-      <h2 id="loginTitle">Acesso da equipe</h2>
-      <p>Entre com seu usuário e senha para acessar o painel da mostra.</p>
-      <form id="staffLoginForm">
-        <label class="field"><span>Usuário</span><input id="staffUser" autocomplete="username" required /></label>
-        <label class="field"><span>Senha</span><input id="staffPassword" type="password" autocomplete="current-password" required /></label>
-        <div id="loginError" class="login-error" role="alert"></div>
-        <button class="primary-btn" type="submit">Entrar</button>
-      </form>
-    </section>
-  </div>
-
-  <footer class="site-footer">
-    <div class="footer-links">
-      <a href="https://www.escolaimperiodasletras.com.br/" target="_blank" rel="noopener noreferrer">Império das Letras</a>
-      <span class="footer-separator">|</span>
-      <a href="https://codificaedu.com.br/" target="_blank" rel="noopener noreferrer">Codifica</a>
-      <span class="footer-separator">|</span>
-      <a href="https://github.com/DevSouza208" target="_blank" rel="noopener noreferrer">DevSouza</a>
-    </div>
+  <footer class="kiosk-footer">
+    <span>Império das Letras</span><span>•</span><span>Codifica</span>
   </footer>
 
-  <script src="./splash.js"></script>
-  <script src="./zoom-lock.js"></script>
   <script src="./pwa.js"></script>
-  <script src="./config.js"></script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>
