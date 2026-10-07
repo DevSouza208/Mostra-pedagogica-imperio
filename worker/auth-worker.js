@@ -13,7 +13,7 @@ function corsHeaders(request,contentType="application/json; charset=UTF-8"){
   return {
     "Access-Control-Allow-Origin":allowOrigin,
     "Access-Control-Allow-Headers":"Content-Type, X-Filename",
-    "Access-Control-Allow-Methods":"GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Methods":"GET, POST, PUT, DELETE, OPTIONS",
     "Vary":"Origin",
     ...(contentType?{"Content-Type":contentType}:{})
   };
@@ -230,6 +230,52 @@ export default {
       `).bind(id).first();
 
       return json(request,{ok:true,project:projectPayload(row,url.origin)},201);
+    }
+
+    const projectUpdateMatch=url.pathname.match(/^\/projects\/([^/]+)$/);
+    if(projectUpdateMatch&&request.method==="PUT"){
+      const id=decodeURIComponent(projectUpdateMatch[1]);
+      const current=await env.DB.prepare(
+        "SELECT id,image_keys FROM projects WHERE id=? AND active=1 LIMIT 1"
+      ).bind(id).first();
+
+      if(!current){
+        return json(request,{ok:false,error:"Projeto não encontrado."},404);
+      }
+
+      const body=await request.json().catch(()=>null);
+      const title=String(body?.title||"").trim();
+      const className=String(body?.class_name||"").trim();
+      const description=String(body?.description||"").trim();
+      const imageKeys=Array.isArray(body?.image_keys)
+        ? [...new Set(body.image_keys.filter(Boolean).map(String))]
+        : parseJsonArray(current.image_keys);
+
+      if(!title||!className){
+        return json(request,{ok:false,error:"Nome do projeto e turma são obrigatórios."},400);
+      }
+
+      const previousKeys=parseJsonArray(current.image_keys);
+      const nextKeySet=new Set(imageKeys);
+      const removedKeys=previousKeys.filter(key=>!nextKeySet.has(key));
+
+      await env.DB.prepare(`
+        UPDATE projects
+        SET title=?,class_name=?,description=?,image_keys=?
+        WHERE id=?
+      `).bind(title,className,description,JSON.stringify(imageKeys),id).run();
+
+      if(removedKeys.length){
+        await Promise.all(removedKeys.map(key=>env.IMAGES.delete(key)));
+      }
+
+      const row=await env.DB.prepare(`
+        SELECT id,title,class_name,description,image_keys,active,created_at
+        FROM projects
+        WHERE id=?
+      `).bind(id).first();
+
+      return json(request,{ok:true,project:projectPayload(row,url.origin)});
     }
 
     const projectDeleteMatch=url.pathname.match(/^\/projects\/([^/]+)$/);
