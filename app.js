@@ -1,11 +1,5 @@
 const CONFIG = window.MOSTRA_CONFIG || {};
-const HAS_SUPABASE = Boolean(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey);
-
-let supabase = null;
-if (HAS_SUPABASE) {
-  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-  supabase = createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
-}
+const API_URL = String(CONFIG.apiUrl || "").replace(/\/$/,"");
 
 const DEMO_PROJECTS = [
   {id:"demo-1",title:"Cidade Sustentável",class_name:"3º Ano",description:"Uma cidade pensada para cuidar das pessoas e do planeta.",image_url:null},
@@ -39,9 +33,14 @@ function markCompleted(id){
   localStorage.setItem("mostra_completed",JSON.stringify([...ids]));
 }
 async function loadProjects(){
-  if(HAS_SUPABASE){
-    const {data,error}=await supabase.from("projects").select("*").eq("active",true).order("created_at");
-    if(!error && data?.length) return data;
+  if(API_URL){
+    try{
+      const response=await fetch(`${API_URL}/projects`);
+      if(response.ok){
+        const data=await response.json();
+        if(Array.isArray(data)&&data.length) return data;
+      }
+    }catch(error){console.warn("API indisponível; usando dados locais.",error)}
   }
   const local=JSON.parse(localStorage.getItem("mostra_projects")||"[]");
   return local.length?local:DEMO_PROJECTS;
@@ -91,9 +90,20 @@ async function submitReview(){
     comment:$("#comment").value.trim()||null
   };
   $("#submitBtn").disabled=true;$("#submitBtn").textContent="Enviando...";
-  if(HAS_SUPABASE){
-    const {error}=await supabase.from("reviews").insert(payload);
-    if(error){alert("Não foi possível enviar agora. Tente novamente.");$("#submitBtn").disabled=false;$("#submitBtn").textContent="Avaliar e ver próxima →";return}
+  if(API_URL){
+    try{
+      const response=await fetch(`${API_URL}/reviews`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(payload)
+      });
+      if(!response.ok) throw new Error("Falha ao salvar avaliação");
+    }catch(error){
+      alert("Não foi possível enviar agora. Tente novamente.");
+      $("#submitBtn").disabled=false;
+      $("#submitBtn").textContent="Avaliar e ver próxima →";
+      return;
+    }
   }else{
     const reviews=JSON.parse(localStorage.getItem("mostra_reviews")||"[]");
     reviews.push({...payload,id:crypto.randomUUID(),created_at:new Date().toISOString()});
@@ -118,12 +128,6 @@ document.querySelectorAll("#stars button").forEach(b=>b.onclick=()=>setRating(Nu
 $("#comment").addEventListener("input",e=>$("#charCount").textContent=`${e.target.value.length}/240`);
 $("#submitBtn").onclick=submitReview;
 
-const STAFF_USERS = {
-  prof: { password: "prof2026", role: "Professor" },
-  admin: { password: "7334", role: "Administrador" },
-  moderador: { password: "mod2026", role: "Moderador" }
-};
-
 const teacherAccessBtn = document.querySelector("#teacherAccessBtn");
 const loginModal = document.querySelector("#loginModal");
 const staffLoginForm = document.querySelector("#staffLoginForm");
@@ -145,21 +149,30 @@ teacherAccessBtn?.addEventListener("click",openLoginModal);
 document.querySelectorAll("[data-close-login]").forEach(el=>el.addEventListener("click",closeLoginModal));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&loginModal?.classList.contains("open"))closeLoginModal()});
 
-staffLoginForm?.addEventListener("submit",e=>{
+staffLoginForm?.addEventListener("submit",async e=>{
   e.preventDefault();
   const username=document.querySelector("#staffUser").value.trim().toLowerCase();
   const password=document.querySelector("#staffPassword").value;
-  const account=STAFF_USERS[username];
+  const submit=staffLoginForm.querySelector('button[type="submit"]');
 
-  if(!account || account.password!==password){
-    loginError.textContent="Usuário ou senha incorretos.";
-    return;
+  loginError.textContent="";
+  submit.disabled=true;
+  submit.textContent="Entrando...";
+
+  try{
+    const response=await fetch(`${API_URL}/auth/login`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({username,password})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.error||"Usuário ou senha incorretos.");
+
+    sessionStorage.setItem("mostra_staff_token",data.token);
+    window.location.href="./admin.html";
+  }catch(error){
+    loginError.textContent=error.message||"Não foi possível entrar.";
+    submit.disabled=false;
+    submit.textContent="Entrar";
   }
-
-  sessionStorage.setItem("mostra_staff_session",JSON.stringify({
-    username,
-    role:account.role,
-    loggedAt:Date.now()
-  }));
-  window.location.href="./admin.html";
 });
