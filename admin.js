@@ -1,8 +1,18 @@
+const STAFF_SESSION_KEY="mostra_staff_session";
+let staffSession=null;
+try{staffSession=JSON.parse(sessionStorage.getItem(STAFF_SESSION_KEY)||"null")}catch{}
+if(!staffSession?.username){
+  window.location.replace("./");
+  throw new Error("Sessão de equipe ausente.");
+}
+
 const CONFIG=window.MOSTRA_CONFIG||{};
 const HAS_SUPABASE=Boolean(CONFIG.supabaseUrl&&CONFIG.supabaseAnonKey);
 let supabase=null;
 if(HAS_SUPABASE){const {createClient}=await import("https://esm.sh/@supabase/supabase-js@2");supabase=createClient(CONFIG.supabaseUrl,CONFIG.supabaseAnonKey)}
 const $=s=>document.querySelector(s);
+$("#staffBadge").textContent=`${staffSession.role} · ${staffSession.username}`;
+$("#logoutBtn").onclick=()=>{sessionStorage.removeItem(STAFF_SESSION_KEY);window.location.replace("./")};
 
 $("#modeNote").textContent=HAS_SUPABASE
   ?"Supabase conectado. Os projetos são compartilhados entre todos os dispositivos."
