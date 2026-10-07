@@ -80,16 +80,27 @@
 
             <div class="photo-actions">
               <button id="cameraBtn" class="photo-action-btn photo-action-btn--camera" type="button">
-                <span class="photo-action-icon">📷</span>
-                <span>
+                <span class="photo-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M8.5 5.5 9.7 4h4.6l1.2 1.5H18a3 3 0 0 1 3 3V16a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V8.5a3 3 0 0 1 3-3h2.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+                  </svg>
+                </span>
+                <span class="photo-action-copy">
                   <strong>Tirar foto</strong>
                   <small>Abrir câmera</small>
                 </span>
               </button>
 
-              <button id="uploadBtn" class="photo-action-btn" type="button">
-                <span class="photo-action-icon">🖼️</span>
-                <span>
+              <button id="uploadBtn" class="photo-action-btn photo-action-btn--upload" type="button">
+                <span class="photo-action-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect x="3.5" y="5" width="17" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/>
+                    <path d="M7 15l3.2-3.2a1.2 1.2 0 0 1 1.7 0L14 14l1.4-1.4a1.2 1.2 0 0 1 1.7 0L19 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="9" cy="9" r="1.2" fill="currentColor"/>
+                  </svg>
+                </span>
+                <span class="photo-action-copy">
                   <strong>Escolher imagem</strong>
                   <small>Galeria ou arquivos</small>
                 </span>
