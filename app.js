@@ -28,7 +28,7 @@ const screens={
   done:$("#done")
 };
 
-let projects=[],queue=[],index=0,rating=0,selectedSuggestion="";
+let projects=[],queue=[],index=0,rating=0,selectedSuggestions=[];
 let projectImages=[],projectImageIndex=0;
 let myReviews=new Map();
 let editingFromSummary=false;
@@ -127,7 +127,7 @@ function clearVisitState({newVisitor=false}={}){
   queue=[];
   index=0;
   rating=0;
-  selectedSuggestion="";
+  selectedSuggestions=[];
   editingFromSummary=false;
 }
 
@@ -202,7 +202,7 @@ async function prepareVisit(){
 
 function resetRating(){
   rating=0;
-  selectedSuggestion="";
+  selectedSuggestions=[];
   $("#comment").value="";
   $("#charCount").textContent="0/240";
   document.querySelectorAll("#stars button").forEach(button=>button.classList.remove("active"));
@@ -268,8 +268,17 @@ function changeProjectPhoto(direction){
   renderProjectPhoto(queue[index]?.title||"");
 }
 
+function renderSuggestionSelection(){
+  document.querySelectorAll("#suggestions .chip").forEach(chip=>
+    chip.classList.toggle("selected",selectedSuggestions.includes(chip.textContent))
+  );
+}
+
 function setRating(value){
+  const ratingChanged=rating!==value;
   rating=value;
+  if(ratingChanged) selectedSuggestions=[];
+
   document.querySelectorAll("#stars button").forEach(button=>
     button.classList.toggle("active",Number(button.dataset.value)<=value)
   );
@@ -283,24 +292,34 @@ function setRating(value){
     button.type="button";
     button.textContent=text;
     button.onclick=()=>{
-      selectedSuggestion=selectedSuggestion===text?"":text;
-      document.querySelectorAll("#suggestions .chip").forEach(chip=>
-        chip.classList.toggle("selected",chip.textContent===selectedSuggestion)
-      );
+      if(selectedSuggestions.includes(text)){
+        selectedSuggestions=selectedSuggestions.filter(item=>item!==text);
+      }else{
+        selectedSuggestions=[...selectedSuggestions,text];
+      }
+      renderSuggestionSelection();
     };
     $("#suggestions").appendChild(button);
   });
 
+  renderSuggestionSelection();
   $("#submitBtn").disabled=false;
+}
+
+function parseSavedSuggestions(value){
+  if(!value)return [];
+  if(Array.isArray(value))return value.filter(Boolean);
+  return String(value)
+    .split(" • ")
+    .map(item=>item.trim())
+    .filter(Boolean);
 }
 
 function applyExistingReview(review){
   if(!review)return;
   setRating(Number(review.stars));
-  selectedSuggestion=review.suggestion||"";
-  document.querySelectorAll("#suggestions .chip").forEach(chip=>
-    chip.classList.toggle("selected",chip.textContent===selectedSuggestion)
-  );
+  selectedSuggestions=parseSavedSuggestions(review.suggestion);
+  renderSuggestionSelection();
   $("#comment").value=review.comment||"";
   $("#charCount").textContent=`${$("#comment").value.length}/240`;
 }
@@ -345,7 +364,7 @@ async function submitReview(){
     project_id:project.id,
     visitor_id:visitorId(),
     stars:rating,
-    suggestion:selectedSuggestion||null,
+    suggestion:selectedSuggestions.length?selectedSuggestions.join(" • "):null,
     comment:$("#comment").value.trim()||null
   };
 
