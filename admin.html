@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin • Mostra Pedagógica</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <span class="eyebrow">PAINEL DA MOSTRA</span>
+        <h1>Projetos</h1>
+      </div>
+      <a href="./" class="secondary-btn" style="width:auto;text-decoration:none">Abrir avaliação</a>
+    </header>
+
+    <div id="modeNote" class="mode-note"></div>
+
+    <div class="admin-grid">
+      <section class="panel">
+        <h2>Novo projeto</h2>
+        <form id="projectForm">
+          <label class="field"><span>Nome do projeto</span><input id="title" required maxlength="80" /></label>
+          <label class="field"><span>Turma</span><input id="className" required maxlength="50" placeholder="Ex.: 4º Ano A" /></label>
+          <label class="field"><span>Descrição</span><textarea id="description" maxlength="400" placeholder="Conte a ideia em poucas palavras..."></textarea></label>
+          <label class="field"><span>Foto da maquete</span><input id="photo" type="file" accept="image/*" capture="environment" /></label>
+          <button class="primary-btn" type="submit">Cadastrar projeto</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Projetos cadastrados</h2>
+        <div id="projectList" class="admin-list"></div>
+      </section>
+    </div>
+  </main>
+  <script src="./config.js"></script>
+  <script type="module" src="./admin.js"></script>
+</body>
+</html>
