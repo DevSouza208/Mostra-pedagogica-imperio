@@ -39,6 +39,8 @@ $$(".admin-menu-card").forEach(card=>{
 });
 
 let selectedPhotoFiles=[];
+let existingProjectImages=[];
+let editingProject=null;
 
 const cameraInput=$("#cameraInput");
 const uploadInput=$("#uploadInput");
@@ -49,7 +51,9 @@ const photoCount=$("#photoCount");
 function updatePhotoPreview(){
   photoPreviewGrid.innerHTML="";
 
-  if(!selectedPhotoFiles.length){
+  const total=existingProjectImages.length+selectedPhotoFiles.length;
+
+  if(!total){
     photoPreviewWrap.classList.add("hidden");
     photoCount.textContent="0 fotos";
     cameraInput.value="";
@@ -58,7 +62,39 @@ function updatePhotoPreview(){
   }
 
   photoPreviewWrap.classList.remove("hidden");
-  photoCount.textContent=`${selectedPhotoFiles.length} ${selectedPhotoFiles.length===1?"foto":"fotos"}`;
+  photoCount.textContent=`${total} ${total===1?"foto":"fotos"}`;
+
+  existingProjectImages.forEach((image,index)=>{
+    const item=document.createElement("div");
+    item.className="photo-thumb-item";
+
+    const img=document.createElement("img");
+    img.className="photo-thumb";
+    img.alt=`Foto existente ${index+1}`;
+    img.src=image.url;
+
+    const badge=document.createElement("span");
+    badge.className="photo-thumb-existing";
+    badge.textContent="salva";
+
+    const removeBtn=document.createElement("button");
+    removeBtn.type="button";
+    removeBtn.className="photo-thumb-remove";
+    removeBtn.setAttribute("aria-label","Remover foto");
+    removeBtn.innerHTML=`
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9 10v6M15 10v6M5 7h14M10 4h4l1 2H9l1-2ZM8 20h8a1.5 1.5 0 0 0 1.5-1.5V7h-11v11.5A1.5 1.5 0 0 0 8 20Z"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+    removeBtn.onclick=()=>{
+      existingProjectImages.splice(index,1);
+      updatePhotoPreview();
+    };
+
+    item.append(img,badge,removeBtn);
+    photoPreviewGrid.appendChild(item);
+  });
 
   selectedPhotoFiles.forEach((file,index)=>{
     const item=document.createElement("div");
@@ -66,10 +102,14 @@ function updatePhotoPreview(){
 
     const img=document.createElement("img");
     img.className="photo-thumb";
-    img.alt=`Foto ${index+1}`;
+    img.alt=`Nova foto ${index+1}`;
     const objectUrl=URL.createObjectURL(file);
     img.src=objectUrl;
     img.onload=()=>URL.revokeObjectURL(objectUrl);
+
+    const badge=document.createElement("span");
+    badge.className="photo-thumb-new";
+    badge.textContent="nova";
 
     const removeBtn=document.createElement("button");
     removeBtn.type="button";
@@ -86,8 +126,7 @@ function updatePhotoPreview(){
       updatePhotoPreview();
     };
 
-    item.appendChild(img);
-    item.appendChild(removeBtn);
+    item.append(img,badge,removeBtn);
     photoPreviewGrid.appendChild(item);
   });
 }
@@ -98,6 +137,41 @@ function addSelectedPhotos(fileList){
   selectedPhotoFiles.push(...files);
   updatePhotoPreview();
 }
+
+function resetProjectFormMode(){
+  editingProject=null;
+  existingProjectImages=[];
+  selectedPhotoFiles=[];
+  $("#projectForm").reset();
+  $("#projectFormTitle").textContent="Cadastrar projeto";
+  $("#projectSubmitBtn").textContent="Cadastrar projeto";
+  $("#cancelProjectEditBtn").classList.add("hidden");
+  updatePhotoPreview();
+}
+
+function openProjectEditor(project){
+  editingProject=project;
+  selectedPhotoFiles=[];
+
+  const keys=Array.isArray(project.image_keys)?project.image_keys:[];
+  const urls=Array.isArray(project.image_urls)?project.image_urls:[];
+  existingProjectImages=keys.map((key,index)=>({
+    key,
+    url:urls[index]||project.image_url||""
+  })).filter(image=>image.key&&image.url);
+
+  $("#title").value=project.title||"";
+  $("#className").value=project.class_name||"";
+  $("#description").value=project.description||"";
+  $("#projectFormTitle").textContent="Editar projeto";
+  $("#projectSubmitBtn").textContent="Salvar alterações";
+  $("#cancelProjectEditBtn").classList.remove("hidden");
+  updatePhotoPreview();
+  showAdminView("create");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+$("#cancelProjectEditBtn").onclick=resetProjectFormMode;
 
 const cameraModal=$("#cameraModal");
 const cameraVideo=$("#cameraVideo");
@@ -287,6 +361,20 @@ function renderProjects(items){
     const footer=document.createElement("div");
     footer.className="project-admin-card-footer";
 
+    const editBtn=document.createElement("button");
+    editBtn.className="project-admin-edit";
+    editBtn.type="button";
+    editBtn.setAttribute("aria-label",`Editar ${project.title}`);
+    editBtn.innerHTML=`
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 20l4.2-1 9.9-9.9a2.1 2.1 0 0 0 0-3L17.9 6a2.1 2.1 0 0 0-3 0L5 15.9 4 20Z"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="m13.8 7.1 3.1 3.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span>Editar</span>
+    `;
+    editBtn.onclick=()=>openProjectEditor(project);
+
     const removeBtn=document.createElement("button");
     removeBtn.className="project-admin-delete";
     removeBtn.type="button";
@@ -300,7 +388,7 @@ function renderProjects(items){
     `;
     removeBtn.onclick=()=>openDeleteProjectModal(project);
 
-    footer.appendChild(removeBtn);
+    footer.append(editBtn,removeBtn);
     body.append(meta,title,description,footer);
     card.append(media,body);
     list.appendChild(card);
@@ -653,39 +741,52 @@ function renderProjectReviewDetails(project,projectReviews,allReviews,allProject
 $("#projectForm").onsubmit=async e=>{
   e.preventDefault();
 
-  const btn=e.submitter;
+  const btn=$("#projectSubmitBtn");
   btn.disabled=true;
   btn.textContent="Salvando...";
 
   try{
-    const imageKeys=[];
+    const uploadedKeys=[];
 
     for(const file of selectedPhotoFiles){
       const uploaded=await uploadImage(file);
-      if(uploaded?.key) imageKeys.push(uploaded.key);
+      if(uploaded?.key)uploadedKeys.push(uploaded.key);
     }
 
-    await api("/projects",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        title:$("#title").value.trim(),
-        class_name:$("#className").value.trim(),
-        description:$("#description").value.trim(),
-        image_keys:imageKeys
-      })
-    });
+    const imageKeys=[
+      ...existingProjectImages.map(image=>image.key),
+      ...uploadedKeys
+    ];
 
-    e.target.reset();
-    selectedPhotoFiles=[];
-    updatePhotoPreview();
+    const payload={
+      title:$("#title").value.trim(),
+      class_name:$("#className").value.trim(),
+      description:$("#description").value.trim(),
+      image_keys:imageKeys
+    };
+
+    if(editingProject){
+      await api(`/projects/${encodeURIComponent(editingProject.id)}`,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(payload)
+      });
+    }else{
+      await api("/projects",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(payload)
+      });
+    }
+
+    resetProjectFormMode();
     await loadProjects();
     showAdminView("projects");
   }catch(error){
     alert(error.message);
   }finally{
     btn.disabled=false;
-    btn.textContent="Cadastrar projeto";
+    btn.textContent=editingProject?"Salvar alterações":"Cadastrar projeto";
   }
 };
 
