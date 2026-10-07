@@ -78,8 +78,8 @@ textarea:focus{border-color:#5bbbe0;box-shadow:0 0 0 3px rgba(91,187,224,.13)}
 .hero-card--done{padding-top:48px;padding-bottom:48px}
 .done-icon{font-size:4.5rem;margin-bottom:12px}
 .done-count{display:inline-flex;margin:-4px auto 24px;padding:10px 14px;border-radius:14px;background:#eff9ff;font-weight:800;color:#0d78aa}
-.site-footer{margin-top:24px;padding:18px 16px 28px;text-align:center}
-.footer-links{display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:12px 18px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid rgba(160,209,232,.5);box-shadow:0 8px 24px rgba(15,67,102,.08);backdrop-filter:blur(8px)}
+.site-footer{width:min(100%,760px);margin:10px auto 0;padding:12px 16px 24px;text-align:center}
+.footer-links{display:flex;width:max-content;max-width:100%;margin:0 auto;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:12px 18px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid rgba(160,209,232,.5);box-shadow:0 8px 24px rgba(15,67,102,.08);backdrop-filter:blur(8px)}
 .footer-links a{color:#5c7d92;text-decoration:none;font-size:.92rem;font-weight:600;transition:.18s ease}
 .footer-links a:hover{color:#0d77b8;transform:translateY(-1px)}
 .footer-separator{color:#9db5c4;font-weight:600}
