@@ -1,27 +1,24 @@
 {
-  "name": "Mostra Pedagógica • Império das Letras",
-  "short_name": "Mostra Pedagógica",
-  "description": "Avaliação dos projetos da Mostra Pedagógica do Império das Letras.",
+  "name": "Meu Uso Tecnológico • Mostra Cultural",
+  "short_name": "Meu Uso",
+  "description": "Experiência interativa sobre uso de tecnologia e distribuição do tempo na Mostra Cultural.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": [
-    "standalone",
-    "minimal-ui"
-  ],
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "background_color": "#eaf8ff",
-  "theme_color": "#15005c",
+  "theme_color": "#0d77b8",
   "icons": [
     {
-      "src": "./logo_mostra%20pedagogica_bgoff.png",
+      "src": "./logo_imperio.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./logo_mostra%20pedagogica_bgoff.png",
+      "src": "./logo_imperio.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "maskable"
