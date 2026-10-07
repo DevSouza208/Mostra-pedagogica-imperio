@@ -329,7 +329,8 @@ export default {
     }
 
     if(url.pathname==="/reviews"&&request.method==="GET"){
-      const {results=[]}=await env.DB.prepare(`
+      const visitorId=String(url.searchParams.get("visitor_id")||"").trim();
+      const baseSql=`
         SELECT
           r.id,
           r.project_id,
@@ -342,9 +343,13 @@ export default {
           p.class_name AS project_class
         FROM reviews r
         LEFT JOIN projects p ON p.id=r.project_id
-        ORDER BY r.created_at DESC
-      `).all();
+      `;
 
+      const statement=visitorId
+        ? env.DB.prepare(baseSql+" WHERE r.visitor_id=? ORDER BY r.created_at DESC").bind(visitorId)
+        : env.DB.prepare(baseSql+" ORDER BY r.created_at DESC");
+
+      const {results=[]}=await statement.all();
       return json(request,results);
     }
 
