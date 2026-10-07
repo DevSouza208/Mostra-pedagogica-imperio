@@ -36,7 +36,7 @@ function showAdminView(view){
   if(view==="reviews") loadReviews();
 }
 
-$(".admin-menu-card").forEach(card=>{
+$$(".admin-menu-card").forEach(card=>{
   card.addEventListener("click",()=>{
     if(cameraModal?.classList.contains("open")) closeCamera();
     showAdminView(card.dataset.adminView);
