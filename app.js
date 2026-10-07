@@ -463,7 +463,15 @@ function renderFamilyReviewGrid(){
     stars.textContent=`${review.stars} ★`;
 
     const edit=document.createElement("small");
-    edit.textContent="Toque para editar";
+    edit.className="family-review-edit";
+    edit.innerHTML=`
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 20l4.2-1 9.9-9.9a2.1 2.1 0 0 0 0-3L17.9 6a2.1 2.1 0 0 0-3 0L5 15.9 4 20Z"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="m13.8 7.1 3.1 3.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span>Toque para editar</span>
+    `;
 
     card.append(photoWrap,title,stars,edit);
 
