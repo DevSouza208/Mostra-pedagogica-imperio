@@ -3654,3 +3654,141 @@ body:not(.review-mode):not(.visit-mode) .site-footer{
     padding-top:6px;
   }
 }
+
+
+/* =========================================================
+   MOSTRA CULTURAL — MEU USO TECNOLÓGICO / MODO QUIOSQUE
+   ========================================================= */
+body.kiosk-mode{
+  min-height:100dvh;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(94,205,239,.22),transparent 30rem),
+    radial-gradient(circle at 90% 12%,rgba(115,86,217,.10),transparent 26rem),
+    linear-gradient(180deg,#eaf8ff 0%,#f9fcff 50%,#edf8ff 100%);
+  color:#10223a;
+  overflow-x:hidden;
+}
+.kiosk-mode button{font:inherit}
+.kiosk-shell{width:min(100%,900px);margin:0 auto;padding:20px 18px 30px}
+.kiosk-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+.kiosk-brand{display:flex;flex-direction:column;gap:3px}
+.kiosk-brand-kicker{font-size:.7rem;font-weight:900;letter-spacing:.16em;color:#0d77b8}
+.kiosk-brand strong{font-size:1.08rem;letter-spacing:-.02em}
+.kiosk-partners{display:flex;align-items:center;gap:8px;color:#7b96a8;font-weight:900}
+.kiosk-partners img{width:44px;height:44px;object-fit:contain;border-radius:13px;background:rgba(255,255,255,.72);padding:4px;border:1px solid rgba(139,196,222,.35)}
+.kiosk-screen{display:none}
+.kiosk-screen--active{display:block;animation:kioskIn .3s ease}
+@keyframes kioskIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kiosk-welcome-card,.kiosk-question-card,.kiosk-result-card{
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(146,206,232,.58);
+  border-radius:30px;
+  box-shadow:0 22px 65px rgba(15,67,102,.13);
+}
+.kiosk-welcome-card{position:relative;overflow:hidden;text-align:center;padding:52px 34px 34px}
+.kiosk-orbit{height:72px;display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:4px}
+.kiosk-orbit span{display:grid;place-items:center;width:52px;height:52px;background:#f3fbff;border:1px solid #d5edf8;border-radius:18px;font-size:1.55rem;box-shadow:0 8px 18px rgba(15,67,102,.07)}
+.kiosk-orbit span:nth-child(2){transform:translateY(-10px)}
+.kiosk-orbit span:nth-child(4){transform:translateY(-10px)}
+.kiosk-pill{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border-radius:999px;background:#e5f6ff;color:#0f76a7;font-size:.72rem;font-weight:900;letter-spacing:.12em}
+.kiosk-pill--small{padding:6px 9px;font-size:.65rem}
+.kiosk-welcome-card h1,.kiosk-result-card>h1{font-size:clamp(2.2rem,7vw,4.2rem);line-height:1.01;letter-spacing:-.05em;margin:15px auto 16px;max-width:720px}
+.kiosk-welcome-card h1 em{font-style:normal;color:#0d77b8}
+.kiosk-welcome-card>p{max-width:650px;margin:0 auto 28px;color:#657d8d;line-height:1.65;font-size:1.02rem}
+.kiosk-info-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:670px;margin:0 auto 24px}
+.kiosk-info-row div{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:18px;background:#f6fbfe;border:1px solid #dfedf4}
+.kiosk-info-row strong{font-size:.9rem}
+.kiosk-info-row span{font-size:.73rem;color:#77909f}
+.kiosk-primary-btn{display:block;width:100%;max-width:670px;margin:0 auto;border:0;border-radius:17px;padding:17px 20px;background:linear-gradient(135deg,#0878b8,#0ba5d5);color:#fff;font-weight:900;font-size:1rem;box-shadow:0 12px 26px rgba(8,120,184,.22);transition:.18s ease}
+.kiosk-primary-btn:not(:disabled):hover{transform:translateY(-1px)}
+.kiosk-primary-btn:disabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+.kiosk-welcome-card>small{display:block;margin-top:13px;color:#8498a6}
+.kiosk-progress{padding:0 4px 14px}
+.kiosk-progress-copy{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;margin-bottom:8px;color:#587588;font-size:.82rem;font-weight:800}
+.kiosk-progress-copy strong{color:#0d77b8}
+.kiosk-progress-track{height:8px;background:#d9ecf5;border-radius:999px;overflow:hidden}
+.kiosk-progress-track>div{height:100%;width:10%;background:linear-gradient(90deg,#0ba5d5,#7356d9);border-radius:999px;transition:width .25s ease}
+.kiosk-back-btn{width:36px;height:36px;border:1px solid #d8e8f1;border-radius:12px;background:rgba(255,255,255,.8);color:#4a7188;font-weight:900}
+.kiosk-back-btn.is-hidden{visibility:hidden}
+.kiosk-question-card{padding:30px}
+.kiosk-question-icon{display:grid;place-items:center;width:64px;height:64px;border-radius:20px;background:linear-gradient(145deg,#e5f7ff,#f4fbff);border:1px solid #d4ebf6;font-size:2rem;margin-bottom:12px}
+.kiosk-question-category{display:block;color:#0d77b8;font-size:.72rem;letter-spacing:.14em;font-weight:900;margin-bottom:8px}
+.kiosk-question-card h2{font-size:clamp(1.8rem,5vw,3rem);letter-spacing:-.04em;line-height:1.08;margin:0 0 9px;max-width:760px}
+.kiosk-question-hint{margin:0 0 24px;color:#708693;line-height:1.55;max-width:720px}
+.kiosk-period-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.kiosk-period-card{padding:18px;border-radius:22px;background:#f8fcff;border:1px solid #dcecf4}
+.kiosk-period-heading{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.kiosk-period-heading>span{font-size:1.35rem}
+.kiosk-period-heading div{display:flex;flex-direction:column;gap:2px}
+.kiosk-period-heading strong{font-size:.9rem}
+.kiosk-period-heading small{font-size:.72rem;color:#8095a2}
+.kiosk-time-options{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kiosk-time-btn{min-height:48px;border:1px solid #cfe4ee;border-radius:13px;background:#fff;color:#496b7f;font-weight:800;transition:.15s ease}
+.kiosk-time-btn:hover{border-color:#7bc9e8}
+.kiosk-time-btn.selected{background:linear-gradient(135deg,#0878b8,#0ba5d5);border-color:transparent;color:#fff;box-shadow:0 8px 18px rgba(8,120,184,.18)}
+.kiosk-result-card{padding:38px 30px}
+.kiosk-result-card>h1{margin-left:0;margin-right:0;max-width:700px}
+.kiosk-result-intro{color:#708693;margin:-4px 0 24px}
+.kiosk-reaction{display:grid;grid-template-columns:84px 1fr;align-items:center;gap:16px;margin-bottom:22px}
+.kiosk-reaction-emoji{display:grid;place-items:center;width:84px;height:84px;border-radius:26px;background:linear-gradient(145deg,#e6f7ff,#f9fdff);border:1px solid #d6edf7;font-size:2.6rem}
+.kiosk-speech{position:relative;display:flex;flex-direction:column;gap:5px;background:#eef9ff;border:1px solid #d4edf8;border-radius:22px;padding:18px 20px;color:#244f67}
+.kiosk-speech:before{content:"";position:absolute;left:-9px;top:30px;width:16px;height:16px;background:#eef9ff;border-left:1px solid #d4edf8;border-bottom:1px solid #d4edf8;transform:rotate(45deg)}
+.kiosk-speech strong{font-size:1.05rem;line-height:1.4}
+.kiosk-speech span{font-size:.88rem;line-height:1.5;color:#628091}
+.kiosk-result-highlights{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.kiosk-highlight-card{display:flex;flex-direction:column;gap:5px;padding:20px;border-radius:22px;background:#f8fcff;border:1px solid #dcecf4}
+.kiosk-highlight-card>span{font-size:.8rem;font-weight:800;color:#527388}
+.kiosk-highlight-card strong{font-size:2rem;letter-spacing:-.04em;color:#0d77b8}
+.kiosk-highlight-card small{color:#8398a5}
+.kiosk-time-projection{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.kiosk-time-projection div{display:flex;flex-direction:column;gap:5px;padding:14px 16px;border-radius:17px;background:#10223a;color:#fff}
+.kiosk-time-projection span{font-size:.7rem;color:#b9ccda}
+.kiosk-time-projection strong{font-size:1rem}
+.kiosk-chart-card{padding:22px;border:1px solid #dbeaf2;border-radius:24px;background:#fff;margin-bottom:18px}
+.kiosk-section-heading h2{font-size:1.5rem;margin:8px 0 18px;letter-spacing:-.03em}
+.kiosk-chart{display:grid;gap:14px}
+.kiosk-chart-row{display:grid;gap:6px}
+.kiosk-chart-label{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:8px}
+.kiosk-chart-icon{font-size:1.15rem}
+.kiosk-chart-label strong{font-size:.82rem;color:#385e73}
+.kiosk-chart-label b{font-size:.78rem;color:#0d77b8}
+.kiosk-chart-track{height:10px;border-radius:999px;background:#e8f1f6;overflow:hidden}
+.kiosk-chart-track span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#0d77b8,#27b7e0)}
+.kiosk-chart-row--offline .kiosk-chart-track span{background:linear-gradient(90deg,#39a776,#82cc88)}
+.kiosk-chart-row--work .kiosk-chart-track span{background:linear-gradient(90deg,#7356d9,#9a7ee8)}
+.kiosk-chart-row--screen-detail .kiosk-chart-track span{background:linear-gradient(90deg,#f59c37,#ffbf2f)}
+.kiosk-note{padding:17px 18px;border-radius:18px;background:#fff9e9;border:1px solid #f2dfad;color:#665936;margin-bottom:18px}
+.kiosk-note strong{font-size:.86rem}
+.kiosk-note p{font-size:.76rem;line-height:1.5;margin:7px 0 0}
+.kiosk-final-message{display:flex;align-items:flex-start;gap:12px;padding:18px;border-radius:20px;background:#eff9ff;border:1px solid #d4ebf7;margin-bottom:18px}
+.kiosk-final-message>span{font-size:1.5rem}
+.kiosk-final-message p{margin:0;color:#41677d;line-height:1.5}
+.kiosk-footer{display:flex;align-items:center;justify-content:center;gap:8px;color:#7891a0;font-size:.78rem;padding:0 18px 22px}
+@media(max-width:720px){
+  .kiosk-shell{padding:14px 12px 24px}
+  .kiosk-header{margin-bottom:12px}
+  .kiosk-brand strong{font-size:.94rem}
+  .kiosk-partners img{width:38px;height:38px}
+  .kiosk-welcome-card{padding:36px 18px 24px}
+  .kiosk-info-row{grid-template-columns:1fr}
+  .kiosk-info-row div{flex-direction:row;align-items:center;justify-content:space-between}
+  .kiosk-question-card{padding:22px 16px}
+  .kiosk-period-grid{grid-template-columns:1fr}
+  .kiosk-time-options{grid-template-columns:repeat(4,1fr)}
+  .kiosk-result-card{padding:28px 16px}
+  .kiosk-result-highlights{grid-template-columns:1fr}
+  .kiosk-time-projection{grid-template-columns:1fr}
+  .kiosk-time-projection div{flex-direction:row;justify-content:space-between;align-items:center}
+}
+@media(max-width:430px){
+  .kiosk-header{align-items:flex-start}
+  .kiosk-brand-kicker{font-size:.62rem}
+  .kiosk-partners{gap:5px}
+  .kiosk-partners img{width:34px;height:34px;border-radius:10px}
+  .kiosk-welcome-card h1,.kiosk-result-card>h1{font-size:2.2rem}
+  .kiosk-orbit span{width:46px;height:46px;border-radius:15px}
+  .kiosk-time-options{grid-template-columns:repeat(3,1fr)}
+  .kiosk-reaction{grid-template-columns:1fr;text-align:center}
+  .kiosk-reaction-emoji{margin:0 auto}
+  .kiosk-speech:before{display:none}
+}
