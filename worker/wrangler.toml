@@ -1,4 +1,4 @@
-name = "mostra-pedagogica-imperio"
+name = "mostra-pedagogica-imperio-api"
 main = "auth-worker.js"
 compatibility_date = "2026-10-06"
 workers_dev = true
