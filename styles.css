@@ -853,3 +853,136 @@ body.splash-lock{
     font-size:1.25rem!important;
   }
 }
+
+
+/* Galeria de fotos no cadastro */
+.photo-actions{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:10px!important;
+}
+
+.photo-action-btn{
+  min-height:88px;
+}
+
+.photo-preview-wrap{
+  margin-top:14px;
+  padding:12px;
+  border:1px solid #d8e8f1;
+  border-radius:18px;
+  background:#fafdff;
+}
+
+.photo-preview-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.photo-preview-header strong{
+  font-size:.84rem;
+}
+
+.photo-count{
+  color:#6b8090;
+  font-size:.72rem;
+  font-weight:700;
+}
+
+.photo-preview-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(96px,1fr));
+  gap:10px;
+}
+
+.photo-thumb-item{
+  position:relative;
+  overflow:hidden;
+  aspect-ratio:1;
+  border:1px solid #d9e8f1;
+  border-radius:15px;
+  background:#eef8fd;
+}
+
+.photo-thumb{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.photo-thumb-remove{
+  position:absolute;
+  top:6px;
+  right:6px;
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  padding:0;
+  border:0;
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  color:#c92f4b;
+  box-shadow:0 6px 16px rgba(16,38,54,.16);
+}
+
+.photo-thumb-remove svg{
+  display:block;
+  width:16px;
+  height:16px;
+}
+
+@media(max-width:480px){
+  .photo-actions{
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+  }
+
+  .photo-action-btn{
+    min-height:76px;
+    padding:10px;
+    gap:8px;
+    border-radius:16px;
+  }
+
+  .photo-field .photo-action-icon{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+  }
+
+  .photo-field .photo-action-icon svg{
+    width:20px;
+    height:20px;
+  }
+
+  .photo-action-copy strong{
+    font-size:.76rem;
+    line-height:1.08;
+  }
+
+  .photo-preview-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+
+  .photo-thumb-item{
+    border-radius:12px;
+  }
+
+  .photo-thumb-remove{
+    top:4px;
+    right:4px;
+    width:26px;
+    height:26px;
+  }
+
+  .photo-thumb-remove svg{
+    width:14px;
+    height:14px;
+  }
+}
