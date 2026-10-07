@@ -15,9 +15,7 @@ Aplicação web mobile-first para a **Mostra Pedagógica do Império das Letras*
 [![Cloudflare Pages](https://img.shields.io/badge/Cloudflare-Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](#)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?style=for-the-badge&logo=cloudflareworkers&logoColor=white)](#)
 
-[**🌐 Abrir aplicação**](https://mostra-pedagogica-imperio.pages.dev/) ·
-[**🧑‍🏫 Painel administrativo**](https://mostra-pedagogica-imperio.pages.dev/admin.html) ·
-[**⚡ API**](https://mostra-pedagogica-imperio-api.imperio-96d.workers.dev)
+[**🌐 Abrir aplicação**](https://mostra-pedagogica-imperio.pages.dev/)
 
 </div>
 
