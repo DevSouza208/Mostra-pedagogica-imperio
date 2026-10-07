@@ -3158,3 +3158,89 @@ body.review-tutorial-open{
     font-size:.74rem;
   }
 }
+
+
+/* Edição dos projetos cadastrados */
+.project-admin-card-footer{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+}
+
+.project-admin-edit,
+.project-admin-delete{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:40px;
+  min-height:40px;
+  padding:9px 10px;
+  border-radius:13px;
+}
+
+.project-admin-edit{
+  border:0;
+  background:#eaf8fe;
+  color:#0d7cb8;
+}
+
+.project-admin-edit svg,
+.project-admin-delete svg{
+  width:18px;
+  height:18px;
+}
+
+.project-admin-edit span,
+.project-admin-delete span{
+  display:none;
+}
+
+.project-form-actions{
+  display:grid;
+  gap:9px;
+}
+
+.project-edit-cancel{
+  min-height:48px;
+}
+
+.photo-thumb-existing,
+.photo-thumb-new{
+  position:absolute;
+  left:6px;
+  bottom:6px;
+  z-index:2;
+  padding:4px 6px;
+  border-radius:999px;
+  font-size:.52rem;
+  font-weight:800;
+  line-height:1;
+}
+
+.photo-thumb-existing{
+  background:rgba(255,255,255,.9);
+  color:#597386;
+}
+
+.photo-thumb-new{
+  background:#e5f8ef;
+  color:#277554;
+}
+
+@media(max-width:560px){
+  .project-admin-edit,
+  .project-admin-delete{
+    min-width:38px;
+    min-height:38px;
+    padding:8px;
+    border-radius:12px;
+  }
+
+  .project-admin-edit svg,
+  .project-admin-delete svg{
+    width:17px;
+    height:17px;
+  }
+}
