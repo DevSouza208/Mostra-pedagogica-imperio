@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./logo_mostra%20pedagogica_bgoff.png" alt="Mostra Pedagógica" width="190" />
+<img src="./Logo_Mostra%20Pedag%C3%B3gica_bgo.png" alt="Mostra Pedagógica" width="220" />
 
 # Mostra Pedagógica
 
