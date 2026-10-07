@@ -423,6 +423,38 @@ function renderFamilyReviewGrid(){
     card.type="button";
     card.className="family-review-item";
 
+    const photoWrap=document.createElement("div");
+    photoWrap.className="family-review-photo-wrap";
+
+    const photoFrame=document.createElement("div");
+    photoFrame.className="family-review-photo-frame";
+
+    const images=Array.isArray(project.image_urls)&&project.image_urls.length
+      ? project.image_urls.filter(Boolean)
+      : (project.image_url?[project.image_url]:[]);
+
+    if(images.length){
+      const img=document.createElement("img");
+      img.className="family-review-photo";
+      img.src=images[0];
+      img.alt=`Miniatura do projeto ${project.title}`;
+      photoFrame.appendChild(img);
+
+      if(images.length>1){
+        const more=document.createElement("span");
+        more.className="family-review-photo-more";
+        more.textContent=`+${images.length-1}`;
+        photoFrame.appendChild(more);
+      }
+    }else{
+      const placeholder=document.createElement("div");
+      placeholder.className="family-review-photo-placeholder";
+      placeholder.textContent="💡";
+      photoFrame.appendChild(placeholder);
+    }
+
+    photoWrap.appendChild(photoFrame);
+
     const title=document.createElement("strong");
     title.textContent=project.title;
 
@@ -433,7 +465,8 @@ function renderFamilyReviewGrid(){
     const edit=document.createElement("small");
     edit.textContent="Toque para editar";
 
-    card.append(title,stars,edit);
+    card.append(photoWrap,title,stars,edit);
+
     card.onclick=()=>{
       const projectIndex=queue.findIndex(item=>item.id===project.id);
       if(projectIndex<0)return;
@@ -442,6 +475,7 @@ function renderFamilyReviewGrid(){
       show("review");
       render();
     };
+
     grid.appendChild(card);
   });
 }
