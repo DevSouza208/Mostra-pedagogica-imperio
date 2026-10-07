@@ -171,6 +171,52 @@ function buildQueue(){
   localStorage.setItem(STORAGE.queue,JSON.stringify(queue.map(project=>project.id)));
 }
 
+async function refreshProjectQueue(){
+  const latest=await loadProjects();
+  if(!latest.length)return {added:0,pending:0};
+
+  const currentIds=new Set(queue.map(project=>project.id));
+  const latestMap=new Map(latest.map(project=>[project.id,project]));
+
+  // Atualiza metadados/fotos de projetos já conhecidos.
+  queue=queue
+    .filter(project=>latestMap.has(project.id))
+    .map(project=>latestMap.get(project.id));
+
+  // Acrescenta projetos novos sem bagunçar a ordem já percorrida.
+  const newProjects=shuffle(latest.filter(project=>!currentIds.has(project.id)));
+  if(newProjects.length)queue.push(...newProjects);
+
+  projects=latest;
+  localStorage.setItem(STORAGE.queue,JSON.stringify(queue.map(project=>project.id)));
+
+  const pending=queue.filter(project=>!myReviews.has(project.id)).length;
+  return {added:newProjects.length,pending};
+}
+
+async function checkForNewProjects({announce=false}={}){
+  try{
+    const result=await refreshProjectQueue();
+    if(result.added>0&&announce){
+      const currentScreen=Object.entries(screens).find(([,el])=>el?.classList.contains("screen--active"))?.[0];
+      if(["summary","done","welcome"].includes(currentScreen)){
+        const next=firstPendingIndex(0);
+        if(next>=0){
+          index=next;
+          await showTransitionSplash("Novo projeto disponível ✨",()=>{
+            show("review");
+            render();
+          });
+        }
+      }
+    }
+    return result;
+  }catch(error){
+    console.warn("Não foi possível verificar novos projetos agora.",error);
+    return {added:0,pending:0};
+  }
+}
+
 function firstPendingIndex(start=0){
   if(!queue.length)return -1;
   for(let i=Math.max(0,start);i<queue.length;i++){
@@ -394,6 +440,10 @@ async function submitReview(){
       return;
     }
 
+    await refreshProjectQueue().catch(error=>
+      console.warn("Falha ao atualizar projetos antes de continuar.",error)
+    );
+
     const next=firstPendingIndex(index+1);
     if(next===-1){
       await finish();
@@ -497,6 +547,23 @@ function showReviewSummary(){
 async function finish(){
   $("#progressBar").style.width="100%";
   localStorage.removeItem(STORAGE.current);
+
+  try{
+    const result=await refreshProjectQueue();
+    const next=firstPendingIndex(0);
+
+    if(result.added>0&&next>=0){
+      index=next;
+      await showTransitionSplash("Novo projeto disponível ✨",()=>{
+        show("review");
+        render();
+      });
+      return;
+    }
+  }catch(error){
+    console.warn("Não foi possível conferir novos projetos antes da revisão.",error);
+  }
+
   await showTransitionSplash("Hora de conferir 💙",()=>showReviewSummary());
 }
 
@@ -558,6 +625,18 @@ $("#reviewBackBtn").onclick=()=>{
 };
 
 $("#finishVisitBtn").onclick=async()=>{
+  const result=await checkForNewProjects();
+  const next=firstPendingIndex(0);
+
+  if(result.added>0&&next>=0){
+    index=next;
+    await showTransitionSplash("Novo projeto disponível ✨",()=>{
+      show("review");
+      render();
+    });
+    return;
+  }
+
   $("#doneCount").textContent=`${myReviews.size} avaliações enviadas 💙`;
   await showTransitionSplash("Obrigado por participar 💙",()=>show("done"));
 };
@@ -596,6 +675,30 @@ $("#submitBtn").onclick=submitReview;
 if(completedIds().length){
   $("#startBtn").textContent="Continuar visita →";
 }
+
+const NEW_PROJECT_CHECK_INTERVAL=90000;
+let newProjectCheckTimer=null;
+
+function startNewProjectWatch(){
+  if(newProjectCheckTimer)return;
+  newProjectCheckTimer=setInterval(()=>{
+    if(document.visibilityState==="visible"){
+      checkForNewProjects({announce:true});
+    }
+  },NEW_PROJECT_CHECK_INTERVAL);
+}
+
+window.addEventListener("focus",()=>{
+  checkForNewProjects({announce:true});
+});
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible"){
+    checkForNewProjects({announce:true});
+  }
+});
+
+startNewProjectWatch();
 
 const teacherAccessBtn = document.querySelector("#teacherAccessBtn");
 const loginModal = document.querySelector("#loginModal");
