@@ -29,7 +29,34 @@
           <label class="field"><span>Nome do projeto</span><input id="title" required maxlength="80" /></label>
           <label class="field"><span>Turma</span><input id="className" required maxlength="50" placeholder="Ex.: 4º Ano A" /></label>
           <label class="field"><span>Descrição</span><textarea id="description" maxlength="400" placeholder="Conte a ideia em poucas palavras..."></textarea></label>
-          <label class="field"><span>Foto da maquete</span><input id="photo" type="file" accept="image/*" capture="environment" /></label>
+          <div class="field photo-field">
+            <span>Foto da maquete</span>
+            <div class="photo-actions">
+              <button id="cameraBtn" class="photo-action-btn photo-action-btn--camera" type="button">
+                <span class="photo-action-icon">📷</span>
+                <span>
+                  <strong>Tirar foto</strong>
+                  <small>Abrir câmera</small>
+                </span>
+              </button>
+              <button id="uploadBtn" class="photo-action-btn" type="button">
+                <span class="photo-action-icon">🖼️</span>
+                <span>
+                  <strong>Escolher imagem</strong>
+                  <small>Galeria ou arquivos</small>
+                </span>
+              </button>
+            </div>
+            <input id="cameraInput" class="hidden-file-input" type="file" accept="image/*" capture="environment" />
+            <input id="uploadInput" class="hidden-file-input" type="file" accept="image/*" />
+            <div id="photoPreviewWrap" class="photo-preview-wrap hidden">
+              <img id="photoPreview" class="photo-preview" alt="Prévia da foto da maquete" />
+              <div class="photo-preview-info">
+                <strong id="photoFileName">Imagem selecionada</strong>
+                <button id="removePhotoBtn" class="photo-remove-btn" type="button">Remover</button>
+              </div>
+            </div>
+          </div>
           <button class="primary-btn" type="submit">Cadastrar projeto</button>
         </form>
       </section>
