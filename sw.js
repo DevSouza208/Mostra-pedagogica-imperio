@@ -1,4 +1,4 @@
-const CACHE_NAME = "mostra-pedagogica-v26";
+const CACHE_NAME = "mostra-pedagogica-v27";
 
 const APP_SHELL = [
   "./",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./config.js",
   "./app.js",
   "./admin.js",
+  "./pdf-export.js",
   "./pwa.js",
   "./zoom-lock.js",
   "./splash.js",
