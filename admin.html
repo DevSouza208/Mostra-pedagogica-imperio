@@ -11,26 +11,73 @@
     <header class="admin-header">
       <div>
         <span class="eyebrow">PAINEL DA MOSTRA</span>
-        <h1>Projetos</h1>
+        <h1>Administração</h1>
+        <p class="admin-subtitle">Gerencie os projetos e acompanhe a participação da mostra.</p>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+
+      <div class="admin-header-actions">
         <span id="staffBadge" class="staff-badge"></span>
         <button id="logoutBtn" class="logout-btn" type="button">Sair</button>
-        <a href="./" class="secondary-btn" style="width:auto;text-decoration:none">Abrir avaliação</a>
+        <a href="./" class="secondary-btn admin-open-evaluation">Abrir avaliação</a>
       </div>
     </header>
 
     <div id="modeNote" class="mode-note"></div>
 
-    <div class="admin-grid">
-      <section class="panel">
-        <h2>Novo projeto</h2>
-        <form id="projectForm">
-          <label class="field"><span>Nome do projeto</span><input id="title" required maxlength="80" /></label>
-          <label class="field"><span>Turma</span><input id="className" required maxlength="50" placeholder="Ex.: 4º Ano A" /></label>
-          <label class="field"><span>Descrição</span><textarea id="description" maxlength="400" placeholder="Conte a ideia em poucas palavras..."></textarea></label>
+    <nav class="admin-menu" aria-label="Navegação do painel">
+      <button class="admin-menu-card active" type="button" data-admin-view="create">
+        <span class="admin-menu-icon">＋</span>
+        <span class="admin-menu-copy">
+          <strong>Cadastrar projetos</strong>
+          <small>Adicionar um novo trabalho à mostra</small>
+        </span>
+      </button>
+
+      <button class="admin-menu-card" type="button" data-admin-view="projects">
+        <span class="admin-menu-icon">📚</span>
+        <span class="admin-menu-copy">
+          <strong>Projetos cadastrados</strong>
+          <small>Visualizar e gerenciar os trabalhos</small>
+        </span>
+      </button>
+
+      <button class="admin-menu-card" type="button" data-admin-view="reviews">
+        <span class="admin-menu-icon">★</span>
+        <span class="admin-menu-copy">
+          <strong>Ver avaliações</strong>
+          <small>Acompanhar notas e comentários</small>
+        </span>
+      </button>
+    </nav>
+
+    <section id="adminViewCreate" class="admin-view active" data-view="create">
+      <div class="panel admin-content-panel">
+        <div class="admin-section-heading">
+          <div>
+            <span class="admin-section-kicker">NOVO TRABALHO</span>
+            <h2>Cadastrar projeto</h2>
+          </div>
+        </div>
+
+        <form id="projectForm" class="project-form">
+          <label class="field">
+            <span>Nome do projeto</span>
+            <input id="title" required maxlength="80" />
+          </label>
+
+          <label class="field">
+            <span>Turma</span>
+            <input id="className" required maxlength="50" placeholder="Ex.: 4º Ano A" />
+          </label>
+
+          <label class="field">
+            <span>Descrição</span>
+            <textarea id="description" maxlength="400" placeholder="Conte a ideia em poucas palavras..."></textarea>
+          </label>
+
           <div class="field photo-field">
             <span>Foto da maquete</span>
+
             <div class="photo-actions">
               <button id="cameraBtn" class="photo-action-btn photo-action-btn--camera" type="button">
                 <span class="photo-action-icon">📷</span>
@@ -39,6 +86,7 @@
                   <small>Abrir câmera</small>
                 </span>
               </button>
+
               <button id="uploadBtn" class="photo-action-btn" type="button">
                 <span class="photo-action-icon">🖼️</span>
                 <span>
@@ -47,8 +95,10 @@
                 </span>
               </button>
             </div>
+
             <input id="cameraInput" class="hidden-file-input" type="file" accept="image/*" capture="environment" />
             <input id="uploadInput" class="hidden-file-input" type="file" accept="image/*" />
+
             <div id="photoPreviewWrap" class="photo-preview-wrap hidden">
               <img id="photoPreview" class="photo-preview" alt="Prévia da foto da maquete" />
               <div class="photo-preview-info">
@@ -57,16 +107,61 @@
               </div>
             </div>
           </div>
+
           <button class="primary-btn" type="submit">Cadastrar projeto</button>
         </form>
-      </section>
+      </div>
+    </section>
 
-      <section class="panel">
-        <h2>Projetos cadastrados</h2>
+    <section id="adminViewProjects" class="admin-view" data-view="projects">
+      <div class="panel admin-content-panel">
+        <div class="admin-section-heading">
+          <div>
+            <span class="admin-section-kicker">CATÁLOGO</span>
+            <h2>Projetos cadastrados</h2>
+          </div>
+          <span id="projectCount" class="admin-count-badge">0 projetos</span>
+        </div>
+
         <div id="projectList" class="admin-list"></div>
-      </section>
-    </div>
+      </div>
+    </section>
+
+    <section id="adminViewReviews" class="admin-view" data-view="reviews">
+      <div class="panel admin-content-panel">
+        <div class="admin-section-heading">
+          <div>
+            <span class="admin-section-kicker">FEEDBACK DA MOSTRA</span>
+            <h2>Avaliações recebidas</h2>
+          </div>
+        </div>
+
+        <div class="review-summary">
+          <div class="review-stat">
+            <span>Total de avaliações</span>
+            <strong id="reviewTotal">0</strong>
+          </div>
+          <div class="review-stat">
+            <span>Média geral</span>
+            <strong id="reviewAverage">—</strong>
+          </div>
+          <div class="review-stat">
+            <span>Comentários</span>
+            <strong id="reviewComments">0</strong>
+          </div>
+        </div>
+
+        <div id="reviewsList" class="admin-list">
+          <div class="admin-empty-state">
+            <span>⭐</span>
+            <strong>Nenhuma avaliação para mostrar ainda.</strong>
+            <p>Quando conectarmos as avaliações ao banco, elas aparecerão organizadas aqui.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
   <script src="./config.js"></script>
   <script type="module" src="./admin.js"></script>
 </body>
