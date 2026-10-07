@@ -94,6 +94,14 @@
     </section>
 
     <section id="review" class="screen">
+      <button id="reviewHelpBtn" class="review-help-btn" type="button" aria-label="Rever como funciona">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 10.7V16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="12" cy="7.6" r="1" fill="currentColor"/>
+        </svg>
+      </button>
+
       <div class="progress-wrap">
         <button id="reviewBackBtn" class="review-back-btn hidden" type="button">← Voltar</button>
         <div class="progress-row">
@@ -175,6 +183,33 @@
 
   <div class="teacher-access">
     <button id="teacherAccessBtn" class="teacher-access-btn" type="button" aria-label="Acesso do professor">Acesso do professor</button>
+  </div>
+
+  <div id="reviewTutorialModal" class="review-tutorial-modal" aria-hidden="true">
+    <div class="review-tutorial-backdrop" data-close-review-tutorial></div>
+    <section class="review-tutorial-card" role="dialog" aria-modal="true" aria-labelledby="reviewTutorialTitle">
+      <button class="review-tutorial-close" type="button" aria-label="Fechar tutorial" data-close-review-tutorial>×</button>
+      <span class="eyebrow">COMO FUNCIONA ✨</span>
+      <h2 id="reviewTutorialTitle">Avalie com carinho e sinceridade.</h2>
+      <p class="review-tutorial-intro">Não existe resposta certa. Conheça cada trabalho e registre a impressão da sua família.</p>
+
+      <div class="tutorial-steps review-tutorial-steps">
+        <article>
+          <span>1</span>
+          <div><strong>Conheça o projeto</strong><p>Veja as fotos, leia a ideia e converse sobre o trabalho.</p></div>
+        </article>
+        <article>
+          <span>2</span>
+          <div><strong>Escolha de 1 a 5 estrelas</strong><p>Você pode marcar mais de um elogio e, se quiser, deixar uma mensagem.</p></div>
+        </article>
+        <article>
+          <span>3</span>
+          <div><strong>Você pode corrigir</strong><p>As avaliações ficam salvas e podem ser revistas antes ou depois de concluir a visita.</p></div>
+        </article>
+      </div>
+
+      <button id="reviewTutorialBackBtn" class="primary-btn" type="button">Voltar para a avaliação →</button>
+    </section>
   </div>
 
   <div id="newVisitModal" class="new-visit-modal" aria-hidden="true">
