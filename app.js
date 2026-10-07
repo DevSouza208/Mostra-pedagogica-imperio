@@ -655,10 +655,28 @@ $("#restartBtn").onclick=async()=>{
   await showTransitionSplash("Suas avaliações ✨",()=>showReviewSummary());
 };
 
-$("#newVisitBtn").onclick=async()=>{
-  const confirmed=confirm("Iniciar uma nova visita neste aparelho? As avaliações anteriores continuarão salvas no sistema, mas este aparelho começará como uma nova família.");
-  if(!confirmed)return;
+const newVisitModal=$("#newVisitModal");
 
+function openNewVisitModal(){
+  newVisitModal.classList.add("open");
+  newVisitModal.setAttribute("aria-hidden","false");
+  document.body.classList.add("modal-open");
+}
+
+function closeNewVisitModal(){
+  newVisitModal.classList.remove("open");
+  newVisitModal.setAttribute("aria-hidden","true");
+  document.body.classList.remove("modal-open");
+}
+
+$("#newVisitBtn").onclick=openNewVisitModal;
+
+document.querySelectorAll("[data-close-new-visit]").forEach(element=>
+  element.addEventListener("click",closeNewVisitModal)
+);
+
+$("#confirmNewVisitBtn").onclick=async()=>{
+  closeNewVisitModal();
   clearVisitState({newVisitor:true});
   await showTransitionSplash("Nova visita ✨",()=>show("welcome"));
   $("#startBtn").textContent="Começar a visita →";
@@ -719,7 +737,11 @@ function closeLoginModal(){
 }
 teacherAccessBtn?.addEventListener("click",openLoginModal);
 document.querySelectorAll("[data-close-login]").forEach(el=>el.addEventListener("click",closeLoginModal));
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&loginModal?.classList.contains("open"))closeLoginModal()});
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape")return;
+  if(loginModal?.classList.contains("open"))closeLoginModal();
+  if(newVisitModal?.classList.contains("open"))closeNewVisitModal();
+});
 
 staffLoginForm?.addEventListener("submit",async e=>{
   e.preventDefault();
