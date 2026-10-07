@@ -19,15 +19,30 @@ const SUGGESTIONS = {
 const RATING_LABELS={1:"Obrigado por compartilhar 💙",2:"Boa ideia! 🌱",3:"Gostei! 😊",4:"Adorei! ✨",5:"Incrível! 🌟"};
 
 const $=s=>document.querySelector(s);
-const screens={welcome:$("#welcome"),review:$("#review"),done:$("#done")};
-let projects=[], queue=[], index=0, rating=0, selectedSuggestion="";
-let projectImages=[], projectImageIndex=0;
+const screens={
+  welcome:$("#welcome"),
+  notices:$("#notices"),
+  tutorial:$("#tutorial"),
+  review:$("#review"),
+  summary:$("#summary"),
+  done:$("#done")
+};
 
+let projects=[],queue=[],index=0,rating=0,selectedSuggestion="";
+let projectImages=[],projectImageIndex=0;
+let myReviews=new Map();
+let editingFromSummary=false;
 let transitionSplashRunning=false;
 
-function wait(ms){
-  return new Promise(resolve=>setTimeout(resolve,ms));
-}
+const STORAGE={
+  visitor:"mostra_visitor_id",
+  completed:"mostra_completed",
+  intro:"mostra_intro_seen",
+  queue:"mostra_visit_queue",
+  current:"mostra_current_project"
+};
+
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
 
 async function showTransitionSplash(message="",onMidpoint=null){
   const splash=$("#transitionSplash");
@@ -36,10 +51,9 @@ async function showTransitionSplash(message="",onMidpoint=null){
     if(typeof onMidpoint==="function")onMidpoint();
     return;
   }
-
   if(transitionSplashRunning)return;
-  transitionSplashRunning=true;
 
+  transitionSplashRunning=true;
   text.textContent=message;
   text.classList.toggle("hidden",!message);
   splash.classList.remove("is-leaving");
@@ -49,9 +63,7 @@ async function showTransitionSplash(message="",onMidpoint=null){
 
   const reducedMotion=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   await wait(reducedMotion?80:220);
-
   if(typeof onMidpoint==="function")onMidpoint();
-
   await wait(reducedMotion?80:210);
   splash.classList.add("is-leaving");
   await wait(reducedMotion?80:220);
@@ -63,35 +75,140 @@ async function showTransitionSplash(message="",onMidpoint=null){
 }
 
 function show(name){
-  Object.values(screens).forEach(s=>s.classList.remove("screen--active"));
-  screens[name].classList.add("screen--active");
+  Object.values(screens).forEach(screen=>screen?.classList.remove("screen--active"));
+  screens[name]?.classList.add("screen--active");
   document.body.classList.toggle("review-mode",name==="review");
+  document.body.classList.toggle("visit-mode",["notices","tutorial","review","summary"].includes(name));
+  window.scrollTo({top:0,behavior:"instant"});
 }
+
 function shuffle(items){return [...items].sort(()=>Math.random()-.5)}
+
 function visitorId(){
-  let id=localStorage.getItem("mostra_visitor_id");
-  if(!id){id=crypto.randomUUID();localStorage.setItem("mostra_visitor_id",id)}
+  let id=localStorage.getItem(STORAGE.visitor);
+  if(!id){
+    id=crypto.randomUUID();
+    localStorage.setItem(STORAGE.visitor,id);
+  }
   return id;
 }
-function completedIds(){try{return JSON.parse(localStorage.getItem("mostra_completed")||"[]")}catch{return[]}}
-function markCompleted(id){
-  const ids=new Set(completedIds());ids.add(id);
-  localStorage.setItem("mostra_completed",JSON.stringify([...ids]));
+
+function completedIds(){
+  try{return JSON.parse(localStorage.getItem(STORAGE.completed)||"[]")}
+  catch{return[]}
 }
+
+function setCompletedIds(ids){
+  localStorage.setItem(STORAGE.completed,JSON.stringify([...new Set(ids)]));
+}
+
+function markCompleted(id){
+  const ids=new Set(completedIds());
+  ids.add(id);
+  setCompletedIds([...ids]);
+}
+
+function saveVisitState(){
+  if(queue.length)localStorage.setItem(STORAGE.queue,JSON.stringify(queue.map(project=>project.id)));
+  const current=queue[index];
+  if(current)localStorage.setItem(STORAGE.current,current.id);
+}
+
+function clearVisitState({newVisitor=false}={}){
+  [
+    STORAGE.completed,
+    STORAGE.intro,
+    STORAGE.queue,
+    STORAGE.current
+  ].forEach(key=>localStorage.removeItem(key));
+
+  if(newVisitor)localStorage.removeItem(STORAGE.visitor);
+  myReviews=new Map();
+  queue=[];
+  index=0;
+  rating=0;
+  selectedSuggestion="";
+  editingFromSummary=false;
+}
+
 async function loadProjects(){
-  if(!API_URL) throw new Error("API não configurada.");
-
+  if(!API_URL)throw new Error("API não configurada.");
   const response=await fetch(`${API_URL}/projects`);
-  if(!response.ok) throw new Error("Não foi possível carregar os projetos.");
-
+  if(!response.ok)throw new Error("Não foi possível carregar os projetos.");
   const data=await response.json();
   return Array.isArray(data)?data:[];
 }
+
+async function loadMyReviews(){
+  if(!API_URL)return [];
+  const response=await fetch(`${API_URL}/reviews?visitor_id=${encodeURIComponent(visitorId())}`);
+  if(!response.ok)throw new Error("Não foi possível recuperar seu progresso.");
+  const data=await response.json();
+  return Array.isArray(data)?data:[];
+}
+
+function syncReviewState(reviews){
+  myReviews=new Map(reviews.map(review=>[review.project_id,review]));
+  setCompletedIds([...myReviews.keys()]);
+}
+
+function buildQueue(){
+  const byId=new Map(projects.map(project=>[project.id,project]));
+  let saved=[];
+  try{saved=JSON.parse(localStorage.getItem(STORAGE.queue)||"[]")}catch{}
+
+  const ordered=[];
+  const used=new Set();
+  for(const id of Array.isArray(saved)?saved:[]){
+    if(byId.has(id)&&!used.has(id)){
+      ordered.push(byId.get(id));
+      used.add(id);
+    }
+  }
+
+  const missing=shuffle(projects.filter(project=>!used.has(project.id)));
+  queue=[...ordered,...missing];
+  localStorage.setItem(STORAGE.queue,JSON.stringify(queue.map(project=>project.id)));
+}
+
+function firstPendingIndex(start=0){
+  if(!queue.length)return -1;
+  for(let i=Math.max(0,start);i<queue.length;i++){
+    if(!myReviews.has(queue[i].id))return i;
+  }
+  for(let i=0;i<Math.max(0,start);i++){
+    if(!myReviews.has(queue[i].id))return i;
+  }
+  return -1;
+}
+
+function resumeIndex(){
+  const currentId=localStorage.getItem(STORAGE.current);
+  if(currentId&&!myReviews.has(currentId)){
+    const savedIndex=queue.findIndex(project=>project.id===currentId);
+    if(savedIndex>=0)return savedIndex;
+  }
+  return firstPendingIndex(0);
+}
+
+async function prepareVisit(){
+  projects=await loadProjects();
+  if(!projects.length)throw new Error("Nenhum projeto cadastrado ainda.");
+  const reviews=await loadMyReviews();
+  syncReviewState(reviews);
+  buildQueue();
+  index=resumeIndex();
+}
+
 function resetRating(){
-  rating=0;selectedSuggestion="";$("#comment").value="";$("#charCount").textContent="0/240";
-  document.querySelectorAll("#stars button").forEach(b=>b.classList.remove("active"));
+  rating=0;
+  selectedSuggestion="";
+  $("#comment").value="";
+  $("#charCount").textContent="0/240";
+  document.querySelectorAll("#stars button").forEach(button=>button.classList.remove("active"));
   $("#ratingLabel").textContent="Escolha de 1 a 5 estrelas";
-  $("#suggestionsWrap").classList.add("hidden");$("#suggestions").innerHTML="";
+  $("#suggestionsWrap").classList.add("hidden");
+  $("#suggestions").innerHTML="";
   $("#submitBtn").disabled=true;
 }
 
@@ -126,7 +243,6 @@ function renderProjectPhoto(title=""){
   next.classList.toggle("hidden",!multiple);
   dots.classList.toggle("hidden",!multiple);
   count.classList.toggle("hidden",!multiple);
-
   count.textContent=`${projectImageIndex+1}/${projectImages.length}`;
   dots.innerHTML="";
 
@@ -149,41 +265,82 @@ function renderProjectPhoto(title=""){
 function changeProjectPhoto(direction){
   if(projectImages.length<2)return;
   projectImageIndex=(projectImageIndex+direction+projectImages.length)%projectImages.length;
-  const current=queue[index];
-  renderProjectPhoto(current?.title||"");
+  renderProjectPhoto(queue[index]?.title||"");
 }
-function render(){
-  if(index>=queue.length){finish();return}
-  resetRating();
-  const p=queue[index], pct=Math.round((index/queue.length)*100);
-  $("#progressText").textContent=`Projeto ${index+1} de ${queue.length}`;
-  $("#progressPct").textContent=`${pct}%`;
-  $("#progressBar").style.width=`${pct}%`;
-  $("#projectTitle").textContent=p.title;
-  $("#projectDescription").textContent=p.description||"Conheça esta ideia e deixe sua avaliação.";
-  $("#projectClass").textContent=p.class_name||"Mostra Pedagógica";
-  projectImages=Array.isArray(p.image_urls)&&p.image_urls.length
-    ? p.image_urls.filter(Boolean)
-    : (p.image_url?[p.image_url]:[]);
-  projectImageIndex=0;
-  renderProjectPhoto(p.title);
-}
+
 function setRating(value){
   rating=value;
-  document.querySelectorAll("#stars button").forEach(b=>b.classList.toggle("active",Number(b.dataset.value)<=value));
+  document.querySelectorAll("#stars button").forEach(button=>
+    button.classList.toggle("active",Number(button.dataset.value)<=value)
+  );
   $("#ratingLabel").textContent=RATING_LABELS[value];
   $("#suggestionsWrap").classList.remove("hidden");
   $("#suggestions").innerHTML="";
+
   SUGGESTIONS[value].forEach(text=>{
-    const b=document.createElement("button");b.className="chip";b.textContent=text;
-    b.onclick=()=>{selectedSuggestion=selectedSuggestion===text?"":text;document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("selected",c.textContent===selectedSuggestion))};
-    $("#suggestions").appendChild(b);
+    const button=document.createElement("button");
+    button.className="chip";
+    button.type="button";
+    button.textContent=text;
+    button.onclick=()=>{
+      selectedSuggestion=selectedSuggestion===text?"":text;
+      document.querySelectorAll("#suggestions .chip").forEach(chip=>
+        chip.classList.toggle("selected",chip.textContent===selectedSuggestion)
+      );
+    };
+    $("#suggestions").appendChild(button);
   });
+
   $("#submitBtn").disabled=false;
 }
+
+function applyExistingReview(review){
+  if(!review)return;
+  setRating(Number(review.stars));
+  selectedSuggestion=review.suggestion||"";
+  document.querySelectorAll("#suggestions .chip").forEach(chip=>
+    chip.classList.toggle("selected",chip.textContent===selectedSuggestion)
+  );
+  $("#comment").value=review.comment||"";
+  $("#charCount").textContent=`${$("#comment").value.length}/240`;
+}
+
+function render(){
+  if(index<0||index>=queue.length){
+    showReviewSummary();
+    return;
+  }
+
+  resetRating();
+  const project=queue[index];
+  const completedCount=myReviews.size;
+  const pct=Math.round((completedCount/Math.max(1,queue.length))*100);
+
+  $("#progressText").textContent=`Projeto ${index+1} de ${queue.length}`;
+  $("#progressPct").textContent=`${pct}%`;
+  $("#progressBar").style.width=`${pct}%`;
+  $("#projectTitle").textContent=project.title;
+  $("#projectDescription").textContent=project.description||"Conheça esta ideia e deixe sua avaliação.";
+  $("#projectClass").textContent=project.class_name||"Mostra Pedagógica";
+  $("#reviewBackBtn").classList.toggle("hidden",index<=0);
+
+  projectImages=Array.isArray(project.image_urls)&&project.image_urls.length
+    ? project.image_urls.filter(Boolean)
+    : (project.image_url?[project.image_url]:[]);
+  projectImageIndex=0;
+  renderProjectPhoto(project.title);
+
+  const existing=myReviews.get(project.id);
+  applyExistingReview(existing);
+  $("#submitBtn").textContent=existing?"Salvar e continuar →":"Avaliar e ver próxima →";
+  saveVisitState();
+}
+
 async function submitReview(){
   if(!rating)return;
   const project=queue[index];
+  if(!project)return;
+
   const payload={
     project_id:project.id,
     visitor_id:visitorId(),
@@ -191,66 +348,193 @@ async function submitReview(){
     suggestion:selectedSuggestion||null,
     comment:$("#comment").value.trim()||null
   };
-  $("#submitBtn").disabled=true;$("#submitBtn").textContent="Enviando...";
-  if(API_URL){
-    try{
-      const response=await fetch(`${API_URL}/reviews`,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(payload)
-      });
-      if(!response.ok) throw new Error("Falha ao salvar avaliação");
-    }catch(error){
-      alert("Não foi possível enviar agora. Tente novamente.");
-      $("#submitBtn").disabled=false;
-      $("#submitBtn").textContent="Avaliar e ver próxima →";
-      return;
-    }
-  }else{
-    const reviews=JSON.parse(localStorage.getItem("mostra_reviews")||"[]");
-    reviews.push({...payload,id:crypto.randomUUID(),created_at:new Date().toISOString()});
-    localStorage.setItem("mostra_reviews",JSON.stringify(reviews));
-  }
-  markCompleted(project.id); index++; $("#submitBtn").textContent="Avaliar e ver próxima →";render();
-}
-async function finish(){
-  $("#progressBar").style.width="100%";
-  $("#doneCount").textContent=`${queue.length} projetos conhecidos 💙`;
-  await showTransitionSplash("Visita completa 💙",()=>show("done"));
-}
-$("#startBtn").onclick=async()=>{
-  const startBtn=$("#startBtn");
-  startBtn.disabled=true;
-  startBtn.textContent="Carregando...";
+
+  $("#submitBtn").disabled=true;
+  $("#submitBtn").textContent="Salvando...";
 
   try{
-    projects=await loadProjects();
+    const response=await fetch(`${API_URL}/reviews`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+    if(!response.ok)throw new Error("Falha ao salvar avaliação");
 
-    if(!projects.length){
-      alert("Nenhum projeto cadastrado ainda.");
+    myReviews.set(project.id,{
+      ...(myReviews.get(project.id)||{}),
+      ...payload,
+      project_title:project.title,
+      project_class:project.class_name,
+      created_at:new Date().toISOString()
+    });
+    markCompleted(project.id);
+
+    if(editingFromSummary){
+      editingFromSummary=false;
+      await showTransitionSplash("Alteração salva ✓",()=>showReviewSummary());
       return;
     }
 
-    const done=new Set(completedIds());
-    const pending=projects.filter(p=>!done.has(p.id));
-    queue=shuffle(pending.length?pending:projects);
-    index=0;
-    await showTransitionSplash("Vamos começar ✨",()=>{
+    const next=firstPendingIndex(index+1);
+    if(next===-1){
+      await finish();
+      return;
+    }
+
+    index=next;
+    render();
+  }catch(error){
+    console.error(error);
+    alert("Não foi possível enviar agora. Tente novamente.");
+    $("#submitBtn").disabled=false;
+    $("#submitBtn").textContent=myReviews.has(project.id)?"Salvar e continuar →":"Avaliar e ver próxima →";
+  }
+}
+
+function renderFamilyReviewGrid(){
+  const grid=$("#familyReviewGrid");
+  grid.innerHTML="";
+
+  const ordered=queue.length?queue:projects;
+  ordered.forEach(project=>{
+    const review=myReviews.get(project.id);
+    if(!review)return;
+
+    const card=document.createElement("button");
+    card.type="button";
+    card.className="family-review-item";
+
+    const title=document.createElement("strong");
+    title.textContent=project.title;
+
+    const stars=document.createElement("span");
+    stars.className="family-review-stars";
+    stars.textContent=`${review.stars} ★`;
+
+    const edit=document.createElement("small");
+    edit.textContent="Toque para editar";
+
+    card.append(title,stars,edit);
+    card.onclick=()=>{
+      const projectIndex=queue.findIndex(item=>item.id===project.id);
+      if(projectIndex<0)return;
+      editingFromSummary=true;
+      index=projectIndex;
+      show("review");
+      render();
+    };
+    grid.appendChild(card);
+  });
+}
+
+function showReviewSummary(){
+  editingFromSummary=false;
+  renderFamilyReviewGrid();
+  show("summary");
+}
+
+async function finish(){
+  $("#progressBar").style.width="100%";
+  localStorage.removeItem(STORAGE.current);
+  await showTransitionSplash("Hora de conferir 💙",()=>showReviewSummary());
+}
+
+async function startOrResumeVisit(){
+  try{
+    await prepareVisit();
+
+    if(myReviews.size>=projects.length){
+      await showTransitionSplash("Suas avaliações ✨",()=>showReviewSummary());
+      return;
+    }
+
+    if(index<0)index=firstPendingIndex(0);
+    await showTransitionSplash(myReviews.size?"Continuando sua visita 💙":"Vamos começar ✨",()=>{
       show("review");
       render();
     });
   }catch(error){
     console.error(error);
-    alert("Não foi possível carregar os projetos agora.");
+    alert(error.message==="Nenhum projeto cadastrado ainda."
+      ? error.message
+      : "Não foi possível carregar os projetos agora.");
+  }
+}
+
+$("#startBtn").onclick=async()=>{
+  const button=$("#startBtn");
+  button.disabled=true;
+  button.textContent="Preparando...";
+
+  try{
+    visitorId();
+    const introSeen=localStorage.getItem(STORAGE.intro)==="1";
+    if(!introSeen){
+      await showTransitionSplash("Antes de começar 💙",()=>show("notices"));
+    }else{
+      await startOrResumeVisit();
+    }
   }finally{
-    startBtn.disabled=false;
-    startBtn.textContent="Começar a visita →";
+    button.disabled=false;
+    button.textContent=completedIds().length?"Continuar visita →":"Começar a visita →";
   }
 };
-$("#restartBtn").onclick=()=>{localStorage.removeItem("mostra_completed");show("welcome")};
-document.querySelectorAll("#stars button").forEach(b=>b.onclick=()=>setRating(Number(b.dataset.value)));
-$("#comment").addEventListener("input",e=>$("#charCount").textContent=`${e.target.value.length}/240`);
+
+$("#noticesNextBtn").onclick=async()=>{
+  await showTransitionSplash("Como funciona ✨",()=>show("tutorial"));
+};
+
+$("#tutorialStartBtn").onclick=async()=>{
+  localStorage.setItem(STORAGE.intro,"1");
+  await startOrResumeVisit();
+};
+
+$("#reviewBackBtn").onclick=()=>{
+  if(index<=0)return;
+  index--;
+  editingFromSummary=false;
+  render();
+};
+
+$("#finishVisitBtn").onclick=async()=>{
+  $("#doneCount").textContent=`${myReviews.size} avaliações enviadas 💙`;
+  await showTransitionSplash("Obrigado por participar 💙",()=>show("done"));
+};
+
+$("#restartBtn").onclick=async()=>{
+  if(!projects.length){
+    try{
+      projects=await loadProjects();
+      syncReviewState(await loadMyReviews());
+      buildQueue();
+    }catch(error){
+      alert("Não foi possível recuperar suas avaliações agora.");
+      return;
+    }
+  }
+  await showTransitionSplash("Suas avaliações ✨",()=>showReviewSummary());
+};
+
+$("#newVisitBtn").onclick=async()=>{
+  const confirmed=confirm("Iniciar uma nova visita neste aparelho? As avaliações anteriores continuarão salvas no sistema, mas este aparelho começará como uma nova família.");
+  if(!confirmed)return;
+
+  clearVisitState({newVisitor:true});
+  await showTransitionSplash("Nova visita ✨",()=>show("welcome"));
+  $("#startBtn").textContent="Começar a visita →";
+};
+
+document.querySelectorAll("#stars button").forEach(button=>
+  button.onclick=()=>setRating(Number(button.dataset.value))
+);
+$("#comment").addEventListener("input",event=>
+  $("#charCount").textContent=`${event.target.value.length}/240`
+);
 $("#submitBtn").onclick=submitReview;
+
+if(completedIds().length){
+  $("#startBtn").textContent="Continuar visita →";
+}
 
 const teacherAccessBtn = document.querySelector("#teacherAccessBtn");
 const loginModal = document.querySelector("#loginModal");
