@@ -1,0 +1,13 @@
+name = "mostra-pedagogica-imperio-api"
+main = "worker/auth-worker.js"
+compatibility_date = "2026-10-06"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mostra-pedagogica-imperio"
+database_id = "116b59f1-db6a-455e-8db1-9c9fd0b2b6b5"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "mostra-pedagogica-imperio"
