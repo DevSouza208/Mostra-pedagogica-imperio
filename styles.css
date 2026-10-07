@@ -19,7 +19,7 @@ button,textarea{font:inherit}
 button{cursor:pointer}
 .app-shell{width:min(100%,760px);margin:auto;padding:18px 16px 34px}
 
-.brandbar{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.brandbar{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:18px}
 .brand-logo{
   width:76px;
   height:76px;
@@ -29,8 +29,9 @@ button{cursor:pointer}
   box-shadow:0 10px 24px rgba(20,58,90,.12);
 }
 .brand-logo--school{width:76px;height:76px}
-.brand-logo--codifica{width:76px;height:76px;margin-left:auto}
-.brand-copy{display:flex;flex-direction:column;gap:2px}
+.brand-logo--codifica{width:76px;height:76px}
+.brand-logos{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.brand-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
 .brand-copy span{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#1878aa}
 .brand-copy strong{font-size:.95rem}
 
@@ -47,7 +48,7 @@ button{cursor:pointer}
 .primary-btn:hover{transform:translateY(-1px)}
 .primary-btn:disabled{cursor:not-allowed;opacity:.45;transform:none;box-shadow:none}
 .secondary-btn{background:#edf7fc;color:#126991}
-.tiny{font-size:.78rem!important;margin:12px 0 0!important}
+.tiny{width:100%;font-size:.78rem!important;text-align:center;margin:12px auto 0!important}
 .progress-wrap{padding:6px 4px 14px}
 .progress-row{display:flex;justify-content:space-between;font-size:.8rem;font-weight:700;color:#527286;margin-bottom:8px}
 .progress-track{height:8px;border-radius:999px;background:#d8ebf5;overflow:hidden}
@@ -105,6 +106,10 @@ textarea:focus{border-color:#5bbbe0;box-shadow:0 0 0 3px rgba(91,187,224,.13)}
 .mode-note{padding:12px 14px;background:#fff8db;color:#6f5a00;border-radius:12px;font-size:.8rem;line-height:1.45;margin-bottom:16px}
 @media(max-width:720px){.admin-grid{grid-template-columns:1fr}.project-photo-wrap{min-height:280px}}
 @media(max-width:420px){
+  .brandbar{gap:12px}
+  .brand-logos{gap:8px}
+  .brand-copy span{font-size:.64rem}
+  .brand-copy strong{font-size:.76rem}
   .brand-logo,
   .brand-logo--school,
   .brand-logo--codifica{
@@ -112,7 +117,6 @@ textarea:focus{border-color:#5bbbe0;box-shadow:0 0 0 3px rgba(91,187,224,.13)}
     height:62px;
     border-radius:16px;
   }
-  .brand-copy strong{font-size:.82rem}
   .stars button{font-size:2rem}
   .hero-card{padding:30px 20px}
   .footer-links{gap:8px;padding:10px 14px}
