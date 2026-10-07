@@ -2560,3 +2560,34 @@ body.visit-mode .site-footer{
     font-size:.92rem;
   }
 }
+
+
+/* Lápis nos cards da revisão final */
+.family-review-edit{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  margin-top:5px;
+  color:#8498a5;
+  font-size:.6rem;
+  font-weight:700;
+}
+
+.family-review-edit svg{
+  width:12px;
+  height:12px;
+  flex:0 0 auto;
+  color:#5f8094;
+}
+
+@media(max-width:480px){
+  .family-review-edit{
+    gap:4px;
+    font-size:.58rem;
+  }
+
+  .family-review-edit svg{
+    width:11px;
+    height:11px;
+  }
+}
