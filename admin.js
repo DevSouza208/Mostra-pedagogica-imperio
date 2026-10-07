@@ -36,8 +36,11 @@ function showAdminView(view){
   if(view==="reviews") loadReviews();
 }
 
-$$(".admin-menu-card").forEach(card=>{
-  card.addEventListener("click",()=>showAdminView(card.dataset.adminView));
+$(".admin-menu-card").forEach(card=>{
+  card.addEventListener("click",()=>{
+    if(cameraModal?.classList.contains("open")) closeCamera();
+    showAdminView(card.dataset.adminView);
+  });
 });
 
 let selectedPhotoFile=null;
@@ -66,11 +69,91 @@ function setSelectedPhoto(file){
   photoPreviewWrap.classList.remove("hidden");
 }
 
-$("#cameraBtn").onclick=()=>cameraInput.click();
+const cameraModal=$("#cameraModal");
+const cameraVideo=$("#cameraVideo");
+const cameraCanvas=$("#cameraCanvas");
+const cameraLoading=$("#cameraLoading");
+const cameraError=$("#cameraError");
+const captureCameraBtn=$("#captureCameraBtn");
+let cameraStream=null;
+
+function stopCamera(){
+  cameraStream?.getTracks().forEach(track=>track.stop());
+  cameraStream=null;
+  cameraVideo.srcObject=null;
+  captureCameraBtn.disabled=true;
+}
+
+function closeCamera(){
+  stopCamera();
+  cameraModal.classList.remove("open");
+  cameraModal.setAttribute("aria-hidden","true");
+  document.body.classList.remove("camera-open");
+}
+
+async function openCamera(){
+  cameraError.classList.add("hidden");
+  cameraError.textContent="";
+  cameraLoading.classList.remove("hidden");
+  captureCameraBtn.disabled=true;
+  cameraModal.classList.add("open");
+  cameraModal.setAttribute("aria-hidden","false");
+  document.body.classList.add("camera-open");
+
+  if(!navigator.mediaDevices?.getUserMedia){
+    closeCamera();
+    cameraInput.click();
+    return;
+  }
+
+  try{
+    cameraStream=await navigator.mediaDevices.getUserMedia({
+      video:{
+        facingMode:{ideal:"environment"},
+        width:{ideal:1920},
+        height:{ideal:1080}
+      },
+      audio:false
+    });
+
+    cameraVideo.srcObject=cameraStream;
+    await cameraVideo.play();
+    cameraLoading.classList.add("hidden");
+    captureCameraBtn.disabled=false;
+  }catch(error){
+    console.warn("Não foi possível abrir a câmera diretamente.",error);
+    closeCamera();
+    cameraInput.click();
+  }
+}
+
+$("#cameraBtn").onclick=openCamera;
 $("#uploadBtn").onclick=()=>uploadInput.click();
 cameraInput.onchange=e=>setSelectedPhoto(e.target.files?.[0]);
 uploadInput.onchange=e=>setSelectedPhoto(e.target.files?.[0]);
 $("#removePhotoBtn").onclick=()=>setSelectedPhoto(null);
+
+$("#closeCameraBtn").onclick=closeCamera;
+$("#cancelCameraBtn").onclick=closeCamera;
+document.querySelectorAll("[data-close-camera]").forEach(el=>el.addEventListener("click",closeCamera));
+
+captureCameraBtn.onclick=()=>{
+  const width=cameraVideo.videoWidth;
+  const height=cameraVideo.videoHeight;
+  if(!width||!height)return;
+
+  cameraCanvas.width=width;
+  cameraCanvas.height=height;
+  const ctx=cameraCanvas.getContext("2d");
+  ctx.drawImage(cameraVideo,0,0,width,height);
+
+  cameraCanvas.toBlob(blob=>{
+    if(!blob)return;
+    const file=new File([blob],`foto-maquete-${Date.now()}.jpg`,{type:"image/jpeg"});
+    setSelectedPhoto(file);
+    closeCamera();
+  },"image/jpeg",0.9);
+};
 
 async function fileToDataUrl(file){
   if(!file)return null;
@@ -256,3 +339,9 @@ $("#projectForm").onsubmit=async e=>{
 load();
 loadReviews();
 showAdminView("create");
+
+document.addEventListener("keydown",event=>{
+  if(event.key==="Escape"&&cameraModal?.classList.contains("open")) closeCamera();
+});
+
+window.addEventListener("pagehide",stopCamera);
