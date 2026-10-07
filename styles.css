@@ -434,3 +434,20 @@ canvas{
     max-width:100%;
   }
 }
+
+
+/* Anti-zoom em campos móveis */
+@supports (-webkit-touch-callout:none){
+  input,
+  textarea,
+  select{
+    font-size:16px!important;
+    line-height:1.35;
+  }
+}
+
+input,
+textarea,
+select{
+  touch-action:manipulation;
+}
