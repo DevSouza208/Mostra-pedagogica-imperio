@@ -39,7 +39,6 @@ $$(".admin-menu-card").forEach(card=>{
 });
 
 let selectedPhotoFiles=[];
-let legacyMigrationPromise=null;
 
 const cameraInput=$("#cameraInput");
 const uploadInput=$("#uploadInput");
@@ -206,138 +205,6 @@ async function uploadImage(file){
   });
 }
 
-async function dataUrlToFile(dataUrl,index=0){
-  const response=await fetch(dataUrl);
-  const blob=await response.blob();
-  const extension=(blob.type.split("/")[1]||"jpg").replace("jpeg","jpg");
-  return new File([blob],`foto-migrada-${Date.now()}-${index}.${extension}`,{
-    type:blob.type||"image/jpeg"
-  });
-}
-
-async function migrateLegacyProjects(remoteItems){
-  if(legacyMigrationPromise)return legacyMigrationPromise;
-
-  legacyMigrationPromise=(async()=>{
-    let legacy=[];
-    try{legacy=JSON.parse(localStorage.getItem("mostra_projects")||"[]")}catch{}
-    if(!Array.isArray(legacy)||!legacy.length)return remoteItems;
-
-    const normalized=value=>String(value||"").trim().toLowerCase();
-    const merged=[...remoteItems];
-    let migratedAny=false;
-
-    for(const project of legacy){
-      const duplicate=merged.some(item=>
-        normalized(item.title)===normalized(project.title)&&
-        normalized(item.class_name)===normalized(project.class_name)&&
-        normalized(item.description)===normalized(project.description)
-      );
-      if(duplicate)continue;
-
-      try{
-        const sources=Array.isArray(project.image_urls)&&project.image_urls.length
-          ? project.image_urls
-          : (project.image_url?[project.image_url]:[]);
-        const imageKeys=[];
-
-        for(let i=0;i<sources.length;i++){
-          const source=sources[i];
-          if(typeof source!=="string"||!source.startsWith("data:image/"))continue;
-          const file=await dataUrlToFile(source,i);
-          const uploaded=await uploadImage(file);
-          if(uploaded?.key)imageKeys.push(uploaded.key);
-        }
-
-        const result=await api("/projects",{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            title:String(project.title||"").trim(),
-            class_name:String(project.class_name||"").trim(),
-            description:String(project.description||"").trim(),
-            image_keys:imageKeys
-          })
-        });
-
-        if(result?.project){
-          merged.unshift(result.project);
-          migratedAny=true;
-        }
-      }catch(error){
-        console.warn("Não foi possível migrar um projeto antigo.",error);
-      }
-    }
-
-    if(migratedAny||legacy.every(project=>merged.some(item=>
-      normalized(item.title)===normalized(project.title)&&
-      normalized(item.class_name)===normalized(project.class_name)&&
-      normalized(item.description)===normalized(project.description)
-    ))){
-      localStorage.removeItem("mostra_projects");
-    }
-
-    return merged;
-  })();
-
-  try{
-    return await legacyMigrationPromise;
-  }finally{
-    legacyMigrationPromise=null;
-  }
-}
-
-async function removeNearDuplicates(items){
-  const normalized=value=>String(value||"").trim().toLowerCase();
-  const groups=new Map();
-
-  for(const item of items){
-    const key=[
-      normalized(item.title),
-      normalized(item.class_name),
-      normalized(item.description)
-    ].join("|");
-
-    if(!groups.has(key))groups.set(key,[]);
-    groups.get(key).push(item);
-  }
-
-  const keep=[];
-  const removeIds=[];
-
-  for(const group of groups.values()){
-    group.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
-    const primary=group[0];
-    keep.push(primary);
-
-    for(let i=1;i<group.length;i++){
-      const current=group[i];
-      const delta=Math.abs(
-        new Date(primary.created_at||0).getTime()-
-        new Date(current.created_at||0).getTime()
-      );
-
-      const samePhotoCount=
-        (Array.isArray(primary.image_urls)?primary.image_urls.length:0)===
-        (Array.isArray(current.image_urls)?current.image_urls.length:0);
-
-      if(delta<=5*60*1000&&samePhotoCount){
-        removeIds.push(current.id);
-      }else{
-        keep.push(current);
-      }
-    }
-  }
-
-  if(removeIds.length){
-    await Promise.all(removeIds.map(id=>
-      api(`/projects/${encodeURIComponent(id)}`,{method:"DELETE"})
-        .catch(error=>console.warn("Falha ao remover duplicata automática.",error))
-    ));
-  }
-
-  return keep.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
-}
 async function loadProjects(){
   const list=$("#projectList");
   const count=$("#projectCount");
@@ -345,8 +212,7 @@ async function loadProjects(){
 
   try{
     const remote=await api("/projects");
-    const migrated=await migrateLegacyProjects(Array.isArray(remote)?remote:[]);
-    const items=await removeNearDuplicates(migrated);
+    const items=Array.isArray(remote)?remote:[];
     renderProjects(items);
   }catch(error){
     console.error(error);
@@ -432,7 +298,7 @@ function renderProjects(items){
       </svg>
       <span>Excluir</span>
     `;
-    removeBtn.onclick=()=>removeProject(project.id);
+    removeBtn.onclick=()=>openDeleteProjectModal(project);
 
     footer.appendChild(removeBtn);
     body.append(meta,title,description,footer);
@@ -440,16 +306,73 @@ function renderProjects(items){
     list.appendChild(card);
   });
 }
-async function removeProject(id){
-  if(!confirm("Excluir este projeto?"))return;
+let pendingDeleteProject=null;
+const deleteProjectModal=$("#deleteProjectModal");
+const deleteProjectName=$("#deleteProjectName");
+const deleteProjectConfirmInput=$("#deleteProjectConfirmInput");
+const confirmDeleteProjectBtn=$("#confirmDeleteProjectBtn");
+
+function updateDeleteProjectConfirmation(){
+  const valid=deleteProjectConfirmInput.value.trim().toLowerCase()==="excluir";
+  confirmDeleteProjectBtn.disabled=!valid;
+}
+
+function openDeleteProjectModal(project){
+  pendingDeleteProject=project;
+  deleteProjectName.textContent=project.title||"este projeto";
+  deleteProjectConfirmInput.value="";
+  confirmDeleteProjectBtn.disabled=true;
+  deleteProjectModal.classList.add("open");
+  deleteProjectModal.setAttribute("aria-hidden","false");
+  document.body.classList.add("delete-project-open");
+  setTimeout(()=>deleteProjectConfirmInput.focus(),80);
+}
+
+function closeDeleteProjectModal(){
+  pendingDeleteProject=null;
+  deleteProjectConfirmInput.value="";
+  confirmDeleteProjectBtn.disabled=true;
+  deleteProjectModal.classList.remove("open");
+  deleteProjectModal.setAttribute("aria-hidden","true");
+  document.body.classList.remove("delete-project-open");
+}
+
+deleteProjectConfirmInput.addEventListener("input",updateDeleteProjectConfirmation);
+deleteProjectConfirmInput.addEventListener("keydown",event=>{
+  if(event.key==="Enter"&&!confirmDeleteProjectBtn.disabled){
+    event.preventDefault();
+    confirmDeleteProjectBtn.click();
+  }
+});
+
+document.querySelectorAll("[data-close-delete-project]").forEach(element=>
+  element.addEventListener("click",closeDeleteProjectModal)
+);
+
+confirmDeleteProjectBtn.onclick=async()=>{
+  if(!pendingDeleteProject||deleteProjectConfirmInput.value.trim().toLowerCase()!=="excluir")return;
+
+  const id=pendingDeleteProject.id;
+  confirmDeleteProjectBtn.disabled=true;
+  confirmDeleteProjectBtn.textContent="Excluindo...";
 
   try{
     await api(`/projects/${encodeURIComponent(id)}`,{method:"DELETE"});
+    closeDeleteProjectModal();
     await loadProjects();
   }catch(error){
     alert(error.message);
+    confirmDeleteProjectBtn.disabled=false;
+  }finally{
+    confirmDeleteProjectBtn.textContent="Excluir projeto";
   }
-}
+};
+
+document.addEventListener("keydown",event=>{
+  if(event.key==="Escape"&&deleteProjectModal?.classList.contains("open")){
+    closeDeleteProjectModal();
+  }
+});
 
 async function loadReviews(){
   const list=$("#reviewsList");
