@@ -456,8 +456,14 @@ async function loadReviews(){
   list.innerHTML='<div class="admin-empty-state"><strong>Carregando...</strong></div>';
 
   try{
-    const reviews=await api("/reviews");
-    renderReviews(Array.isArray(reviews)?reviews:[]);
+    const [reviewsData,projectsData]=await Promise.all([
+      api("/reviews"),
+      api("/projects")
+    ]);
+
+    const reviews=Array.isArray(reviewsData)?reviewsData:[];
+    const projects=Array.isArray(projectsData)?projectsData:[];
+    renderReviews(reviews,projects);
   }catch(error){
     console.error(error);
     $("#reviewTotal").textContent="0";
@@ -467,7 +473,7 @@ async function loadReviews(){
   }
 }
 
-function renderReviews(reviews){
+function renderReviews(reviews,projects=[]){
   const total=reviews.length;
   const comments=reviews.filter(r=>r.comment?.trim()).length;
   const average=total
@@ -480,10 +486,11 @@ function renderReviews(reviews){
 
   const list=$("#reviewsList");
   list.innerHTML="";
+  list.classList.add("review-project-grid");
 
-  if(!reviews.length){
+  if(!projects.length&&!reviews.length){
     list.innerHTML=`
-      <div class="admin-empty-state">
+      <div class="admin-empty-state review-project-empty">
         <span>⭐</span>
         <strong>Nenhuma avaliação.</strong>
       </div>
@@ -491,29 +498,124 @@ function renderReviews(reviews){
     return;
   }
 
+  const reviewsByProject=new Map();
   reviews.forEach(review=>{
-    const item=document.createElement("div");
-    item.className="review-admin-item";
+    const key=review.project_id||"sem-projeto";
+    if(!reviewsByProject.has(key))reviewsByProject.set(key,[]);
+    reviewsByProject.get(key).push(review);
+  });
 
-    const stars=document.createElement("div");
-    stars.className="review-admin-stars";
-    stars.textContent="★".repeat(Number(review.stars||0))+"☆".repeat(Math.max(0,5-Number(review.stars||0)));
+  const projectMap=new Map(projects.map(project=>[project.id,project]));
+
+  reviewsByProject.forEach((projectReviews,projectId)=>{
+    if(!projectMap.has(projectId)){
+      const sample=projectReviews[0];
+      projectMap.set(projectId,{
+        id:projectId,
+        title:sample?.project_title||"Projeto",
+        class_name:sample?.project_class||""
+      });
+    }
+  });
+
+  const orderedProjects=[...projectMap.values()].sort((a,b)=>{
+    const aCount=(reviewsByProject.get(a.id)||[]).length;
+    const bCount=(reviewsByProject.get(b.id)||[]).length;
+    if(aCount!==bCount)return bCount-aCount;
+    return String(a.title||"").localeCompare(String(b.title||""),"pt-BR");
+  });
+
+  orderedProjects.forEach(project=>{
+    const projectReviews=reviewsByProject.get(project.id)||[];
+    const projectTotal=projectReviews.length;
+    const projectComments=projectReviews.filter(r=>r.comment?.trim()).length;
+    const projectAverage=projectTotal
+      ? (projectReviews.reduce((sum,r)=>sum+Number(r.stars||0),0)/projectTotal).toFixed(1)
+      : "—";
+
+    const card=document.createElement("article");
+    card.className="review-project-card";
+
+    const header=document.createElement("div");
+    header.className="review-project-header";
+
+    const heading=document.createElement("div");
+    heading.className="review-project-heading";
+
+    const title=document.createElement("h3");
+    title.textContent=project.title||"Projeto";
+
+    const classBadge=document.createElement("span");
+    classBadge.className="review-project-class";
+    classBadge.textContent=project.class_name||"Sem turma";
+
+    heading.append(title,classBadge);
+    header.appendChild(heading);
+
+    const stats=document.createElement("div");
+    stats.className="review-project-stats";
+
+    [
+      ["Avaliações",String(projectTotal)],
+      ["Média",projectTotal?`${projectAverage} ★`:"—"],
+      ["Comentários",String(projectComments)]
+    ].forEach(([label,value])=>{
+      const stat=document.createElement("div");
+      stat.className="review-project-stat";
+
+      const statLabel=document.createElement("span");
+      statLabel.textContent=label;
+
+      const statValue=document.createElement("strong");
+      statValue.textContent=value;
+
+      stat.append(statLabel,statValue);
+      stats.appendChild(stat);
+    });
 
     const body=document.createElement("div");
-    body.className="review-admin-body";
+    body.className="review-project-body";
 
-    const title=document.createElement("strong");
-    title.textContent=review.project_title||"Projeto";
+    if(!projectReviews.length){
+      const empty=document.createElement("div");
+      empty.className="review-project-no-reviews";
+      empty.textContent="Nenhuma avaliação ainda.";
+      body.appendChild(empty);
+    }else{
+      projectReviews.forEach(review=>{
+        const item=document.createElement("div");
+        item.className="review-entry";
 
-    const meta=document.createElement("p");
-    meta.textContent=[review.project_class,review.suggestion].filter(Boolean).join(" · ")||"Avaliação recebida";
+        const stars=document.createElement("div");
+        stars.className="review-entry-stars";
+        stars.textContent="★".repeat(Number(review.stars||0))+"☆".repeat(Math.max(0,5-Number(review.stars||0)));
 
-    const comment=document.createElement("p");
-    comment.textContent=review.comment||"Sem comentário.";
+        const content=document.createElement("div");
+        content.className="review-entry-content";
 
-    body.append(title,meta,comment);
-    item.append(stars,body);
-    list.appendChild(item);
+        if(review.suggestion){
+          const suggestion=document.createElement("strong");
+          suggestion.textContent=review.suggestion;
+          content.appendChild(suggestion);
+        }
+
+        if(review.comment?.trim()){
+          const comment=document.createElement("p");
+          comment.textContent=review.comment;
+          content.appendChild(comment);
+        }else if(!review.suggestion){
+          const text=document.createElement("p");
+          text.textContent="Avaliação sem comentário.";
+          content.appendChild(text);
+        }
+
+        item.append(stars,content);
+        body.appendChild(item);
+      });
+    }
+
+    card.append(header,stats,body);
+    list.appendChild(card);
   });
 }
 
