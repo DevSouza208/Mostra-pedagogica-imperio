@@ -6,19 +6,22 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait-primary",
   "background_color": "#eaf8ff",
   "theme_color": "#15005c",
   "icons": [
     {
-      "src": "./Imperio.png",
+      "src": "./logo_mostra%20pedagogica_bgoff.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./logo_imperio.png",
+      "src": "./logo_mostra%20pedagogica_bgoff.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "maskable"
