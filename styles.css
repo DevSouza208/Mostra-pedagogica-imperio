@@ -1255,3 +1255,10 @@ body.splash-lock{
     padding-top:8px;
   }
 }
+
+
+/* Oculta rodapé durante a avaliação */
+body.review-mode .teacher-access,
+body.review-mode .site-footer{
+  display:none!important;
+}
