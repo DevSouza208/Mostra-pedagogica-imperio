@@ -578,3 +578,114 @@ body.splash-lock{
     max-width:100%;
   }
 }
+
+
+/* Navegação inferior do admin no celular */
+@media(max-width:780px){
+  .admin-shell{
+    padding-bottom:calc(108px + env(safe-area-inset-bottom))!important;
+  }
+
+  .admin-menu{
+    position:fixed;
+    left:10px;
+    right:10px;
+    bottom:calc(10px + env(safe-area-inset-bottom));
+    z-index:1100;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:4px;
+    margin:0;
+    padding:7px;
+    border:1px solid rgba(160,209,232,.72);
+    border-radius:22px;
+    background:rgba(255,255,255,.94);
+    box-shadow:0 16px 45px rgba(10,47,72,.18);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+  }
+
+  .admin-menu-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    min-width:0;
+    min-height:64px;
+    padding:7px 4px;
+    border:0;
+    border-radius:16px;
+    background:transparent;
+    box-shadow:none;
+    text-align:center;
+    color:#607b8c;
+    transform:none!important;
+  }
+
+  .admin-menu-card:hover{
+    border:0;
+    box-shadow:none;
+    transform:none;
+  }
+
+  .admin-menu-card.active{
+    background:linear-gradient(135deg,#0878b8,#13a7d5);
+    color:#fff;
+    box-shadow:0 7px 18px rgba(8,120,184,.2);
+  }
+
+  .admin-menu-icon{
+    width:30px;
+    height:30px;
+    border-radius:10px;
+    background:transparent;
+    color:inherit;
+    font-size:1.18rem;
+    line-height:1;
+  }
+
+  .admin-menu-card.active .admin-menu-icon{
+    background:rgba(255,255,255,.16);
+    color:#fff;
+  }
+
+  .admin-menu-copy{
+    display:block;
+    width:100%;
+    min-width:0;
+    margin:0!important;
+  }
+
+  .admin-menu-copy strong{
+    display:block;
+    overflow:hidden;
+    margin:0;
+    font-size:.68rem;
+    line-height:1.15;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+
+  .admin-menu-copy small{
+    display:none!important;
+  }
+}
+
+@media(max-width:380px){
+  .admin-menu{
+    left:6px;
+    right:6px;
+    bottom:calc(6px + env(safe-area-inset-bottom));
+    border-radius:19px;
+    padding:5px;
+  }
+
+  .admin-menu-card{
+    min-height:60px;
+  }
+
+  .admin-menu-copy strong{
+    font-size:.62rem;
+  }
+}
