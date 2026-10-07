@@ -655,6 +655,26 @@ $("#restartBtn").onclick=async()=>{
   await showTransitionSplash("Suas avaliações ✨",()=>showReviewSummary());
 };
 
+const reviewTutorialModal=$("#reviewTutorialModal");
+
+function openReviewTutorialModal(){
+  reviewTutorialModal.classList.add("open");
+  reviewTutorialModal.setAttribute("aria-hidden","false");
+  document.body.classList.add("review-tutorial-open");
+}
+
+function closeReviewTutorialModal(){
+  reviewTutorialModal.classList.remove("open");
+  reviewTutorialModal.setAttribute("aria-hidden","true");
+  document.body.classList.remove("review-tutorial-open");
+}
+
+$("#reviewHelpBtn")?.addEventListener("click",openReviewTutorialModal);
+$("#reviewTutorialBackBtn")?.addEventListener("click",closeReviewTutorialModal);
+document.querySelectorAll("[data-close-review-tutorial]").forEach(element=>
+  element.addEventListener("click",closeReviewTutorialModal)
+);
+
 const newVisitModal=$("#newVisitModal");
 
 function openNewVisitModal(){
@@ -741,6 +761,7 @@ document.addEventListener("keydown",e=>{
   if(e.key!=="Escape")return;
   if(loginModal?.classList.contains("open"))closeLoginModal();
   if(newVisitModal?.classList.contains("open"))closeNewVisitModal();
+  if(reviewTutorialModal?.classList.contains("open"))closeReviewTutorialModal();
 });
 
 staffLoginForm?.addEventListener("submit",async e=>{
