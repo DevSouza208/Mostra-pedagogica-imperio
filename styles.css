@@ -2745,3 +2745,87 @@ body.visit-mode .site-footer{
     font-size:.76rem;
   }
 }
+
+
+/* Miniaturas dos cards de avaliações no admin */
+.review-project-picker-card{
+  justify-content:flex-start;
+}
+
+.review-project-picker-thumb-wrap{
+  display:flex;
+  justify-content:flex-start;
+  width:100%;
+  margin-bottom:10px;
+}
+
+.review-project-picker-thumb{
+  position:relative;
+  width:74px;
+  height:84px;
+  padding:5px 5px 16px;
+  border:1px solid rgba(195,216,227,.72);
+  border-radius:6px;
+  background:#fff;
+  box-shadow:
+    0 8px 18px rgba(15,67,102,.12),
+    0 2px 5px rgba(15,67,102,.07);
+  transform:rotate(-2.5deg);
+  overflow:hidden;
+}
+
+.review-project-picker-thumb img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:3px;
+  background:#eaf7fd;
+}
+
+.review-project-picker-thumb-placeholder{
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  border-radius:3px;
+  background:linear-gradient(145deg,#e8f8ff,#d8f1fb);
+  font-size:1.35rem;
+}
+
+.review-project-picker-thumb-more{
+  position:absolute;
+  right:3px;
+  bottom:3px;
+  display:grid;
+  place-items:center;
+  min-width:22px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#eaf7fd;
+  color:#0d77b8;
+  font-size:.54rem;
+  font-weight:800;
+  line-height:1;
+}
+
+.review-project-picker-card .review-project-picker-score{
+  margin-top:9px;
+}
+
+@media(max-width:560px){
+  .review-project-picker-card{
+    min-height:160px;
+  }
+
+  .review-project-picker-thumb-wrap{
+    margin-bottom:8px;
+  }
+
+  .review-project-picker-thumb{
+    width:68px;
+    height:78px;
+    padding:5px 5px 15px;
+  }
+}
