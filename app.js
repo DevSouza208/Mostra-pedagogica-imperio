@@ -1,5 +1,7 @@
 const CONFIG = window.MOSTRA_CONFIG || {};
 const API_URL = String(CONFIG.apiUrl || "").replace(/\/$/,"");
+const HAS_SUPABASE = false;
+let supabase = null;
 
 const DEMO_PROJECTS = [
   {id:"demo-1",title:"Cidade Sustentável",class_name:"3º Ano",description:"Uma cidade pensada para cuidar das pessoas e do planeta.",image_url:null},
