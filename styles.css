@@ -451,3 +451,95 @@ textarea,
 select{
   touch-action:manipulation;
 }
+
+
+/* Splash da Mostra Pedagógica */
+.app-splash{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(102,199,236,.28), transparent 36%),
+    linear-gradient(180deg,#eaf8ff 0%,#f7fcff 100%);
+  opacity:1;
+  visibility:visible;
+  transition:opacity .42s ease,visibility .42s ease;
+}
+
+.app-splash.is-hiding{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+.app-splash-glow{
+  position:absolute;
+  width:min(78vw,520px);
+  aspect-ratio:1;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.96) 0%,rgba(223,246,255,.7) 45%,rgba(223,246,255,0) 72%);
+  filter:blur(2px);
+  transform:scale(.88);
+  animation:splashGlow 1.5s ease-in-out both;
+}
+
+.app-splash-logo{
+  position:relative;
+  z-index:1;
+  width:min(62vw,340px);
+  max-height:55vh;
+  object-fit:contain;
+  filter:drop-shadow(0 18px 34px rgba(11,74,114,.18));
+  animation:splashLogoIn .7s cubic-bezier(.2,.75,.22,1) both;
+}
+
+.app-splash-loader{
+  position:absolute;
+  left:50%;
+  bottom:max(36px,calc(22px + env(safe-area-inset-bottom)));
+  width:42px;
+  height:4px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(13,119,184,.13);
+  transform:translateX(-50%);
+}
+
+.app-splash-loader::after{
+  content:"";
+  display:block;
+  width:45%;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#0d77b8,#67c8ea);
+  animation:splashLoader 1s ease-in-out infinite;
+}
+
+body.splash-lock{
+  overflow:hidden!important;
+}
+
+@keyframes splashLogoIn{
+  from{opacity:0;transform:scale(.86) translateY(10px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+
+@keyframes splashGlow{
+  from{opacity:.2;transform:scale(.72)}
+  to{opacity:1;transform:scale(1)}
+}
+
+@keyframes splashLoader{
+  0%{transform:translateX(-120%)}
+  50%{transform:translateX(70%)}
+  100%{transform:translateX(230%)}
+}
+
+@media(max-width:480px){
+  .app-splash-logo{
+    width:min(72vw,300px);
+  }
+}
