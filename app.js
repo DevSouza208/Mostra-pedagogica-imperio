@@ -21,6 +21,7 @@ const RATING_LABELS={1:"Obrigado por compartilhar 💙",2:"Boa ideia! 🌱",3:"G
 const $=s=>document.querySelector(s);
 const screens={welcome:$("#welcome"),review:$("#review"),done:$("#done")};
 let projects=[], queue=[], index=0, rating=0, selectedSuggestion="";
+let projectImages=[], projectImageIndex=0;
 
 function show(name){Object.values(screens).forEach(s=>s.classList.remove("screen--active"));screens[name].classList.add("screen--active")}
 function shuffle(items){return [...items].sort(()=>Math.random()-.5)}
@@ -54,6 +55,64 @@ function resetRating(){
   $("#suggestionsWrap").classList.add("hidden");$("#suggestions").innerHTML="";
   $("#submitBtn").disabled=true;
 }
+
+function renderProjectPhoto(title=""){
+  const img=$("#projectPhoto");
+  const ph=$("#projectPlaceholder");
+  const prev=$("#projectPhotoPrev");
+  const next=$("#projectPhotoNext");
+  const dots=$("#projectPhotoDots");
+  const count=$("#projectPhotoCount");
+
+  if(!projectImages.length){
+    img.removeAttribute("src");
+    img.style.display="none";
+    ph.style.display="block";
+    prev.classList.add("hidden");
+    next.classList.add("hidden");
+    dots.classList.add("hidden");
+    count.classList.add("hidden");
+    dots.innerHTML="";
+    return;
+  }
+
+  projectImageIndex=Math.max(0,Math.min(projectImageIndex,projectImages.length-1));
+  img.src=projectImages[projectImageIndex];
+  img.alt=`Foto ${projectImageIndex+1} do projeto ${title}`;
+  img.style.display="block";
+  ph.style.display="none";
+
+  const multiple=projectImages.length>1;
+  prev.classList.toggle("hidden",!multiple);
+  next.classList.toggle("hidden",!multiple);
+  dots.classList.toggle("hidden",!multiple);
+  count.classList.toggle("hidden",!multiple);
+
+  count.textContent=`${projectImageIndex+1}/${projectImages.length}`;
+  dots.innerHTML="";
+
+  if(multiple){
+    projectImages.forEach((_,i)=>{
+      const dot=document.createElement("button");
+      dot.type="button";
+      dot.className="project-photo-dot";
+      dot.classList.toggle("active",i===projectImageIndex);
+      dot.setAttribute("aria-label",`Ver foto ${i+1}`);
+      dot.onclick=()=>{
+        projectImageIndex=i;
+        renderProjectPhoto(title);
+      };
+      dots.appendChild(dot);
+    });
+  }
+}
+
+function changeProjectPhoto(direction){
+  if(projectImages.length<2)return;
+  projectImageIndex=(projectImageIndex+direction+projectImages.length)%projectImages.length;
+  const current=queue[index];
+  renderProjectPhoto(current?.title||"");
+}
 function render(){
   if(index>=queue.length){finish();return}
   resetRating();
@@ -64,9 +123,11 @@ function render(){
   $("#projectTitle").textContent=p.title;
   $("#projectDescription").textContent=p.description||"Conheça esta ideia e deixe sua avaliação.";
   $("#projectClass").textContent=p.class_name||"Mostra Pedagógica";
-  const img=$("#projectPhoto"), ph=$("#projectPlaceholder");
-  if(p.image_url){img.src=p.image_url;img.alt=`Foto do projeto ${p.title}`;img.style.display="block";ph.style.display="none"}
-  else{img.removeAttribute("src");img.style.display="none";ph.style.display="block"}
+  projectImages=Array.isArray(p.image_urls)&&p.image_urls.length
+    ? p.image_urls.filter(Boolean)
+    : (p.image_url?[p.image_url]:[]);
+  projectImageIndex=0;
+  renderProjectPhoto(p.title);
 }
 function setRating(value){
   rating=value;
@@ -181,3 +242,20 @@ staffLoginForm?.addEventListener("submit",async e=>{
     submit.textContent="Entrar";
   }
 });
+
+
+$("#projectPhotoPrev").onclick=()=>changeProjectPhoto(-1);
+$("#projectPhotoNext").onclick=()=>changeProjectPhoto(1);
+
+let projectPhotoTouchStartX=0;
+const projectPhotoWrap=$("#projectPhotoWrap");
+projectPhotoWrap?.addEventListener("touchstart",event=>{
+  if(event.touches.length===1) projectPhotoTouchStartX=event.touches[0].clientX;
+},{passive:true});
+projectPhotoWrap?.addEventListener("touchend",event=>{
+  if(!projectPhotoTouchStartX||!event.changedTouches.length)return;
+  const delta=event.changedTouches[0].clientX-projectPhotoTouchStartX;
+  projectPhotoTouchStartX=0;
+  if(Math.abs(delta)<45)return;
+  changeProjectPhoto(delta>0?-1:1);
+},{passive:true});
