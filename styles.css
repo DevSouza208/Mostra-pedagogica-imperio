@@ -118,3 +118,14 @@ textarea:focus{border-color:#5bbbe0;box-shadow:0 0 0 3px rgba(91,187,224,.13)}
   .footer-links{gap:8px;padding:10px 14px}
   .footer-links a{font-size:.84rem}
 }
+.login-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
+.login-modal.open{display:flex}
+.login-backdrop{position:absolute;inset:0;background:rgba(10,31,49,.45);backdrop-filter:blur(5px)}
+.login-card{position:relative;width:min(100%,420px);background:#fff;border:1px solid rgba(160,209,232,.65);border-radius:24px;padding:28px;box-shadow:0 24px 70px rgba(10,47,72,.22);z-index:1}
+.login-card h2{margin:12px 0 8px;font-size:1.65rem}
+.login-card p{margin:0 0 20px;color:var(--muted);line-height:1.5}
+.login-close{position:absolute;top:12px;right:14px;width:36px;height:36px;border:0;border-radius:50%;background:#eef7fc;color:#4f7187;font-size:1.45rem;line-height:1}
+.login-error{min-height:20px;margin:-2px 0 10px;color:#b92845;font-size:.82rem;font-weight:700}
+body.modal-open{overflow:hidden}
+.staff-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#edf7fc;color:#126991;font-size:.78rem;font-weight:800}
+.logout-btn{border:0;background:#fff0f2;color:#b92845;padding:9px 12px;border-radius:10px;font-weight:800}
