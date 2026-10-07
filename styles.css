@@ -18,10 +18,19 @@ body{min-height:100vh}
 button,textarea{font:inherit}
 button{cursor:pointer}
 .app-shell{width:min(100%,760px);margin:auto;padding:18px 16px 34px}
-.brandbar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.brand-logo{display:block;object-fit:contain;border-radius:16px;box-shadow:0 8px 22px rgba(20,58,90,.12)}
-.brand-logo--school{width:58px;height:58px}
-.brand-logo--codifica{width:70px;height:58px;margin-left:auto}
+.brandbar{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.brand-logo{
+  width:76px;
+  height:76px;
+  padding:10px;
+  display:block;
+  object-fit:contain;
+  border-radius:22px;
+  background:#ffffff;
+  box-shadow:0 10px 24px rgba(20,58,90,.12);
+}
+.brand-logo--school{width:76px;height:76px}
+.brand-logo--codifica{width:76px;height:76px;margin-left:auto;background:#17005d}
 .brand-copy{display:flex;flex-direction:column;gap:2px}
 .brand-copy span{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#1878aa}
 .brand-copy strong{font-size:.95rem}
@@ -88,4 +97,16 @@ footer{text-align:center;color:#7690a0;font-size:.74rem;padding:16px}
 .danger-btn{border:0;background:#fff0f2;color:#b92845;padding:8px 10px;border-radius:10px;font-weight:800}
 .mode-note{padding:12px 14px;background:#fff8db;color:#6f5a00;border-radius:12px;font-size:.8rem;line-height:1.45;margin-bottom:16px}
 @media(max-width:720px){.admin-grid{grid-template-columns:1fr}.project-photo-wrap{min-height:280px}}
-@media(max-width:420px){.brand-copy strong{font-size:.8rem}.brand-logo--codifica{width:58px;height:50px}.brand-logo--school{width:50px;height:50px}.stars button{font-size:2rem}.hero-card{padding:30px 20px}}
+@media(max-width:420px){
+  .brand-logo,
+  .brand-logo--school,
+  .brand-logo--codifica{
+    width:62px;
+    height:62px;
+    padding:8px;
+    border-radius:18px;
+  }
+  .brand-copy strong{font-size:.82rem}
+  .stars button{font-size:2rem}
+  .hero-card{padding:30px 20px}
+}
