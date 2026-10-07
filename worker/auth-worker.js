@@ -173,26 +173,6 @@ export default {
       return json(request,{ok:false,error:"Falha ao preparar banco de dados."},500);
     }
 
-    if(url.pathname==="/__cleanup_test_project_4eb1bd82"&&request.method==="GET"){
-      const id="4eb1bd82-2ca0-495f-8c55-bf8306ea2f25";
-      const row=await env.DB.prepare("SELECT image_keys FROM projects WHERE id=? LIMIT 1").bind(id).first();
-
-      if(!row){
-        return json(request,{ok:true,deleted:false,reason:"already_missing"});
-      }
-
-      const keys=parseJsonArray(row.image_keys);
-      if(keys.length){
-        await Promise.all(keys.map(key=>env.IMAGES.delete(key)));
-      }
-
-      await env.DB.batch([
-        env.DB.prepare("DELETE FROM reviews WHERE project_id=?").bind(id),
-        env.DB.prepare("DELETE FROM projects WHERE id=?").bind(id)
-      ]);
-
-      return json(request,{ok:true,deleted:true,id});
-    }
 
     if(url.pathname==="/health"&&request.method==="GET"){
       return json(request,{ok:true});
