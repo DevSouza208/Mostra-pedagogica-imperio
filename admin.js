@@ -2,56 +2,22 @@ const CONFIG=window.MOSTRA_CONFIG||{};
 const API_URL=String(CONFIG.apiUrl||"").replace(/\/$/,"");
 const HAS_SUPABASE=false;
 let supabase=null;
-const STAFF_TOKEN_KEY="mostra_staff_token";
-const staffToken=sessionStorage.getItem(STAFF_TOKEN_KEY);
-if(!staffToken){
+
+let staffSession=null;
+try{staffSession=JSON.parse(sessionStorage.getItem("mostra_staff_user")||"null")}catch{}
+if(!staffSession?.username){
   window.location.replace("./");
   throw new Error("Sessão de equipe ausente.");
 }
-
-async function verifyStaffSession(){
-  const response=await fetch(`${API_URL}/auth/me`,{
-    headers:{Authorization:`Bearer ${staffToken}`}
-  });
-  if(!response.ok){
-    sessionStorage.removeItem(STAFF_TOKEN_KEY);
-    window.location.replace("./");
-    throw new Error("Sessão inválida.");
-  }
-  return response.json();
-}
-const staffSession=await verifyStaffSession();
-
-const API_URL=String(CONFIG.apiUrl||"").replace(/\/$/,"");
-const STAFF_TOKEN_KEY="mostra_staff_token";
-const staffToken=sessionStorage.getItem(STAFF_TOKEN_KEY);
-if(!staffToken){
-  window.location.replace("./");
-  throw new Error("Sessão de equipe ausente.");
-}
-
-async function verifyStaffSession(){
-  const response=await fetch(`${API_URL}/auth/me`,{
-    headers:{Authorization:`Bearer ${staffToken}`}
-  });
-  if(!response.ok){
-    sessionStorage.removeItem(STAFF_TOKEN_KEY);
-    window.location.replace("./");
-    throw new Error("Sessão inválida.");
-  }
-  return response.json();
-}
-const staffSession=await verifyStaffSession();
 
 const $=s=>document.querySelector(s);
 $("#staffBadge").textContent=`${staffSession.role} · ${staffSession.username}`;
-$("#logoutBtn").onclick=async()=>{
-  try{await fetch(`${API_URL}/auth/logout`,{method:"POST",headers:{Authorization:`Bearer ${staffToken}`}})}catch{}
-  sessionStorage.removeItem(STAFF_TOKEN_KEY);
+$("#logoutBtn").onclick=()=>{
+  sessionStorage.removeItem("mostra_staff_user");
   window.location.replace("./");
 };
 
-$("#modeNote").textContent="Cloudflare conectado: autenticação via Worker + D1.";
+$("#modeNote").textContent="Cloudflare conectado: acesso validado pela tabela D1.";
 
 let selectedPhotoFile=null;
 
