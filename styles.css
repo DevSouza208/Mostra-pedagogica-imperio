@@ -3584,50 +3584,73 @@ body.pdf-builder-open{
   }
 }
 
-
-/* Home: card centralizado e rodapé no final */
+/* Home: bloco central equilibrado e rodapé no fim */
 body:not(.review-mode):not(.visit-mode){
-  min-height:100dvh;
-}
-
-body:not(.review-mode):not(.visit-mode) .app-shell{
   min-height:100dvh;
   display:flex;
   flex-direction:column;
 }
 
-body:not(.review-mode):not(.visit-mode) #welcome{
-  flex:1;
+body:not(.review-mode):not(.visit-mode) .app-shell{
+  flex:1 0 auto;
+  width:min(100%,760px);
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+
+body:not(.review-mode):not(.visit-mode) .brandbar{
+  flex:0 0 auto;
+}
+
+body:not(.review-mode):not(.visit-mode) #welcome.screen--active{
+  flex:1 0 auto;
   display:flex;
   flex-direction:column;
   justify-content:center;
 }
 
-body:not(.review-mode):not(.visit-mode) #welcome.screen--active{
-  display:flex;
+body:not(.review-mode):not(.visit-mode) #welcome .hero-card{
+  margin:0;
 }
 
-body:not(.review-mode):not(.visit-mode) #welcome .hero-card{
-  margin-top:auto;
-  margin-bottom:auto;
+body:not(.review-mode):not(.visit-mode) #welcome .welcome-partners{
+  flex:0 0 auto;
+  margin-top:14px;
+  margin-bottom:0;
+}
+
+body:not(.review-mode):not(.visit-mode) .teacher-access{
+  flex:0 0 auto;
+  margin-top:8px;
 }
 
 body:not(.review-mode):not(.visit-mode) .site-footer{
-  margin-top:auto;
+  flex:0 0 auto;
+  margin-top:6px;
   padding-bottom:max(16px,env(safe-area-inset-bottom));
 }
 
 @media(max-width:560px){
-  body:not(.review-mode):not(.visit-mode) #welcome{
-    justify-content:center;
+  body:not(.review-mode):not(.visit-mode) .app-shell{
+    padding-bottom:12px!important;
   }
 
-  body:not(.review-mode):not(.visit-mode) #welcome .hero-card{
-    margin-top:auto;
-    margin-bottom:auto;
+  body:not(.review-mode):not(.visit-mode) #welcome.screen--active{
+    padding-top:10px;
+    padding-bottom:10px;
+  }
+
+  body:not(.review-mode):not(.visit-mode) #welcome .welcome-partners{
+    margin-top:12px;
+  }
+
+  body:not(.review-mode):not(.visit-mode) .teacher-access{
+    margin-top:4px;
   }
 
   body:not(.review-mode):not(.visit-mode) .site-footer{
-    padding-top:10px;
+    margin-top:4px;
+    padding-top:6px;
   }
 }
