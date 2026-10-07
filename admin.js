@@ -41,30 +41,66 @@ $$(".admin-menu-card").forEach(card=>{
   });
 });
 
-let selectedPhotoFile=null;
+let selectedPhotoFiles=[];
 
 const cameraInput=$("#cameraInput");
 const uploadInput=$("#uploadInput");
 const photoPreviewWrap=$("#photoPreviewWrap");
-const photoPreview=$("#photoPreview");
-const photoFileName=$("#photoFileName");
+const photoPreviewGrid=$("#photoPreviewGrid");
+const photoCount=$("#photoCount");
 
-function setSelectedPhoto(file){
-  selectedPhotoFile=file||null;
+function updatePhotoPreview(){
+  photoPreviewGrid.innerHTML="";
 
-  if(!selectedPhotoFile){
-    photoPreview.removeAttribute("src");
+  if(!selectedPhotoFiles.length){
     photoPreviewWrap.classList.add("hidden");
-    photoFileName.textContent="Imagem selecionada";
+    photoCount.textContent="0 fotos";
     cameraInput.value="";
     uploadInput.value="";
     return;
   }
 
-  const url=URL.createObjectURL(selectedPhotoFile);
-  photoPreview.src=url;
-  photoFileName.textContent=selectedPhotoFile.name||"Foto da maquete";
   photoPreviewWrap.classList.remove("hidden");
+  photoCount.textContent=`${selectedPhotoFiles.length} ${selectedPhotoFiles.length===1?"foto":"fotos"}`;
+
+  selectedPhotoFiles.forEach((file,index)=>{
+    const item=document.createElement("div");
+    item.className="photo-thumb-item";
+
+    const img=document.createElement("img");
+    img.className="photo-thumb";
+    img.alt=`Foto ${index+1}`;
+    const objectUrl=URL.createObjectURL(file);
+    img.src=objectUrl;
+    img.onload=()=>URL.revokeObjectURL(objectUrl);
+
+    const removeBtn=document.createElement("button");
+    removeBtn.type="button";
+    removeBtn.className="photo-thumb-remove";
+    removeBtn.setAttribute("aria-label","Remover foto");
+    removeBtn.innerHTML=`
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9 10v6M15 10v6M5 7h14M10 4h4l1 2H9l1-2ZM8 20h8a1.5 1.5 0 0 0 1.5-1.5V7h-11v11.5A1.5 1.5 0 0 0 8 20Z"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+    removeBtn.onclick=()=>{
+      selectedPhotoFiles.splice(index,1);
+      updatePhotoPreview();
+    };
+
+    item.appendChild(img);
+    item.appendChild(removeBtn);
+    photoPreviewGrid.appendChild(item);
+  });
+}
+
+function addSelectedPhotos(fileList){
+  const files=[...(fileList||[])].filter(file=>file && file.type?.startsWith("image/"));
+  if(!files.length)return;
+
+  selectedPhotoFiles.push(...files);
+  updatePhotoPreview();
 }
 
 const cameraModal=$("#cameraModal");
@@ -127,9 +163,8 @@ async function openCamera(){
 
 $("#cameraBtn").onclick=openCamera;
 $("#uploadBtn").onclick=()=>uploadInput.click();
-cameraInput.onchange=e=>setSelectedPhoto(e.target.files?.[0]);
-uploadInput.onchange=e=>setSelectedPhoto(e.target.files?.[0]);
-$("#removePhotoBtn").onclick=()=>setSelectedPhoto(null);
+cameraInput.onchange=e=>addSelectedPhotos(e.target.files);
+uploadInput.onchange=e=>addSelectedPhotos(e.target.files);
 
 $("#closeCameraBtn").onclick=closeCamera;
 $("#cancelCameraBtn").onclick=closeCamera;
@@ -148,7 +183,8 @@ captureCameraBtn.onclick=()=>{
   cameraCanvas.toBlob(blob=>{
     if(!blob)return;
     const file=new File([blob],`foto-maquete-${Date.now()}.jpg`,{type:"image/jpeg"});
-    setSelectedPhoto(file);
+    selectedPhotoFiles.push(file);
+    updatePhotoPreview();
     closeCamera();
   },"image/jpeg",0.9);
 };
@@ -206,16 +242,21 @@ function render(items){
 
     el.querySelector("strong").textContent=p.title;
     el.querySelector("span").textContent=p.class_name||"Sem turma";
-    el.querySelector("button").onclick=()=>remove(p.id,p.image_path);
+    el.querySelector("button").onclick=()=>remove(
+      p.id,
+      Array.isArray(p.image_paths)&&p.image_paths.length
+        ? p.image_paths
+        : (p.image_path?[p.image_path]:[])
+    );
     list.appendChild(el);
   });
 }
 
-async function remove(id,imagePath){
+async function remove(id,imagePaths=[]){
   if(!confirm("Excluir este projeto?"))return;
 
   if(HAS_SUPABASE){
-    if(imagePath) await supabase.storage.from("project-images").remove([imagePath]);
+    if(imagePaths.length) await supabase.storage.from("project-images").remove(imagePaths);
     await supabase.from("projects").delete().eq("id",id);
   }else{
     const items=JSON.parse(localStorage.getItem("mostra_projects")||"[]").filter(p=>p.id!==id);
@@ -277,24 +318,30 @@ $("#projectForm").onsubmit=async e=>{
   btn.disabled=true;
   btn.textContent="Salvando...";
 
-  const file=selectedPhotoFile;
-  let image_url=null;
-  let image_path=null;
+  const files=[...selectedPhotoFiles];
+  let image_urls=[];
+  let image_paths=[];
 
-  if(HAS_SUPABASE&&file){
-    image_path=`${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
-    const {error}=await supabase.storage.from("project-images").upload(image_path,file,{upsert:false});
+  if(HAS_SUPABASE&&files.length){
+    for(const file of files){
+      const image_path=`${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
+      const {error}=await supabase.storage.from("project-images").upload(image_path,file,{upsert:false});
 
-    if(error){
-      alert("Erro no upload da imagem.");
-      btn.disabled=false;
-      btn.textContent="Cadastrar projeto";
-      return;
+      if(error){
+        alert("Erro no upload de uma das imagens.");
+        btn.disabled=false;
+        btn.textContent="Cadastrar projeto";
+        return;
+      }
+
+      const image_url=supabase.storage.from("project-images").getPublicUrl(image_path).data.publicUrl;
+      image_paths.push(image_path);
+      image_urls.push(image_url);
     }
-
-    image_url=supabase.storage.from("project-images").getPublicUrl(image_path).data.publicUrl;
-  }else if(file){
-    image_url=await fileToDataUrl(file);
+  }else if(files.length){
+    for(const file of files){
+      image_urls.push(await fileToDataUrl(file));
+    }
   }
 
   const project={
@@ -302,8 +349,10 @@ $("#projectForm").onsubmit=async e=>{
     title:$("#title").value.trim(),
     class_name:$("#className").value.trim(),
     description:$("#description").value.trim(),
-    image_url,
-    image_path,
+    image_url:image_urls[0]||null,
+    image_urls,
+    image_path:image_paths[0]||null,
+    image_paths,
     active:true,
     created_at:new Date().toISOString()
   };
@@ -325,7 +374,8 @@ $("#projectForm").onsubmit=async e=>{
   }
 
   e.target.reset();
-  setSelectedPhoto(null);
+  selectedPhotoFiles=[];
+  updatePhotoPreview();
   btn.disabled=false;
   btn.textContent="Cadastrar projeto";
   await load();
