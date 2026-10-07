@@ -2591,3 +2591,157 @@ body.visit-mode .site-footer{
     height:11px;
   }
 }
+
+
+/* Modal de nova visita */
+.new-visit-modal{
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.new-visit-modal.open{
+  display:flex;
+}
+
+.new-visit-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(37,16,20,.48);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+
+.new-visit-card{
+  position:relative;
+  z-index:1;
+  width:min(100%,420px);
+  padding:28px 24px 22px;
+  border:1px solid rgba(220,92,110,.28);
+  border-radius:24px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,248,249,.98));
+  box-shadow:0 28px 70px rgba(74,20,29,.24);
+  text-align:center;
+  animation:newVisitModalIn .2s ease both;
+}
+
+.new-visit-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#fff0f2;
+  color:#a43a4f;
+  font-size:1.35rem;
+  line-height:1;
+}
+
+.new-visit-icon{
+  display:grid;
+  place-items:center;
+  width:56px;
+  height:56px;
+  margin:0 auto 12px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#fff0f2,#ffe2e7);
+  color:#c53a54;
+  box-shadow:0 8px 20px rgba(185,40,69,.10);
+}
+
+.new-visit-icon svg{
+  width:28px;
+  height:28px;
+}
+
+.new-visit-kicker{
+  display:block;
+  margin-bottom:6px;
+  color:#c13b53;
+  font-size:.68rem;
+  font-weight:800;
+  letter-spacing:.13em;
+}
+
+.new-visit-card h2{
+  margin:0 0 10px;
+  color:#3a1c22;
+  font-size:1.45rem;
+  line-height:1.1;
+  letter-spacing:-.025em;
+}
+
+.new-visit-card p{
+  margin:0 auto 20px;
+  max-width:340px;
+  color:#7e6268;
+  font-size:.82rem;
+  line-height:1.55;
+}
+
+.new-visit-actions{
+  display:grid;
+  gap:9px;
+}
+
+.new-visit-danger,
+.new-visit-cancel{
+  width:100%;
+  min-height:48px;
+  border-radius:14px;
+  font-size:.86rem;
+  font-weight:800;
+}
+
+.new-visit-danger{
+  border:0;
+  background:linear-gradient(135deg,#c93650,#e84f66);
+  color:#fff;
+  box-shadow:0 10px 22px rgba(201,54,80,.20);
+}
+
+.new-visit-cancel{
+  border:1px solid #efd4d9;
+  background:#fff;
+  color:#8a5963;
+}
+
+@keyframes newVisitModalIn{
+  from{opacity:0;transform:translateY(8px) scale(.97)}
+  to{opacity:1;transform:none}
+}
+
+@media(max-width:480px){
+  .new-visit-modal{
+    padding:16px;
+  }
+
+  .new-visit-card{
+    padding:24px 18px 18px;
+    border-radius:22px;
+  }
+
+  .new-visit-icon{
+    width:50px;
+    height:50px;
+    border-radius:16px;
+  }
+
+  .new-visit-card h2{
+    font-size:1.25rem;
+  }
+
+  .new-visit-card p{
+    font-size:.76rem;
+  }
+}
