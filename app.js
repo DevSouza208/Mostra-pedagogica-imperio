@@ -117,3 +117,49 @@ $("#restartBtn").onclick=()=>{localStorage.removeItem("mostra_completed");show("
 document.querySelectorAll("#stars button").forEach(b=>b.onclick=()=>setRating(Number(b.dataset.value)));
 $("#comment").addEventListener("input",e=>$("#charCount").textContent=`${e.target.value.length}/240`);
 $("#submitBtn").onclick=submitReview;
+
+const STAFF_USERS = {
+  prof: { password: "prof2026", role: "Professor" },
+  admin: { password: "7334", role: "Administrador" },
+  moderador: { password: "mod2026", role: "Moderador" }
+};
+
+const teacherAccessBtn = document.querySelector("#teacherAccessBtn");
+const loginModal = document.querySelector("#loginModal");
+const staffLoginForm = document.querySelector("#staffLoginForm");
+const loginError = document.querySelector("#loginError");
+
+function openLoginModal(){
+  loginModal.classList.add("open");
+  loginModal.setAttribute("aria-hidden","false");
+  document.body.classList.add("modal-open");
+  setTimeout(()=>document.querySelector("#staffUser")?.focus(),50);
+}
+function closeLoginModal(){
+  loginModal.classList.remove("open");
+  loginModal.setAttribute("aria-hidden","true");
+  document.body.classList.remove("modal-open");
+  loginError.textContent="";
+}
+teacherAccessBtn?.addEventListener("click",openLoginModal);
+document.querySelectorAll("[data-close-login]").forEach(el=>el.addEventListener("click",closeLoginModal));
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&loginModal?.classList.contains("open"))closeLoginModal()});
+
+staffLoginForm?.addEventListener("submit",e=>{
+  e.preventDefault();
+  const username=document.querySelector("#staffUser").value.trim().toLowerCase();
+  const password=document.querySelector("#staffPassword").value;
+  const account=STAFF_USERS[username];
+
+  if(!account || account.password!==password){
+    loginError.textContent="Usuário ou senha incorretos.";
+    return;
+  }
+
+  sessionStorage.setItem("mostra_staff_session",JSON.stringify({
+    username,
+    role:account.role,
+    loggedAt:Date.now()
+  }));
+  window.location.href="./admin.html";
+});
