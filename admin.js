@@ -20,6 +20,27 @@ async function verifyStaffSession(){
 }
 const staffSession=await verifyStaffSession();
 
+const API_URL=String(CONFIG.apiUrl||"").replace(/\/$/,"");
+const STAFF_TOKEN_KEY="mostra_staff_token";
+const staffToken=sessionStorage.getItem(STAFF_TOKEN_KEY);
+if(!staffToken){
+  window.location.replace("./");
+  throw new Error("Sessão de equipe ausente.");
+}
+
+async function verifyStaffSession(){
+  const response=await fetch(`${API_URL}/auth/me`,{
+    headers:{Authorization:`Bearer ${staffToken}`}
+  });
+  if(!response.ok){
+    sessionStorage.removeItem(STAFF_TOKEN_KEY);
+    window.location.replace("./");
+    throw new Error("Sessão inválida.");
+  }
+  return response.json();
+}
+const staffSession=await verifyStaffSession();
+
 const $=s=>document.querySelector(s);
 $("#staffBadge").textContent=`${staffSession.role} · ${staffSession.username}`;
 $("#logoutBtn").onclick=async()=>{
