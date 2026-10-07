@@ -1,234 +1,338 @@
-# Mostra Pedagógica • Império das Letras
+<div align="center">
 
-Aplicação web **mobile-first e instalável como PWA** criada para a Mostra Pedagógica do **Império das Letras**, em parceria com a **Codifica**.
+<img src="./logo_mostra%20pedagogica_bgoff.png" alt="Mostra Pedagógica" width="190" />
 
-O projeto foi pensado especialmente para a dinâmica do **1º ano**, em que as famílias participam da construção das maquetes e também fazem parte do processo de avaliação. Cada família conhece os trabalhos, registra sua percepção e pode revisar suas respostas antes de encerrar a visita.
+# Mostra Pedagógica
 
-> **Status:** pronto para uso no evento ✅
+### Ideias que ganham vida ✨
 
-## Acesso
+Aplicação web mobile-first para a **Mostra Pedagógica do Império das Letras**, em parceria com a **Codifica**.
 
-- **Aplicação pública:** https://mostra-pedagogica-imperio.pages.dev/
-- **Painel administrativo:** https://mostra-pedagogica-imperio.pages.dev/admin.html
-- **API / Worker:** https://mostra-pedagogica-imperio-api.imperio-96d.workers.dev
+<br />
 
-## Como funciona
+[![Status](https://img.shields.io/badge/status-pronto%20para%20o%20evento-22a06b?style=for-the-badge)](#)
+[![PWA](https://img.shields.io/badge/PWA-instalável-0b8fc6?style=for-the-badge&logo=pwa&logoColor=white)](#)
+[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare-Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](#)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?style=for-the-badge&logo=cloudflareworkers&logoColor=white)](#)
 
-O visitante escaneia o QR Code da mostra e segue um fluxo simples:
+[**🌐 Abrir aplicação**](https://mostra-pedagogica-imperio.pages.dev/) ·
+[**🧑‍🏫 Painel administrativo**](https://mostra-pedagogica-imperio.pages.dev/admin.html) ·
+[**⚡ API**](https://mostra-pedagogica-imperio-api.imperio-96d.workers.dev)
 
-1. recebe as boas-vindas;
-2. lê avisos rápidos sobre privacidade e persistência do progresso;
-3. vê um pequeno tutorial;
-4. conhece um projeto por vez;
-5. avalia de **1 a 5 estrelas**;
-6. pode marcar **mais de um elogio**;
-7. pode deixar um comentário opcional;
-8. segue até conhecer todos os projetos;
-9. revisa suas avaliações;
-10. pode editar qualquer resposta antes ou depois de concluir a visita.
+</div>
 
-A ordem dos projetos é embaralhada por visitante para distribuir melhor a experiência ao longo do evento.
+---
 
-## Recursos da experiência das famílias
+## Sobre o projeto
 
-- ⭐ avaliação obrigatória de 1 a 5 estrelas;
-- 💬 múltiplos elogios por projeto;
-- ✍️ comentário livre opcional;
-- 🖼️ galeria com várias fotos por maquete;
-- 🔄 progresso salvo no aparelho;
-- 📱 retomada após recarregar ou fechar o navegador;
-- ✏️ edição de avaliações já enviadas;
-- 🧾 revisão final com miniaturas estilo polaroid;
-- ℹ️ tutorial acessível novamente durante a avaliação;
-- ✨ transições e splash screens entre etapas importantes;
-- 👨‍👩‍👧 nova visita no mesmo aparelho para outra família;
-- 🆕 projetos cadastrados durante o evento entram automaticamente nas visitas em andamento;
-- 📲 suporte a PWA e instalação na tela inicial.
+A plataforma foi criada para uma dinâmica de **avaliação participativa entre famílias** durante a Mostra Pedagógica.
 
-### Persistência da visita
+Cada visitante percorre os projetos um por vez, visualiza as maquetes, registra uma nota em estrelas, escolhe elogios e pode deixar um comentário. No final, todas as respostas podem ser revisadas antes do encerramento da visita.
 
-Cada navegador recebe um identificador anônimo armazenado em `localStorage`.
+O foco é manter a experiência **simples para as famílias**, **prática para a equipe escolar** e suficientemente flexível para continuar funcionando mesmo com novos projetos sendo cadastrados durante o evento.
 
-Esse identificador é usado para:
+## Destaques
 
-- recuperar avaliações já enviadas;
-- reconstruir o progresso;
-- evitar avaliações duplicadas do mesmo visitante para o mesmo projeto;
-- permitir editar uma avaliação existente.
+| Famílias | Equipe escolar |
+| --- | --- |
+| ⭐ Avaliação de 1 a 5 estrelas | ➕ Cadastro de projetos |
+| 💬 Múltiplos elogios | 📸 Upload de várias fotos |
+| ✍️ Comentário opcional | ✏️ Edição sem perder avaliações |
+| 🖼️ Galeria de fotos | 🗑️ Exclusão com confirmação |
+| 💾 Progresso persistente | 📊 Médias e comentários por projeto |
+| 🔄 Retomada após fechar ou recarregar | 💙 Ranking dos elogios recebidos |
+| 🧾 Revisão final das respostas | 📄 Exportação de portfólio em PDF |
+| ℹ️ Tutorial disponível durante a visita | 🖨️ Seleção manual dos comentários do PDF |
+| 🆕 Projetos novos entram no percurso | 📱 Painel responsivo |
 
-Não são solicitados nome, e-mail, telefone ou cadastro das famílias.
-
-> O modo anônimo/privado não é recomendado, porque o navegador pode apagar o identificador local ao ser fechado.
-
-## Painel administrativo
-
-O painel foi pensado para uso rápido durante a preparação e durante a própria mostra.
-
-### Projetos
-
-- cadastrar nome, turma e descrição;
-- tirar foto diretamente pela câmera do celular;
-- selecionar várias imagens;
-- visualizar miniaturas;
-- editar projeto depois de cadastrado;
-- trocar, adicionar ou remover fotos;
-- manter o mesmo `project_id` durante edições, preservando as avaliações recebidas;
-- excluir projetos somente após confirmação digitando **`excluir`**.
-
-### Avaliações
-
-O painel exibe:
-
-- total de avaliações;
-- média geral;
-- quantidade de comentários;
-- cards de projetos com miniatura e média;
-- detalhes individuais por projeto;
-- total de avaliações do projeto;
-- média do projeto;
-- comentários recebidos;
-- elogios mais recebidos e sua frequência.
-
-Exemplo:
+## Fluxo da experiência
 
 ```text
-Muito criativo  5x
-Incrível!       3x
-Bem feito       2x
+QR Code
+   │
+   ▼
+Boas-vindas
+   │
+   ▼
+Avisos e tutorial
+   │
+   ▼
+Projeto 1 → Projeto 2 → Projeto 3 → ...
+   │
+   ▼
+Revisão final
+   │
+   ├── editar estrelas
+   ├── editar elogios
+   └── editar comentário
+   │
+   ▼
+Visita concluída
 ```
+
+A ordem dos projetos é embaralhada para cada visitante.
+
+Se um novo projeto for cadastrado durante o evento, a aplicação atualiza a fila sem apagar o progresso já realizado.
+
+## Stack
+
+<div align="center">
+
+| Camada | Tecnologia |
+| --- | --- |
+| Frontend | HTML + CSS + JavaScript |
+| Hospedagem | Cloudflare Pages |
+| API | Cloudflare Workers |
+| Banco de dados | Cloudflare D1 |
+| Imagens | Cloudflare R2 |
+| Aplicação instalável | Web App Manifest + Service Worker |
+| Deploy | GitHub → Cloudflare |
+
+</div>
 
 ## Arquitetura
 
 ```text
-Famílias / Professores
-        │
-        ▼
-Cloudflare Pages
-HTML + CSS + JavaScript
-        │
-        ▼
-Cloudflare Worker
-        │
-   ┌────┴────┐
-   ▼         ▼
-Cloudflare   Cloudflare
-D1           R2
-dados        imagens
+┌─────────────────────────────┐
+│      Famílias / Escola      │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│      Cloudflare Pages       │
+│   HTML • CSS • JavaScript   │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│     Cloudflare Worker       │
+│          REST API           │
+└──────────┬─────────┬────────┘
+           │         │
+           ▼         ▼
+     ┌─────────┐ ┌─────────┐
+     │   D1    │ │   R2    │
+     │  dados  │ │ imagens │
+     └─────────┘ └─────────┘
 ```
 
-### Stack
+## Persistência da visita
 
-- **Frontend:** HTML, CSS e JavaScript puro;
-- **Hospedagem:** Cloudflare Pages;
-- **API:** Cloudflare Workers;
-- **Banco:** Cloudflare D1;
-- **Imagens:** Cloudflare R2;
-- **PWA:** Web App Manifest + Service Worker;
-- **Deploy:** integrado ao GitHub pela branch `main`.
+Cada navegador recebe um identificador anônimo armazenado em `localStorage`.
 
-## Banco de dados
+Ele permite:
 
-O backend mantém duas entidades principais.
+- recuperar avaliações já enviadas;
+- reconstruir o progresso da visita;
+- impedir duplicação do voto do mesmo visitante no mesmo projeto;
+- editar uma resposta já registrada;
+- continuar após fechar ou recarregar a página.
 
-### `projects`
+> [!NOTE]
+> Nenhum nome, e-mail, telefone ou cadastro é solicitado às famílias.
 
-Armazena:
+> [!WARNING]
+> O modo anônimo/privado não é recomendado, porque o navegador pode apagar o identificador local quando for fechado.
 
+## Painel administrativo
+
+O painel concentra três áreas principais:
+
+### `Cadastrar projetos`
+
+- nome do projeto;
+- turma;
+- descrição;
+- uma ou várias fotos;
+- captura direta pela câmera;
+- seleção de imagens da galeria.
+
+### `Projetos cadastrados`
+
+- visualização em cards;
+- edição pelo ícone de lápis;
+- inclusão ou remoção de fotos;
+- manutenção do mesmo `project_id` durante a edição;
+- exclusão somente após digitar **`excluir`**.
+
+Manter o mesmo `project_id` garante que as avaliações já recebidas continuem vinculadas ao projeto depois de uma edição.
+
+### `Ver avaliações`
+
+O painel apresenta:
+
+- total de avaliações;
+- média geral;
+- total de comentários;
+- média individual de cada projeto;
+- avaliações detalhadas;
+- elogios mais recebidos;
+- comentários enviados pelas famílias.
+
+## Exportação de PDF
+
+Cada projeto pode gerar um **portfólio em PDF** diretamente pelo painel.
+
+A professora escolhe o projeto, seleciona quais comentários devem aparecer e o navegador monta um documento com:
+
+- fotos da maquete;
+- nome e turma;
+- média de estrelas;
+- quantidade de avaliações;
+- principais elogios;
+- comentários selecionados;
+- identidade da Mostra Pedagógica;
+- Império das Letras + Codifica.
+
+A lógica de exportação fica isolada em `pdf-export.js`.
+
+## Dados
+
+<details>
+<summary><strong>projects</strong></summary>
+
+<br />
+
+Cada projeto armazena:
+
+- `id`;
 - título;
 - turma;
 - descrição;
 - chaves das imagens no R2;
-- estado ativo;
+- status ativo;
 - data de criação.
 
-### `reviews`
+</details>
 
-Armazena:
+<details>
+<summary><strong>reviews</strong></summary>
 
-- projeto avaliado;
-- identificador anônimo do visitante;
+<br />
+
+Cada avaliação armazena:
+
+- projeto;
+- `visitor_id`;
 - estrelas;
-- elogios selecionados;
+- elogios;
 - comentário;
 - data da avaliação.
 
-A combinação `project_id + visitor_id` é única. Caso a família edite uma avaliação, o registro existente é atualizado em vez de criar um voto duplicado.
+A combinação `project_id + visitor_id` é única. Ao editar uma avaliação, o backend atualiza o registro existente em vez de criar outro.
 
-## Projetos adicionados durante o evento
+</details>
 
-O catálogo não fica congelado quando uma família inicia a visita.
+## Estrutura do repositório
 
-A aplicação:
+```text
+.
+├── index.html
+├── app.js
+├── admin.html
+├── admin.js
+├── pdf-export.js
+├── styles.css
+├── config.js
+├── manifest.webmanifest
+├── sw.js
+├── pwa.js
+├── splash.js
+├── zoom-lock.js
+├── wrangler.toml
+├── worker/
+│   └── auth-worker.js
+├── logo_mostra pedagogica_bgoff.png
+├── logo_imperio.png
+└── logo_codifica.png
+```
 
-- consulta novamente os projetos durante o percurso;
-- inclui novos projetos sem apagar o progresso atual;
-- confere a lista antes da revisão final;
-- verifica novamente quando o app volta ao primeiro plano;
-- faz uma checagem periódica enquanto estiver aberto.
+<details>
+<summary><strong>O que cada arquivo principal faz</strong></summary>
 
-Se uma família já estiver na revisão ou na tela final e surgir uma nova maquete, ela é direcionada para avaliá-la antes de encerrar definitivamente.
+<br />
+
+| Arquivo | Responsabilidade |
+| --- | --- |
+| `index.html` | Interface pública |
+| `app.js` | Fluxo das famílias e avaliações |
+| `admin.html` | Estrutura do painel |
+| `admin.js` | Projetos, resultados e edição |
+| `pdf-export.js` | Construção dos portfólios em PDF |
+| `styles.css` | Identidade visual e responsividade |
+| `config.js` | Endpoint da API |
+| `sw.js` | Cache e comportamento do PWA |
+| `worker/auth-worker.js` | API, autenticação, D1 e R2 |
+| `wrangler.toml` | Configuração do Worker |
+
+</details>
+
+## Rodando localmente
+
+O frontend não possui etapa de build.
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/DevSouza208/Mostra-pedagogica-imperio.git
+cd Mostra-pedagogica-imperio
+```
+
+Depois sirva a raiz com um servidor HTTP local, como:
+
+- VS Code Live Server;
+- Web Preview;
+- qualquer servidor estático local.
+
+A API utilizada pelo frontend é configurada em `config.js`.
+
+As bindings do Worker ficam em `wrangler.toml`.
 
 ## PWA
 
-A aplicação pode ser instalada como PWA.
+A aplicação pode ser instalada na tela inicial de dispositivos compatíveis.
 
-O Service Worker mantém em cache os principais arquivos estáticos da interface, enquanto scripts e estilos priorizam a versão de rede para facilitar atualizações durante o desenvolvimento.
+O Service Worker mantém o shell principal em cache e prioriza a rede para arquivos que precisam refletir atualizações rapidamente.
 
-> As avaliações e o carregamento dos dados ainda dependem de conexão com a internet. Não existe fila offline de avaliações nesta versão.
+> [!IMPORTANT]
+> O frontend pode permanecer disponível pelo cache, mas o envio e a consulta das avaliações precisam de conexão com a internet.
 
-## Estrutura principal
+## Checklist do evento
 
-```text
-/
-├── index.html                 # experiência pública
-├── app.js                     # fluxo das famílias
-├── admin.html                 # painel administrativo
-├── admin.js                   # cadastro, edição e resultados
-├── styles.css                 # identidade visual e responsividade
-├── config.js                  # endereço da API
-├── manifest.webmanifest       # configuração do PWA
-├── sw.js                      # service worker
-├── pwa.js                     # registro do service worker
-├── splash.js                  # splash inicial
-├── zoom-lock.js               # ajustes de interação mobile
-├── wrangler.toml              # configuração do Cloudflare Worker
-├── worker/
-│   └── auth-worker.js         # API, D1 e R2
-└── logo_mostra pedagogica_bgoff.png
-```
+- [ ] Cadastrar todos os projetos.
+- [ ] Revisar nomes, turmas e descrições.
+- [ ] Conferir as fotos em um celular.
+- [ ] Testar uma visita completa em outro aparelho.
+- [ ] Conferir uma avaliação no painel.
+- [ ] Testar a revisão final.
+- [ ] Testar o QR Code impresso.
+- [ ] Garantir Wi-Fi ou 4G/5G no local.
 
-## Desenvolvimento local
+## Status
 
-O frontend não exige build.
-
-Basta servir a raiz do repositório com um servidor HTTP local, por exemplo:
-
-- VS Code Live Server;
-- extensão de preview do editor;
-- qualquer servidor estático.
-
-A URL da API utilizada pelo frontend fica em `config.js`.
-
-Para trabalhar com o Worker, as configurações de D1 e R2 estão em `wrangler.toml`.
-
-## Antes do evento
-
-Checklist recomendado:
-
-- cadastrar todos os projetos disponíveis;
-- conferir nome e turma;
-- validar as fotos;
-- testar uma visita completa em um celular diferente;
-- verificar o painel de avaliações;
-- garantir Wi-Fi ou 4G disponível no local;
-- evitar navegação privada nos aparelhos das famílias.
-
-## Identidade
-
-**Mostra Pedagógica — Ideias que ganham vida ✨**
-
-Projeto desenvolvido para o **Império das Letras**, com participação da **Codifica**.
+- [x] Experiência pública
+- [x] Avaliações persistentes
+- [x] Revisão e edição
+- [x] Cadastro de projetos
+- [x] Galeria de fotos
+- [x] Painel de resultados
+- [x] Projetos dinâmicos durante o evento
+- [x] PWA
+- [x] Exportação de PDF
+- [x] Layout mobile-first
 
 ---
 
-Desenvolvimento: [DevSouza208](https://github.com/DevSouza208)
+<div align="center">
+
+### 💙 Mostra Pedagógica
+
+**Ideias que ganham vida ✨**
+
+Império das Letras + Codifica
+
+<br />
+
+Desenvolvido por [**DevSouza208**](https://github.com/DevSouza208)
+
+</div>
