@@ -23,6 +23,45 @@ const screens={welcome:$("#welcome"),review:$("#review"),done:$("#done")};
 let projects=[], queue=[], index=0, rating=0, selectedSuggestion="";
 let projectImages=[], projectImageIndex=0;
 
+let transitionSplashRunning=false;
+
+function wait(ms){
+  return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+async function showTransitionSplash(message="",onMidpoint=null){
+  const splash=$("#transitionSplash");
+  const text=$("#transitionSplashText");
+  if(!splash){
+    if(typeof onMidpoint==="function")onMidpoint();
+    return;
+  }
+
+  if(transitionSplashRunning)return;
+  transitionSplashRunning=true;
+
+  text.textContent=message;
+  text.classList.toggle("hidden",!message);
+  splash.classList.remove("is-leaving");
+  splash.classList.add("is-active");
+  splash.setAttribute("aria-hidden","false");
+  document.body.classList.add("transition-lock");
+
+  const reducedMotion=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  await wait(reducedMotion?80:220);
+
+  if(typeof onMidpoint==="function")onMidpoint();
+
+  await wait(reducedMotion?80:210);
+  splash.classList.add("is-leaving");
+  await wait(reducedMotion?80:220);
+
+  splash.classList.remove("is-active","is-leaving");
+  splash.setAttribute("aria-hidden","true");
+  document.body.classList.remove("transition-lock");
+  transitionSplashRunning=false;
+}
+
 function show(name){
   Object.values(screens).forEach(s=>s.classList.remove("screen--active"));
   screens[name].classList.add("screen--active");
@@ -174,10 +213,10 @@ async function submitReview(){
   }
   markCompleted(project.id); index++; $("#submitBtn").textContent="Avaliar e ver próxima →";render();
 }
-function finish(){
+async function finish(){
   $("#progressBar").style.width="100%";
   $("#doneCount").textContent=`${queue.length} projetos conhecidos 💙`;
-  show("done");
+  await showTransitionSplash("Visita completa 💙",()=>show("done"));
 }
 $("#startBtn").onclick=async()=>{
   const startBtn=$("#startBtn");
@@ -196,8 +235,10 @@ $("#startBtn").onclick=async()=>{
     const pending=projects.filter(p=>!done.has(p.id));
     queue=shuffle(pending.length?pending:projects);
     index=0;
-    show("review");
-    render();
+    await showTransitionSplash("Vamos começar ✨",()=>{
+      show("review");
+      render();
+    });
   }catch(error){
     console.error(error);
     alert("Não foi possível carregar os projetos agora.");
