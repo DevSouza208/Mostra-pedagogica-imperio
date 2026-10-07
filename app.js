@@ -1,813 +1,395 @@
-const CONFIG = window.MOSTRA_CONFIG || {};
-const API_URL = String(CONFIG.apiUrl || "").replace(/\/$/,"");
-const HAS_SUPABASE = false;
-let supabase = null;
-
-const DEMO_PROJECTS = [
-  {id:"demo-1",title:"Cidade Sustentável",class_name:"3º Ano",description:"Uma cidade pensada para cuidar das pessoas e do planeta.",image_url:null},
-  {id:"demo-2",title:"Energia que Transforma",class_name:"4º Ano",description:"Uma maquete para descobrir diferentes formas de produzir energia.",image_url:null},
-  {id:"demo-3",title:"O Futuro da Mobilidade",class_name:"5º Ano",description:"Ideias criativas para transformar a forma como nos movimentamos.",image_url:null}
+const QUESTIONS = [
+  {
+    id:"phone", icon:"📱", category:"TECNOLOGIA",
+    title:"Quanto tempo por dia você usa o celular?",
+    hint:"Considere o uso do aparelho ao longo de um dia comum."
+  },
+  {
+    id:"social", icon:"📲", category:"ENTRETENIMENTO",
+    title:"Quanto tempo por dia você passa em redes sociais ou assistindo vídeos curtos?",
+    hint:"Por exemplo: Instagram, TikTok, Shorts, Reels e outras redes."
+  },
+  {
+    id:"games", icon:"🎮", category:"ENTRETENIMENTO",
+    title:"Quanto tempo por dia você joga videogame, jogos de celular ou computador?",
+    hint:"Vale qualquer tipo de jogo digital."
+  },
+  {
+    id:"tv", icon:"📺", category:"ENTRETENIMENTO",
+    title:"Quanto tempo por dia você assiste TV, filmes, séries ou vídeos?",
+    hint:"Considere TV aberta, streaming e vídeos mais longos."
+  },
+  {
+    id:"computer", icon:"💻", category:"ESTUDO E TRABALHO",
+    title:"Quanto tempo por dia você usa computador ou tablet para estudar ou trabalhar?",
+    hint:"Aqui entram tarefas, aulas, pesquisas, trabalho e outras atividades produtivas."
+  },
+  {
+    id:"reading", icon:"📚", category:"FORA DAS TELAS",
+    title:"Quanto tempo por dia você lê por escolha própria?",
+    hint:"Livros, revistas, quadrinhos ou outros textos."
+  },
+  {
+    id:"family", icon:"👨‍👩‍👧", category:"CONVÍVIO",
+    title:"Quanto tempo por dia você faz alguma atividade junto com sua família ou com as pessoas que moram com você?",
+    hint:"Pode ser brincar, cozinhar, passear, jogar algo juntos ou simplesmente passar um tempo em companhia."
+  },
+  {
+    id:"conversation", icon:"💬", category:"CONVÍVIO",
+    title:"Quanto tempo por dia você conversa pessoalmente com familiares ou outras pessoas da sua casa, sem usar telas?",
+    hint:"Considere conversas em que a atenção está nas pessoas, e não nos aparelhos."
+  },
+  {
+    id:"physical", icon:"🚶", category:"FORA DAS TELAS",
+    title:"Quanto tempo por dia você pratica atividade física ou passa tempo em atividades fora das telas?",
+    hint:"Esporte, caminhada, brincar, passear e outras atividades em movimento."
+  },
+  {
+    id:"creative", icon:"🎨", category:"CRIATIVIDADE",
+    title:"Quanto tempo por dia você faz algo criativo ou manual sem usar telas?",
+    hint:"Desenhar, pintar, cozinhar, montar coisas, tocar instrumento, artesanato e outras criações."
+  }
 ];
 
-const SUGGESTIONS = {
-  1:["Parabéns pelo esforço","Continuem criando","Foi legal conhecer a ideia"],
-  2:["Boa tentativa","Tem potencial","Parabéns pelo empenho"],
-  3:["Bom trabalho","Ideia interessante","Gostei do projeto","Muito legal"],
-  4:["Muito bom","Muito criativo","Bem feito","Ótima explicação"],
-  5:["Incrível!","Adorei a ideia","Excelente trabalho","Muito criativo","Sensacional!"]
-};
-const RATING_LABELS={1:"Obrigado por compartilhar 💙",2:"Boa ideia! 🌱",3:"Gostei! 😊",4:"Adorei! ✨",5:"Incrível! 🌟"};
+const TIME_OPTIONS = [
+  {label:"0", value:0},
+  {label:"30 min", value:.5},
+  {label:"1h", value:1},
+  {label:"2h", value:2},
+  {label:"3h", value:3},
+  {label:"4h", value:4},
+  {label:"5h+", value:5}
+];
 
-const $=s=>document.querySelector(s);
+const COMMENTS = {
+  balanced:[
+    "🙂 Olha só, parece que as telas ocupam uma parte pequena do seu dia.",
+    "🌱 Seu tempo parece bem distribuído.",
+    "😌 Tem bastante espaço no seu dia para outras atividades.",
+    "👏 Legal! Você parece conseguir equilibrar bem as telas com outras coisas.",
+    "🌤️ Seu resultado mostra uma rotina relativamente equilibrada.",
+    "🧩 Parece que a tecnologia é só uma das peças do seu dia.",
+    "🙂 Nada mal! Ainda sobra bastante tempo para outras experiências.",
+    "🌿 Seu tempo de tela parece estar dividindo espaço com outras atividades.",
+    "👀 Interessante! Seu uso não parece dominar sua rotina.",
+    "⭐ Você parece ter encontrado um ritmo confortável.",
+    "🧠 Seu resultado mostra bastante variedade no uso do tempo.",
+    "📚 Tem espaço aí para leitura, conversa, movimento e descanso.",
+    "🙂 Parece que você usa tecnologia sem deixar ela ocupar tudo.",
+    "⏳ Seu tempo está distribuído de um jeito interessante.",
+    "🌈 Sua rotina parece ter uma boa mistura de atividades.",
+    "💙 Legal perceber que nem todo tempo livre precisa virar tempo de tela.",
+    "🪁 Parece que ainda sobra bastante espaço fora das telas.",
+    "🤓 Seu resultado ficou bem equilibrado.",
+    "🌱 Pequenos hábitos assim podem fazer bastante diferença ao longo do ano.",
+    "😊 Esse resultado parece confortável. Continue percebendo como usa seu tempo."
+  ],
+  moderate:[
+    "👀 Opa… já são algumas horas da sua semana, hein?",
+    "🤔 Parece pouco por dia, mas olha como vai somando.",
+    "⏰ Interessante como algumas horinhas viram bastante tempo no fim da semana.",
+    "🙂 Nada assustador, mas vale observar para onde esse tempo está indo.",
+    "📱 O celular vai ocupando pequenos espaços do dia sem a gente perceber.",
+    "🎮 Jogar é divertido — olha só quanto tempo isso representa na semana toda.",
+    "📺 Um episódio aqui, outro ali… e o número cresce rapidinho.",
+    "🤔 Se você pudesse recuperar uma hora desse tempo, o que faria?",
+    "👀 Seu resultado já ocupa uma boa parte do seu tempo livre.",
+    "🧠 Talvez valha observar quais dessas horas realmente valem a pena para você.",
+    "⏳ Não parece tanto olhando um dia só, né?",
+    "📊 Quando colocamos tudo na semana, a história muda um pouco.",
+    "🙂 Tecnologia faz parte da rotina. A curiosidade é perceber quanto.",
+    "👓 Seu resultado está numa faixa interessante para observar.",
+    "💭 Será que todo esse tempo foi escolhido ou parte dele aconteceu no automático?",
+    "📱 Quantas vezes você pega o celular sem nem saber exatamente por quê?",
+    "🧩 Seu dia tem muitas peças. Quanto espaço você quer que as telas ocupem?",
+    "🕐 Alguns minutos repetidos várias vezes viram horas.",
+    "🤔 Talvez seu resultado seja um bom convite para prestar atenção na rotina.",
+    "🌤️ Não é sobre parar de usar — é sobre perceber o uso."
+  ],
+  high:[
+    "😮 Nossa… isso já é bastante tempo, não é?",
+    "👀 Caramba, as telas ocupam uma parte grande da sua semana.",
+    "⏳ Quando transformamos em horas, o número impressiona.",
+    "😯 Parece menos quando está espalhado ao longo dos dias.",
+    "📱 Seu celular está recebendo uma boa parcela do seu tempo.",
+    "🎮 Seu tempo com jogos já representa várias horas da semana.",
+    "📺 Dá para assistir bastante coisa nesse tempo, hein?",
+    "🤔 Será que você imaginava que daria tudo isso?",
+    "😮 Quando colocamos tudo junto, fica mais fácil perceber.",
+    "🧠 Talvez seja interessante experimentar pequenas pausas ao longo do dia.",
+    "👀 Uma hora a menos por dia já mudaria bastante esse resultado.",
+    "⌛ Seu tempo de tela já poderia preencher um dia inteiro da semana.",
+    "😲 Isso é mais tempo do que parece quando estamos usando aos poucos.",
+    "📊 Os números não estão julgando você — só deixando o hábito mais visível.",
+    "🤔 Qual dessas atividades você reduziria primeiro se precisasse escolher?",
+    "🌱 Pequenas mudanças diárias viram grandes mudanças no mês.",
+    "👣 Não precisa mudar tudo de uma vez. Observar já é um começo.",
+    "📵 Talvez algumas partes do dia possam virar momentos sem tela.",
+    "🧩 Seu resultado mostra como hábitos pequenos podem ocupar espaços grandes.",
+    "😮 Vale pensar: esse tempo combina com o que você gostaria para sua rotina?"
+  ],
+  veryHigh:[
+    "😳 Uau… quando vemos o total assim, impressiona bastante.",
+    "🤯 Isso vira muitos dias inteiros ao longo do mês!",
+    "👀 Nossa, isso é bastante, não é?",
+    "⏰ Seu resultado ocupa uma parte enorme das horas da semana.",
+    "😮 Talvez você nunca tivesse colocado esse tempo no papel.",
+    "📱 Algumas horas por dia podem virar semanas inteiras ao longo do ano.",
+    "🤔 E se uma pequena parte disso fosse usada de outro jeito?",
+    "🧠 Não precisa abandonar a tecnologia — mas talvez valha escolher melhor alguns momentos.",
+    "😲 O número parece gigante porque pequenos hábitos se acumulam todos os dias.",
+    "📊 É exatamente por isso que medir o tempo pode ser tão interessante.",
+    "👣 Uma mudança de 30 minutos por dia já faria diferença aqui.",
+    "⌛ Imagine recuperar algumas dessas horas todo mês.",
+    "🌿 Talvez seja uma boa oportunidade de criar alguns momentos sem tela.",
+    "😮 Seu resultado mostra como é fácil perder a noção do tempo quando estamos entretidos.",
+    "👀 Você imaginava chegar nesse número?",
+    "📱 O “só mais cinco minutos” pode virar muita coisa ao longo de um mês.",
+    "💭 O que você gostaria de fazer se tivesse algumas dessas horas de volta?",
+    "🛑 Talvez algumas pausas durante o dia façam bem.",
+    "🌱 Não é uma bronca — é só um convite para perceber.",
+    "💙 Tecnologia é ótima. O desafio é não deixar que ela escolha sozinha como usamos nosso tempo."
+  ],
+  reflection:[
+    "📚 Um pouco de leitura todos os dias também vira muita coisa ao longo do ano.",
+    "🤓 Cada meia hora dedicada a algo importante vai se somando.",
+    "📖 Pequenos hábitos podem ocupar muitas páginas da nossa história.",
+    "🌱 Seu tempo fora das telas também merece aparecer nesse resultado.",
+    "📚 Imagine quantas experiências cabem nas horas de uma semana.",
+    "⭐ É interessante perceber quais atividades estão ganhando espaço na sua rotina.",
+    "🧠 Nem todo tempo diante de uma tela tem o mesmo propósito.",
+    "📖 Um pouquinho por dia pode virar centenas de horas ao longo dos anos.",
+    "🌟 Pequenas escolhas também se acumulam para o lado positivo.",
+    "📚 Que tal comparar o tempo rolando a tela com o tempo dedicado a outras coisas?",
+    "🍽️ Que tal experimentar alguns momentos do dia sem celular por perto?",
+    "🌙 Um fim de dia com menos telas pode abrir espaço para outros hábitos.",
+    "💤 Talvez seu celular também mereça uma hora de descanso.",
+    "🗣️ Algumas pausas de tela podem virar conversa com alguém.",
+    "🚶 E se uma parte desse tempo virasse movimento, passeio ou brincadeira?",
+    "🎨 Algumas horas também podem virar desenho, música, cozinha ou criação.",
+    "👀 O objetivo não é usar menos tecnologia a qualquer custo — é usar com intenção.",
+    "💡 Saber quanto tempo usamos já muda a forma como enxergamos nossos hábitos.",
+    "🧭 Você decide como usar seu tempo. Os números só ajudam a enxergar o caminho.",
+    "💙 Tecnologia faz parte da vida. O importante é perceber como estamos usando nosso tempo."
+  ]
+};
+
+const CHART_META = {
+  phone:["📱","Celular","screen"],
+  social:["📲","Redes sociais / vídeos curtos","screen-detail"],
+  games:["🎮","Jogos","screen-detail"],
+  tv:["📺","TV, filmes e vídeos","screen"],
+  computer:["💻","Computador / tablet","work"],
+  reading:["📚","Leitura","offline"],
+  family:["👨‍👩‍👧","Atividades com a família","offline"],
+  conversation:["💬","Conversas em casa","offline"],
+  physical:["🚶","Atividade física / fora das telas","offline"],
+  creative:["🎨","Criatividade / atividades manuais","offline"]
+};
+
 const screens={
-  welcome:$("#welcome"),
-  notices:$("#notices"),
-  tutorial:$("#tutorial"),
-  review:$("#review"),
-  summary:$("#summary"),
-  done:$("#done")
+  welcome:document.querySelector("#welcomeScreen"),
+  quiz:document.querySelector("#quizScreen"),
+  result:document.querySelector("#resultScreen")
 };
 
-let projects=[],queue=[],index=0,rating=0,selectedSuggestions=[];
-let projectImages=[],projectImageIndex=0;
-let myReviews=new Map();
-let editingFromSummary=false;
-let transitionSplashRunning=false;
+const answers={};
+let currentQuestion=0;
+let resetTimer=null;
 
-const STORAGE={
-  visitor:"mostra_visitor_id",
-  completed:"mostra_completed",
-  intro:"mostra_intro_seen",
-  queue:"mostra_visit_queue",
-  current:"mostra_current_project"
-};
-
-function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
-
-async function showTransitionSplash(message="",onMidpoint=null){
-  const splash=$("#transitionSplash");
-  const text=$("#transitionSplashText");
-  if(!splash){
-    if(typeof onMidpoint==="function")onMidpoint();
-    return;
-  }
-  if(transitionSplashRunning)return;
-
-  transitionSplashRunning=true;
-  text.textContent=message;
-  text.classList.toggle("hidden",!message);
-  splash.classList.remove("is-leaving");
-  splash.classList.add("is-active");
-  splash.setAttribute("aria-hidden","false");
-  document.body.classList.add("transition-lock");
-
-  const reducedMotion=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-  await wait(reducedMotion?80:220);
-  if(typeof onMidpoint==="function")onMidpoint();
-  await wait(reducedMotion?80:210);
-  splash.classList.add("is-leaving");
-  await wait(reducedMotion?80:220);
-
-  splash.classList.remove("is-active","is-leaving");
-  splash.setAttribute("aria-hidden","true");
-  document.body.classList.remove("transition-lock");
-  transitionSplashRunning=false;
-}
-
-function show(name){
-  Object.values(screens).forEach(screen=>screen?.classList.remove("screen--active"));
-  screens[name]?.classList.add("screen--active");
-  document.body.classList.toggle("review-mode",name==="review");
-  document.body.classList.toggle("visit-mode",["notices","tutorial","review","summary"].includes(name));
+function showScreen(name){
+  Object.values(screens).forEach(el=>el?.classList.remove("kiosk-screen--active"));
+  screens[name]?.classList.add("kiosk-screen--active");
   window.scrollTo({top:0,behavior:"instant"});
 }
 
-function shuffle(items){return [...items].sort(()=>Math.random()-.5)}
-
-function visitorId(){
-  let id=localStorage.getItem(STORAGE.visitor);
-  if(!id){
-    id=crypto.randomUUID();
-    localStorage.setItem(STORAGE.visitor,id);
-  }
-  return id;
+function formatHours(value){
+  const rounded=Math.round(value*10)/10;
+  if(rounded===0)return "0h";
+  if(rounded<1)return `${Math.round(rounded*60)}min`;
+  if(Number.isInteger(rounded))return `${rounded}h`;
+  const hours=Math.floor(rounded);
+  const minutes=Math.round((rounded-hours)*60);
+  return minutes ? `${hours}h ${minutes}min` : `${hours}h`;
 }
 
-function completedIds(){
-  try{return JSON.parse(localStorage.getItem(STORAGE.completed)||"[]")}
-  catch{return[]}
+function weeklyFor(answer){
+  if(!answer)return 0;
+  return answer.weekday*5 + answer.weekend*2;
 }
 
-function setCompletedIds(ids){
-  localStorage.setItem(STORAGE.completed,JSON.stringify([...new Set(ids)]));
-}
-
-function markCompleted(id){
-  const ids=new Set(completedIds());
-  ids.add(id);
-  setCompletedIds([...ids]);
-}
-
-function saveVisitState(){
-  if(queue.length)localStorage.setItem(STORAGE.queue,JSON.stringify(queue.map(project=>project.id)));
-  const current=queue[index];
-  if(current)localStorage.setItem(STORAGE.current,current.id);
-}
-
-function clearVisitState({newVisitor=false}={}){
-  [
-    STORAGE.completed,
-    STORAGE.intro,
-    STORAGE.queue,
-    STORAGE.current
-  ].forEach(key=>localStorage.removeItem(key));
-
-  if(newVisitor)localStorage.removeItem(STORAGE.visitor);
-  myReviews=new Map();
-  queue=[];
-  index=0;
-  rating=0;
-  selectedSuggestions=[];
-  editingFromSummary=false;
-}
-
-async function loadProjects(){
-  if(!API_URL)throw new Error("API não configurada.");
-  const response=await fetch(`${API_URL}/projects`);
-  if(!response.ok)throw new Error("Não foi possível carregar os projetos.");
-  const data=await response.json();
-  return Array.isArray(data)?data:[];
-}
-
-async function loadMyReviews(){
-  if(!API_URL)return [];
-  const response=await fetch(`${API_URL}/reviews?visitor_id=${encodeURIComponent(visitorId())}`);
-  if(!response.ok)throw new Error("Não foi possível recuperar seu progresso.");
-  const data=await response.json();
-  return Array.isArray(data)?data:[];
-}
-
-function syncReviewState(reviews){
-  myReviews=new Map(reviews.map(review=>[review.project_id,review]));
-  setCompletedIds([...myReviews.keys()]);
-}
-
-function buildQueue(){
-  const byId=new Map(projects.map(project=>[project.id,project]));
-  let saved=[];
-  try{saved=JSON.parse(localStorage.getItem(STORAGE.queue)||"[]")}catch{}
-
-  const ordered=[];
-  const used=new Set();
-  for(const id of Array.isArray(saved)?saved:[]){
-    if(byId.has(id)&&!used.has(id)){
-      ordered.push(byId.get(id));
-      used.add(id);
-    }
-  }
-
-  const missing=shuffle(projects.filter(project=>!used.has(project.id)));
-  queue=[...ordered,...missing];
-  localStorage.setItem(STORAGE.queue,JSON.stringify(queue.map(project=>project.id)));
-}
-
-async function refreshProjectQueue(){
-  const latest=await loadProjects();
-  if(!latest.length)return {added:0,pending:0};
-
-  const currentIds=new Set(queue.map(project=>project.id));
-  const latestMap=new Map(latest.map(project=>[project.id,project]));
-
-  // Atualiza metadados/fotos de projetos já conhecidos.
-  queue=queue
-    .filter(project=>latestMap.has(project.id))
-    .map(project=>latestMap.get(project.id));
-
-  // Acrescenta projetos novos sem bagunçar a ordem já percorrida.
-  const newProjects=shuffle(latest.filter(project=>!currentIds.has(project.id)));
-  if(newProjects.length)queue.push(...newProjects);
-
-  projects=latest;
-  localStorage.setItem(STORAGE.queue,JSON.stringify(queue.map(project=>project.id)));
-
-  const pending=queue.filter(project=>!myReviews.has(project.id)).length;
-  return {added:newProjects.length,pending};
-}
-
-async function checkForNewProjects({announce=false}={}){
-  try{
-    const result=await refreshProjectQueue();
-    if(result.added>0&&announce){
-      const currentScreen=Object.entries(screens).find(([,el])=>el?.classList.contains("screen--active"))?.[0];
-      if(["summary","done"].includes(currentScreen)){
-        const next=firstPendingIndex(0);
-        if(next>=0){
-          index=next;
-          await showTransitionSplash("Novo projeto disponível ✨",()=>{
-            show("review");
-            render();
-          });
-        }
-      }
-    }
-    return result;
-  }catch(error){
-    console.warn("Não foi possível verificar novos projetos agora.",error);
-    return {added:0,pending:0};
-  }
-}
-
-function firstPendingIndex(start=0){
-  if(!queue.length)return -1;
-  for(let i=Math.max(0,start);i<queue.length;i++){
-    if(!myReviews.has(queue[i].id))return i;
-  }
-  for(let i=0;i<Math.max(0,start);i++){
-    if(!myReviews.has(queue[i].id))return i;
-  }
-  return -1;
-}
-
-function resumeIndex(){
-  const currentId=localStorage.getItem(STORAGE.current);
-  if(currentId&&!myReviews.has(currentId)){
-    const savedIndex=queue.findIndex(project=>project.id===currentId);
-    if(savedIndex>=0)return savedIndex;
-  }
-  return firstPendingIndex(0);
-}
-
-async function prepareVisit(){
-  projects=await loadProjects();
-  if(!projects.length)throw new Error("Nenhum projeto cadastrado ainda.");
-  const reviews=await loadMyReviews();
-  syncReviewState(reviews);
-  buildQueue();
-  index=resumeIndex();
-}
-
-function resetRating(){
-  rating=0;
-  selectedSuggestions=[];
-  $("#comment").value="";
-  $("#charCount").textContent="0/240";
-  document.querySelectorAll("#stars button").forEach(button=>button.classList.remove("active"));
-  $("#ratingLabel").textContent="Escolha de 1 a 5 estrelas";
-  $("#suggestionsWrap").classList.add("hidden");
-  $("#suggestions").innerHTML="";
-  $("#submitBtn").disabled=true;
-}
-
-function renderProjectPhoto(title=""){
-  const img=$("#projectPhoto");
-  const ph=$("#projectPlaceholder");
-  const prev=$("#projectPhotoPrev");
-  const next=$("#projectPhotoNext");
-  const dots=$("#projectPhotoDots");
-  const count=$("#projectPhotoCount");
-
-  if(!projectImages.length){
-    img.removeAttribute("src");
-    img.style.display="none";
-    ph.style.display="block";
-    prev.classList.add("hidden");
-    next.classList.add("hidden");
-    dots.classList.add("hidden");
-    count.classList.add("hidden");
-    dots.innerHTML="";
-    return;
-  }
-
-  projectImageIndex=Math.max(0,Math.min(projectImageIndex,projectImages.length-1));
-  img.src=projectImages[projectImageIndex];
-  img.alt=`Foto ${projectImageIndex+1} do projeto ${title}`;
-  img.style.display="block";
-  ph.style.display="none";
-
-  const multiple=projectImages.length>1;
-  prev.classList.toggle("hidden",!multiple);
-  next.classList.toggle("hidden",!multiple);
-  dots.classList.toggle("hidden",!multiple);
-  count.classList.toggle("hidden",!multiple);
-  count.textContent=`${projectImageIndex+1}/${projectImages.length}`;
-  dots.innerHTML="";
-
-  if(multiple){
-    projectImages.forEach((_,i)=>{
-      const dot=document.createElement("button");
-      dot.type="button";
-      dot.className="project-photo-dot";
-      dot.classList.toggle("active",i===projectImageIndex);
-      dot.setAttribute("aria-label",`Ver foto ${i+1}`);
-      dot.onclick=()=>{
-        projectImageIndex=i;
-        renderProjectPhoto(title);
-      };
-      dots.appendChild(dot);
-    });
-  }
-}
-
-function changeProjectPhoto(direction){
-  if(projectImages.length<2)return;
-  projectImageIndex=(projectImageIndex+direction+projectImages.length)%projectImages.length;
-  renderProjectPhoto(queue[index]?.title||"");
-}
-
-function renderSuggestionSelection(){
-  document.querySelectorAll("#suggestions .chip").forEach(chip=>
-    chip.classList.toggle("selected",selectedSuggestions.includes(chip.textContent))
-  );
-}
-
-function setRating(value){
-  const ratingChanged=rating!==value;
-  rating=value;
-  if(ratingChanged) selectedSuggestions=[];
-
-  document.querySelectorAll("#stars button").forEach(button=>
-    button.classList.toggle("active",Number(button.dataset.value)<=value)
-  );
-  $("#ratingLabel").textContent=RATING_LABELS[value];
-  $("#suggestionsWrap").classList.remove("hidden");
-  $("#suggestions").innerHTML="";
-
-  SUGGESTIONS[value].forEach(text=>{
+function renderOptions(container,period){
+  container.innerHTML="";
+  TIME_OPTIONS.forEach(option=>{
     const button=document.createElement("button");
-    button.className="chip";
     button.type="button";
-    button.textContent=text;
-    button.onclick=()=>{
-      if(selectedSuggestions.includes(text)){
-        selectedSuggestions=selectedSuggestions.filter(item=>item!==text);
-      }else{
-        selectedSuggestions=[...selectedSuggestions,text];
-      }
-      renderSuggestionSelection();
-    };
-    $("#suggestions").appendChild(button);
-  });
-
-  renderSuggestionSelection();
-  $("#submitBtn").disabled=false;
-}
-
-function parseSavedSuggestions(value){
-  if(!value)return [];
-  if(Array.isArray(value))return value.filter(Boolean);
-  return String(value)
-    .split(" • ")
-    .map(item=>item.trim())
-    .filter(Boolean);
-}
-
-function applyExistingReview(review){
-  if(!review)return;
-  setRating(Number(review.stars));
-  selectedSuggestions=parseSavedSuggestions(review.suggestion);
-  renderSuggestionSelection();
-  $("#comment").value=review.comment||"";
-  $("#charCount").textContent=`${$("#comment").value.length}/240`;
-}
-
-function render(){
-  if(index<0||index>=queue.length){
-    showReviewSummary();
-    return;
-  }
-
-  resetRating();
-  const project=queue[index];
-  const completedCount=myReviews.size;
-  const pct=Math.round((completedCount/Math.max(1,queue.length))*100);
-
-  $("#progressText").textContent=`Projeto ${index+1} de ${queue.length}`;
-  $("#progressPct").textContent=`${pct}%`;
-  $("#progressBar").style.width=`${pct}%`;
-  $("#projectTitle").textContent=project.title;
-  $("#projectDescription").textContent=project.description||"Conheça esta ideia e deixe sua avaliação.";
-  $("#projectClass").textContent=project.class_name||"Mostra Pedagógica";
-  $("#reviewBackBtn").classList.toggle("hidden",index<=0);
-
-  projectImages=Array.isArray(project.image_urls)&&project.image_urls.length
-    ? project.image_urls.filter(Boolean)
-    : (project.image_url?[project.image_url]:[]);
-  projectImageIndex=0;
-  renderProjectPhoto(project.title);
-
-  const existing=myReviews.get(project.id);
-  applyExistingReview(existing);
-  $("#submitBtn").textContent=existing?"Salvar e continuar →":"Avaliar e ver próxima →";
-  saveVisitState();
-}
-
-async function submitReview(){
-  if(!rating)return;
-  const project=queue[index];
-  if(!project)return;
-
-  const payload={
-    project_id:project.id,
-    visitor_id:visitorId(),
-    stars:rating,
-    suggestion:selectedSuggestions.length?selectedSuggestions.join(" • "):null,
-    comment:$("#comment").value.trim()||null
-  };
-
-  $("#submitBtn").disabled=true;
-  $("#submitBtn").textContent="Salvando...";
-
-  try{
-    const response=await fetch(`${API_URL}/reviews`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(payload)
-    });
-    if(!response.ok)throw new Error("Falha ao salvar avaliação");
-
-    myReviews.set(project.id,{
-      ...(myReviews.get(project.id)||{}),
-      ...payload,
-      project_title:project.title,
-      project_class:project.class_name,
-      created_at:new Date().toISOString()
-    });
-    markCompleted(project.id);
-
-    if(editingFromSummary){
-      editingFromSummary=false;
-      await showTransitionSplash("Alteração salva ✓",()=>showReviewSummary());
-      return;
-    }
-
-    await refreshProjectQueue().catch(error=>
-      console.warn("Falha ao atualizar projetos antes de continuar.",error)
-    );
-
-    const next=firstPendingIndex(index+1);
-    if(next===-1){
-      await finish();
-      return;
-    }
-
-    index=next;
-    render();
-  }catch(error){
-    console.error(error);
-    alert("Não foi possível enviar agora. Tente novamente.");
-    $("#submitBtn").disabled=false;
-    $("#submitBtn").textContent=myReviews.has(project.id)?"Salvar e continuar →":"Avaliar e ver próxima →";
-  }
-}
-
-function renderFamilyReviewGrid(){
-  const grid=$("#familyReviewGrid");
-  grid.innerHTML="";
-
-  const ordered=queue.length?queue:projects;
-  ordered.forEach(project=>{
-    const review=myReviews.get(project.id);
-    if(!review)return;
-
-    const card=document.createElement("button");
-    card.type="button";
-    card.className="family-review-item";
-
-    const photoWrap=document.createElement("div");
-    photoWrap.className="family-review-photo-wrap";
-
-    const photoFrame=document.createElement("div");
-    photoFrame.className="family-review-photo-frame";
-
-    const images=Array.isArray(project.image_urls)&&project.image_urls.length
-      ? project.image_urls.filter(Boolean)
-      : (project.image_url?[project.image_url]:[]);
-
-    if(images.length){
-      const img=document.createElement("img");
-      img.className="family-review-photo";
-      img.src=images[0];
-      img.alt=`Miniatura do projeto ${project.title}`;
-      photoFrame.appendChild(img);
-
-      if(images.length>1){
-        const more=document.createElement("span");
-        more.className="family-review-photo-more";
-        more.textContent=`+${images.length-1}`;
-        photoFrame.appendChild(more);
-      }
-    }else{
-      const placeholder=document.createElement("div");
-      placeholder.className="family-review-photo-placeholder";
-      placeholder.textContent="💡";
-      photoFrame.appendChild(placeholder);
-    }
-
-    photoWrap.appendChild(photoFrame);
-
-    const title=document.createElement("strong");
-    title.textContent=project.title;
-
-    const stars=document.createElement("span");
-    stars.className="family-review-stars";
-    stars.textContent=`${review.stars} ★`;
-
-    const edit=document.createElement("small");
-    edit.className="family-review-edit";
-    edit.innerHTML=`
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M4 20l4.2-1 9.9-9.9a2.1 2.1 0 0 0 0-3L17.9 6a2.1 2.1 0 0 0-3 0L5 15.9 4 20Z"
-          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="m13.8 7.1 3.1 3.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <span>Toque para editar</span>
-    `;
-
-    card.append(photoWrap,title,stars,edit);
-
-    card.onclick=()=>{
-      const projectIndex=queue.findIndex(item=>item.id===project.id);
-      if(projectIndex<0)return;
-      editingFromSummary=true;
-      index=projectIndex;
-      show("review");
-      render();
-    };
-
-    grid.appendChild(card);
-  });
-}
-
-function showReviewSummary(){
-  editingFromSummary=false;
-  renderFamilyReviewGrid();
-  show("summary");
-}
-
-async function finish(){
-  $("#progressBar").style.width="100%";
-  localStorage.removeItem(STORAGE.current);
-
-  try{
-    const result=await refreshProjectQueue();
-    const next=firstPendingIndex(0);
-
-    if(result.added>0&&next>=0){
-      index=next;
-      await showTransitionSplash("Novo projeto disponível ✨",()=>{
-        show("review");
-        render();
+    button.className="kiosk-time-btn";
+    button.textContent=option.label;
+    button.dataset.value=String(option.value);
+    button.setAttribute("role","radio");
+    button.setAttribute("aria-checked","false");
+    button.addEventListener("click",()=>{
+      const question=QUESTIONS[currentQuestion];
+      answers[question.id] ||= {};
+      answers[question.id][period]=option.value;
+      container.querySelectorAll(".kiosk-time-btn").forEach(btn=>{
+        const active=btn===button;
+        btn.classList.toggle("selected",active);
+        btn.setAttribute("aria-checked",active?"true":"false");
       });
-      return;
-    }
-  }catch(error){
-    console.warn("Não foi possível conferir novos projetos antes da revisão.",error);
-  }
-
-  await showTransitionSplash("Hora de conferir 💙",()=>showReviewSummary());
+      syncNextButton();
+    });
+    container.appendChild(button);
+  });
 }
 
-async function startOrResumeVisit(){
-  try{
-    await prepareVisit();
-
-    if(myReviews.size>=projects.length){
-      await showTransitionSplash("Suas avaliações ✨",()=>showReviewSummary());
-      return;
-    }
-
-    if(index<0)index=firstPendingIndex(0);
-    await showTransitionSplash(myReviews.size?"Continuando sua visita 💙":"Vamos começar ✨",()=>{
-      show("review");
-      render();
-    });
-  }catch(error){
-    console.error(error);
-    alert(error.message==="Nenhum projeto cadastrado ainda."
-      ? error.message
-      : "Não foi possível carregar os projetos agora.");
-  }
+function restoreOptionState(container,period){
+  const question=QUESTIONS[currentQuestion];
+  const value=answers[question.id]?.[period];
+  container.querySelectorAll(".kiosk-time-btn").forEach(btn=>{
+    const active=value!==undefined && Number(btn.dataset.value)===value;
+    btn.classList.toggle("selected",active);
+    btn.setAttribute("aria-checked",active?"true":"false");
+  });
 }
 
-$("#startBtn").onclick=async()=>{
-  const button=$("#startBtn");
-  button.disabled=true;
-  button.textContent="Preparando...";
+function syncNextButton(){
+  const question=QUESTIONS[currentQuestion];
+  const answer=answers[question.id];
+  const ready=answer && answer.weekday!==undefined && answer.weekend!==undefined;
+  const button=document.querySelector("#nextQuestionBtn");
+  button.disabled=!ready;
+  button.textContent=currentQuestion===QUESTIONS.length-1
+    ?"Ver meu resultado →"
+    :"Próxima pergunta →";
+}
 
-  try{
-    visitorId();
-    const introSeen=localStorage.getItem(STORAGE.intro)==="1";
-    if(!introSeen){
-      await showTransitionSplash("Antes de começar 💙",()=>show("notices"));
-    }else{
-      await startOrResumeVisit();
-    }
-  }finally{
-    button.disabled=false;
-    button.textContent=completedIds().length?"Continuar visita →":"Começar a visita →";
-  }
-};
+function renderQuestion(){
+  const question=QUESTIONS[currentQuestion];
+  const progress=((currentQuestion+1)/QUESTIONS.length)*100;
 
-$("#noticesNextBtn").onclick=async()=>{
-  await showTransitionSplash("Como funciona ✨",()=>show("tutorial"));
-};
+  document.querySelector("#questionIcon").textContent=question.icon;
+  document.querySelector("#questionCategory").textContent=question.category;
+  document.querySelector("#questionTitle").textContent=question.title;
+  document.querySelector("#questionHint").textContent=question.hint;
+  document.querySelector("#questionCounter").textContent=`${currentQuestion+1} de ${QUESTIONS.length}`;
+  document.querySelector("#questionPercent").textContent=`${Math.round(progress)}%`;
+  document.querySelector("#questionProgressBar").style.width=`${progress}%`;
+  document.querySelector("#quizBackBtn").classList.toggle("is-hidden",currentQuestion===0);
 
-$("#tutorialStartBtn").onclick=async()=>{
-  localStorage.setItem(STORAGE.intro,"1");
-  await startOrResumeVisit();
-};
+  const weekday=document.querySelector("#weekdayOptions");
+  const weekend=document.querySelector("#weekendOptions");
+  renderOptions(weekday,"weekday");
+  renderOptions(weekend,"weekend");
+  restoreOptionState(weekday,"weekday");
+  restoreOptionState(weekend,"weekend");
+  syncNextButton();
+}
 
-$("#reviewBackBtn").onclick=()=>{
-  if(index<=0)return;
-  index--;
-  editingFromSummary=false;
-  render();
-};
+function choose(list){
+  return list[Math.floor(Math.random()*list.length)];
+}
 
-$("#finishVisitBtn").onclick=async()=>{
-  const result=await checkForNewProjects();
-  const next=firstPendingIndex(0);
+function parseReaction(text){
+  const match=text.match(/^(\S+)\s+(.*)$/);
+  return match ? {emoji:match[1],text:match[2]} : {emoji:"👀",text};
+}
 
-  if(result.added>0&&next>=0){
-    index=next;
-    await showTransitionSplash("Novo projeto disponível ✨",()=>{
-      show("review");
-      render();
-    });
+function calculateResults(){
+  const weekly={};
+  QUESTIONS.forEach(question=>weekly[question.id]=weeklyFor(answers[question.id]));
+
+  // Redes sociais e jogos podem estar contidos em celular/computador.
+  // Para a estimativa principal, usamos somente os dispositivos/categorias-base.
+  const screenEstimate=weekly.phone+weekly.tv+weekly.computer;
+  const offlineEstimate=weekly.reading+weekly.family+weekly.conversation+weekly.physical+weekly.creative;
+  const month=screenEstimate*4.35;
+  const year=screenEstimate*52;
+  const days=year/24;
+
+  let bucket="balanced";
+  if(screenEstimate>42)bucket="veryHigh";
+  else if(screenEstimate>28)bucket="high";
+  else if(screenEstimate>14)bucket="moderate";
+
+  const main=parseReaction(choose(COMMENTS[bucket]));
+  const reflection=parseReaction(choose(COMMENTS.reflection));
+
+  document.querySelector("#reactionEmoji").textContent=main.emoji;
+  document.querySelector("#reactionText").textContent=main.text;
+  document.querySelector("#reflectionText").textContent=`${reflection.emoji} ${reflection.text}`;
+
+  document.querySelector("#screenWeek").textContent=formatHours(screenEstimate);
+  document.querySelector("#offlineWeek").textContent=formatHours(offlineEstimate);
+  document.querySelector("#screenMonth").textContent=formatHours(month);
+  document.querySelector("#screenYear").textContent=formatHours(year);
+  document.querySelector("#screenDays").textContent=`${Math.round(days)} dias inteiros`;
+
+  renderChart(weekly);
+}
+
+function renderChart(weekly){
+  const chart=document.querySelector("#usageChart");
+  const max=Math.max(...Object.values(weekly),1);
+  chart.innerHTML="";
+
+  QUESTIONS.forEach(question=>{
+    const value=weekly[question.id];
+    const [icon,label,type]=CHART_META[question.id];
+    const row=document.createElement("div");
+    row.className=`kiosk-chart-row kiosk-chart-row--${type}`;
+    row.innerHTML=`
+      <div class="kiosk-chart-label">
+        <span class="kiosk-chart-icon">${icon}</span>
+        <strong>${label}</strong>
+        <b>${formatHours(value)}</b>
+      </div>
+      <div class="kiosk-chart-track"><span style="width:${Math.max(value/max*100,value?4:0)}%"></span></div>
+    `;
+    chart.appendChild(row);
+  });
+}
+
+function showResults(){
+  calculateResults();
+  showScreen("result");
+  clearTimeout(resetTimer);
+  resetTimer=setTimeout(resetKiosk,90000);
+}
+
+function resetKiosk(){
+  clearTimeout(resetTimer);
+  Object.keys(answers).forEach(key=>delete answers[key]);
+  currentQuestion=0;
+  showScreen("welcome");
+}
+
+document.querySelector("#startKioskBtn").addEventListener("click",()=>{
+  currentQuestion=0;
+  renderQuestion();
+  showScreen("quiz");
+});
+
+document.querySelector("#quizBackBtn").addEventListener("click",()=>{
+  if(currentQuestion===0)return;
+  currentQuestion--;
+  renderQuestion();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+document.querySelector("#nextQuestionBtn").addEventListener("click",()=>{
+  const question=QUESTIONS[currentQuestion];
+  const answer=answers[question.id];
+  if(!answer || answer.weekday===undefined || answer.weekend===undefined)return;
+
+  if(currentQuestion===QUESTIONS.length-1){
+    showResults();
     return;
   }
 
-  $("#doneCount").textContent=`${myReviews.size} avaliações enviadas 💙`;
-  await showTransitionSplash("Obrigado por participar 💙",()=>show("done"));
-};
-
-$("#restartBtn").onclick=async()=>{
-  if(!projects.length){
-    try{
-      projects=await loadProjects();
-      syncReviewState(await loadMyReviews());
-      buildQueue();
-    }catch(error){
-      alert("Não foi possível recuperar suas avaliações agora.");
-      return;
-    }
-  }
-  await showTransitionSplash("Suas avaliações ✨",()=>showReviewSummary());
-};
-
-const reviewTutorialModal=$("#reviewTutorialModal");
-
-function openReviewTutorialModal(){
-  reviewTutorialModal.classList.add("open");
-  reviewTutorialModal.setAttribute("aria-hidden","false");
-  document.body.classList.add("review-tutorial-open");
-}
-
-function closeReviewTutorialModal(){
-  reviewTutorialModal.classList.remove("open");
-  reviewTutorialModal.setAttribute("aria-hidden","true");
-  document.body.classList.remove("review-tutorial-open");
-}
-
-$("#reviewHelpBtn")?.addEventListener("click",openReviewTutorialModal);
-$("#reviewTutorialBackBtn")?.addEventListener("click",closeReviewTutorialModal);
-document.querySelectorAll("[data-close-review-tutorial]").forEach(element=>
-  element.addEventListener("click",closeReviewTutorialModal)
-);
-
-const newVisitModal=$("#newVisitModal");
-
-function openNewVisitModal(){
-  newVisitModal.classList.add("open");
-  newVisitModal.setAttribute("aria-hidden","false");
-  document.body.classList.add("modal-open");
-}
-
-function closeNewVisitModal(){
-  newVisitModal.classList.remove("open");
-  newVisitModal.setAttribute("aria-hidden","true");
-  document.body.classList.remove("modal-open");
-}
-
-$("#newVisitBtn").onclick=openNewVisitModal;
-
-document.querySelectorAll("[data-close-new-visit]").forEach(element=>
-  element.addEventListener("click",closeNewVisitModal)
-);
-
-$("#confirmNewVisitBtn").onclick=async()=>{
-  closeNewVisitModal();
-  clearVisitState({newVisitor:true});
-  await showTransitionSplash("Nova visita ✨",()=>show("welcome"));
-  $("#startBtn").textContent="Começar a visita →";
-};
-
-document.querySelectorAll("#stars button").forEach(button=>
-  button.onclick=()=>setRating(Number(button.dataset.value))
-);
-$("#comment").addEventListener("input",event=>
-  $("#charCount").textContent=`${event.target.value.length}/240`
-);
-$("#submitBtn").onclick=submitReview;
-
-if(completedIds().length){
-  $("#startBtn").textContent="Continuar visita →";
-}
-
-const NEW_PROJECT_CHECK_INTERVAL=90000;
-let newProjectCheckTimer=null;
-
-function startNewProjectWatch(){
-  if(newProjectCheckTimer)return;
-  newProjectCheckTimer=setInterval(()=>{
-    if(document.visibilityState==="visible"){
-      checkForNewProjects({announce:true});
-    }
-  },NEW_PROJECT_CHECK_INTERVAL);
-}
-
-window.addEventListener("focus",()=>{
-  checkForNewProjects({announce:true});
+  currentQuestion++;
+  renderQuestion();
+  window.scrollTo({top:0,behavior:"smooth"});
 });
 
-document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="visible"){
-    checkForNewProjects({announce:true});
-  }
-});
-
-startNewProjectWatch();
-
-const teacherAccessBtn = document.querySelector("#teacherAccessBtn");
-const loginModal = document.querySelector("#loginModal");
-const staffLoginForm = document.querySelector("#staffLoginForm");
-const loginError = document.querySelector("#loginError");
-
-function openLoginModal(){
-  loginModal.classList.add("open");
-  loginModal.setAttribute("aria-hidden","false");
-  document.body.classList.add("modal-open");
-  setTimeout(()=>document.querySelector("#staffUser")?.focus(),50);
-}
-function closeLoginModal(){
-  loginModal.classList.remove("open");
-  loginModal.setAttribute("aria-hidden","true");
-  document.body.classList.remove("modal-open");
-  loginError.textContent="";
-}
-teacherAccessBtn?.addEventListener("click",openLoginModal);
-document.querySelectorAll("[data-close-login]").forEach(el=>el.addEventListener("click",closeLoginModal));
-document.addEventListener("keydown",e=>{
-  if(e.key!=="Escape")return;
-  if(loginModal?.classList.contains("open"))closeLoginModal();
-  if(newVisitModal?.classList.contains("open"))closeNewVisitModal();
-  if(reviewTutorialModal?.classList.contains("open"))closeReviewTutorialModal();
-});
-
-staffLoginForm?.addEventListener("submit",async e=>{
-  e.preventDefault();
-  const username=document.querySelector("#staffUser").value.trim().toLowerCase();
-  const password=document.querySelector("#staffPassword").value;
-  const submit=staffLoginForm.querySelector('button[type="submit"]');
-
-  loginError.textContent="";
-  submit.disabled=true;
-  submit.textContent="Entrando...";
-
-  try{
-    const response=await fetch(`${API_URL}/login`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({username,password})
-    });
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok || !data.ok) throw new Error(data.error||"Usuário ou senha incorretos.");
-
-    sessionStorage.setItem("mostra_staff_user",JSON.stringify({
-      username:data.username,
-      role:data.role
-    }));
-    window.location.href="./admin.html";
-  }catch(error){
-    loginError.textContent=error.message||"Não foi possível entrar.";
-    submit.disabled=false;
-    submit.textContent="Entrar";
-  }
-});
-
-
-$("#projectPhotoPrev").onclick=()=>changeProjectPhoto(-1);
-$("#projectPhotoNext").onclick=()=>changeProjectPhoto(1);
-
-let projectPhotoTouchStartX=0;
-const projectPhotoWrap=$("#projectPhotoWrap");
-projectPhotoWrap?.addEventListener("touchstart",event=>{
-  if(event.touches.length===1) projectPhotoTouchStartX=event.touches[0].clientX;
-},{passive:true});
-projectPhotoWrap?.addEventListener("touchend",event=>{
-  if(!projectPhotoTouchStartX||!event.changedTouches.length)return;
-  const delta=event.changedTouches[0].clientX-projectPhotoTouchStartX;
-  projectPhotoTouchStartX=0;
-  if(Math.abs(delta)<45)return;
-  changeProjectPhoto(delta>0?-1:1);
-},{passive:true});
+document.querySelector("#restartKioskBtn").addEventListener("click",resetKiosk);
