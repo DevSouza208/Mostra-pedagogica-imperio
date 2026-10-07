@@ -722,3 +722,134 @@ body.splash-lock{
     height:46px;
   }
 }
+
+
+/* Refinamento do cabeçalho do admin */
+.admin-header{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.admin-title-wrap{
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr);
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+
+.admin-event-logo{
+  width:64px;
+  height:64px;
+  padding:7px;
+  border-radius:18px;
+  background:rgba(255,255,255,.82);
+  border:1px solid rgba(160,209,232,.5);
+  object-fit:contain;
+  filter:none;
+  box-shadow:0 8px 22px rgba(15,67,102,.08);
+}
+
+.admin-title-copy{
+  min-width:0;
+}
+
+.admin-title-copy .eyebrow{
+  display:block;
+  width:max-content;
+  margin:0 0 5px;
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  color:#1778a9;
+  font-size:.68rem;
+  font-weight:800;
+  letter-spacing:.13em;
+}
+
+.admin-header h1{
+  margin:0;
+  font-size:1.85rem;
+  line-height:1.05;
+  letter-spacing:-.035em;
+}
+
+.admin-header-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  margin:0;
+}
+
+.logout-btn{
+  min-width:auto;
+}
+
+@media(max-width:780px){
+  .admin-header{
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:10px;
+    margin-bottom:12px;
+  }
+
+  .admin-title-wrap{
+    grid-template-columns:52px minmax(0,1fr);
+    gap:10px;
+  }
+
+  .admin-event-logo{
+    width:52px;
+    height:52px;
+    padding:6px;
+    border-radius:15px;
+  }
+
+  .admin-title-copy .eyebrow{
+    margin-bottom:4px;
+    font-size:.60rem;
+    letter-spacing:.12em;
+  }
+
+  .admin-header h1{
+    font-size:1.42rem!important;
+    line-height:1.08;
+  }
+
+  .logout-btn{
+    width:40px;
+    height:40px;
+    padding:0;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+  }
+
+  .logout-btn span{
+    display:none;
+  }
+
+  .logout-btn svg{
+    width:18px;
+    height:18px;
+  }
+}
+
+@media(max-width:380px){
+  .admin-title-wrap{
+    grid-template-columns:46px minmax(0,1fr);
+    gap:8px;
+  }
+
+  .admin-event-logo{
+    width:46px;
+    height:46px;
+    padding:5px;
+  }
+
+  .admin-header h1{
+    font-size:1.25rem!important;
+  }
+}
