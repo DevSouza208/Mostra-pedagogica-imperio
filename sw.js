@@ -1,4 +1,4 @@
-const CACHE_NAME = "mostra-pedagogica-v8";
+const CACHE_NAME = "mostra-pedagogica-v9";
 
 const APP_SHELL = [
   "./",
@@ -57,6 +57,23 @@ self.addEventListener("fetch", event => {
         .catch(async () => {
           return (await caches.match(request)) || (await caches.match("./index.html"));
         })
+    );
+    return;
+  }
+
+  const dynamicAsset = ["script","style","worker"].includes(request.destination);
+
+  if (dynamicAsset) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
     );
     return;
   }
