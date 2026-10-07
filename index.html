@@ -53,8 +53,49 @@
       </div>
     </section>
 
+    <section id="notices" class="screen">
+      <div class="flow-card">
+        <span class="eyebrow">ANTES DE COMEÇAR 💙</span>
+        <h1>Alguns avisos rápidos.</h1>
+        <div class="notice-list">
+          <article class="notice-item">
+            <span class="notice-icon">↻</span>
+            <div><strong>Seu progresso fica neste aparelho</strong><p>Você pode atualizar ou fechar a página e continuar depois.</p></div>
+          </article>
+          <article class="notice-item">
+            <span class="notice-icon">◌</span>
+            <div><strong>Evite a navegação privada</strong><p>No modo anônimo ou privado, o progresso pode ser perdido ao fechar o navegador.</p></div>
+          </article>
+          <article class="notice-item">
+            <span class="notice-icon">✓</span>
+            <div><strong>Nenhum dado pessoal é solicitado</strong><p>Não pedimos nome, e-mail, telefone ou cadastro. Usamos apenas um identificador anônimo deste navegador para manter suas avaliações.</p></div>
+          </article>
+          <article class="notice-item">
+            <span class="notice-icon">⌁</span>
+            <div><strong>Trocar de aparelho pode mudar a visita</strong><p>Outro navegador, outro aparelho ou a limpeza dos dados do site podem iniciar uma nova visita.</p></div>
+          </article>
+        </div>
+        <button id="noticesNextBtn" class="primary-btn">Continuar →</button>
+      </div>
+    </section>
+
+    <section id="tutorial" class="screen">
+      <div class="flow-card">
+        <span class="eyebrow">COMO FUNCIONA ✨</span>
+        <h1>Avalie com carinho e sinceridade.</h1>
+        <p class="flow-intro">Não existe resposta certa. Conheça cada trabalho e registre a impressão da sua família.</p>
+        <div class="tutorial-steps">
+          <article><span>1</span><div><strong>Conheça o projeto</strong><p>Veja as fotos, leia a ideia e converse sobre o trabalho.</p></div></article>
+          <article><span>2</span><div><strong>Escolha de 1 a 5 estrelas</strong><p>Depois, se quiser, selecione um elogio e deixe uma mensagem.</p></div></article>
+          <article><span>3</span><div><strong>Você pode corrigir</strong><p>As avaliações ficam salvas e podem ser revistas antes ou depois de concluir a visita.</p></div></article>
+        </div>
+        <button id="tutorialStartBtn" class="primary-btn">Começar as avaliações →</button>
+      </div>
+    </section>
+
     <section id="review" class="screen">
       <div class="progress-wrap">
+        <button id="reviewBackBtn" class="review-back-btn hidden" type="button">← Voltar</button>
         <div class="progress-row">
           <span id="progressText">Projeto 1 de 1</span>
           <span id="progressPct">0%</span>
@@ -107,6 +148,16 @@
       </article>
     </section>
 
+    <section id="summary" class="screen">
+      <div class="flow-card family-summary-card">
+        <span class="eyebrow">REVISÃO FINAL 💙</span>
+        <h1>Confira suas avaliações.</h1>
+        <p class="flow-intro">Toque em qualquer projeto para alterar estrelas, elogio ou comentário.</p>
+        <div id="familyReviewGrid" class="family-review-grid"></div>
+        <button id="finishVisitBtn" class="primary-btn">Encerrar visita →</button>
+      </div>
+    </section>
+
     <section id="done" class="screen">
       <div class="hero-card hero-card--done">
         <div class="done-icon">🎉</div>
@@ -114,7 +165,10 @@
         <h1>Você conheceu todos os projetos!</h1>
         <p>Obrigado por valorizar as ideias, a criatividade e o trabalho dos nossos alunos.</p>
         <div id="doneCount" class="done-count"></div>
-        <button id="restartBtn" class="secondary-btn">Rever os projetos</button>
+        <div class="done-actions">
+          <button id="restartBtn" class="secondary-btn">Rever minhas avaliações</button>
+          <button id="newVisitBtn" class="text-action-btn" type="button">Nova visita neste aparelho</button>
+        </div>
       </div>
     </section>
   </main>
