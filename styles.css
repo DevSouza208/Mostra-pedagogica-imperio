@@ -3017,3 +3017,144 @@ body.delete-project-open{
     font-size:16px;
   }
 }
+
+
+/* Ajuda rápida durante a avaliação */
+.review-help-btn{
+  position:fixed;
+  top:max(16px,calc(env(safe-area-inset-top) + 12px));
+  right:16px;
+  z-index:1200;
+  display:none;
+  place-items:center;
+  width:40px;
+  height:40px;
+  padding:0;
+  border:1px solid rgba(135,190,216,.55);
+  border-radius:50%;
+  background:rgba(255,255,255,.92);
+  color:#176f9a;
+  box-shadow:0 8px 20px rgba(15,67,102,.12);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
+body.review-mode .review-help-btn{
+  display:grid;
+}
+
+.review-help-btn svg{
+  width:21px;
+  height:21px;
+}
+
+.review-help-btn:active{
+  transform:scale(.96);
+}
+
+.review-tutorial-modal{
+  position:fixed;
+  inset:0;
+  z-index:3100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.review-tutorial-modal.open{
+  display:flex;
+}
+
+.review-tutorial-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(18,48,67,.46);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+
+.review-tutorial-card{
+  position:relative;
+  z-index:1;
+  width:min(100%,440px);
+  max-height:min(88dvh,720px);
+  overflow:auto;
+  padding:26px 22px 20px;
+  border:1px solid rgba(160,209,232,.68);
+  border-radius:24px;
+  background:linear-gradient(180deg,#fff,#f8fdff);
+  box-shadow:0 28px 70px rgba(15,67,102,.24);
+  animation:newVisitModalIn .2s ease both;
+}
+
+.review-tutorial-close{
+  position:absolute;
+  top:11px;
+  right:11px;
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#edf9fe;
+  color:#477487;
+  font-size:1.35rem;
+  line-height:1;
+}
+
+.review-tutorial-card h2{
+  margin:10px 40px 8px 0;
+  color:var(--ink);
+  font-size:1.34rem;
+  line-height:1.12;
+  letter-spacing:-.025em;
+}
+
+.review-tutorial-intro{
+  margin:0 0 14px;
+  color:var(--muted);
+  font-size:.8rem;
+  line-height:1.5;
+}
+
+.review-tutorial-steps{
+  margin:14px 0 18px;
+}
+
+body.review-tutorial-open{
+  overflow:hidden!important;
+}
+
+@media(max-width:480px){
+  .review-help-btn{
+    top:max(12px,calc(env(safe-area-inset-top) + 9px));
+    right:12px;
+    width:36px;
+    height:36px;
+  }
+
+  .review-help-btn svg{
+    width:19px;
+    height:19px;
+  }
+
+  .review-tutorial-modal{
+    padding:14px;
+  }
+
+  .review-tutorial-card{
+    padding:22px 16px 16px;
+    border-radius:21px;
+  }
+
+  .review-tutorial-card h2{
+    font-size:1.16rem;
+  }
+
+  .review-tutorial-intro{
+    font-size:.74rem;
+  }
+}
