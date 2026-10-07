@@ -21,19 +21,20 @@ button{cursor:pointer}
 
 .brandbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:24px;margin-bottom:18px}
 .brand-logo{
-  width:76px;
-  height:76px;
+  width:64px;
+  height:64px;
   display:block;
   object-fit:cover;
   border-radius:20px;
   box-shadow:0 10px 24px rgba(20,58,90,.12);
 }
-.brand-logo--school{width:76px;height:76px}
-.brand-logo--codifica{width:76px;height:76px}
-.brand-logos{display:inline-flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center;justify-content:flex-end;gap:12px;width:auto!important;min-width:max-content}
+.brand-logo--school{width:64px;height:64px}
+.brand-logo--codifica{width:64px;height:64px}
+.brand-logos{display:inline-flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center;justify-content:flex-end;gap:10px;width:auto!important;min-width:max-content}
+.brand-plus{display:grid;place-items:center;width:30px;height:30px;border-radius:999px;background:#fff;border:1px solid rgba(13,119,184,.18);color:#1488be;font-size:1.15rem;font-weight:800;line-height:1;box-shadow:0 6px 16px rgba(15,67,102,.08)}
 .brand-copy{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
-.brand-copy span{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#1878aa}
-.brand-copy strong{font-size:.95rem}
+.brand-copy span{font-size:.88rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#1878aa}
+.brand-copy strong{font-size:1.08rem}
 
 .screen{display:none}
 .screen--active{display:block;animation:fade .28s ease}
@@ -108,13 +109,14 @@ textarea:focus{border-color:#5bbbe0;box-shadow:0 0 0 3px rgba(91,187,224,.13)}
 @media(max-width:420px){
   .brandbar{grid-template-columns:minmax(0,1fr) auto;gap:10px}
   .brand-logos{gap:6px}
-  .brand-copy span{font-size:.64rem}
-  .brand-copy strong{font-size:.76rem}
+  .brand-plus{width:24px;height:24px;font-size:.95rem}
+  .brand-copy span{font-size:.70rem}
+  .brand-copy strong{font-size:.86rem}
   .brand-logo,
   .brand-logo--school,
   .brand-logo--codifica{
-    width:62px;
-    height:62px;
+    width:52px;
+    height:52px;
     border-radius:16px;
   }
   .stars button{font-size:2rem}
