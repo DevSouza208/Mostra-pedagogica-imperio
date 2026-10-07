@@ -1071,3 +1071,80 @@ body.splash-lock{
     bottom:12px;
   }
 }
+
+
+/* Cabeçalho da página pública com identidade da Mostra */
+.brandbar{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.brand-event-logo{
+  width:68px;
+  height:68px;
+  flex:0 0 auto;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 18px rgba(13,119,184,.10));
+}
+
+.brand-copy{
+  min-width:0;
+}
+
+.welcome-partners{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin:18px auto 0;
+}
+
+.welcome-partners .brand-logo{
+  width:66px;
+  height:66px;
+}
+
+.welcome-partners .brand-plus{
+  width:30px;
+  height:30px;
+}
+
+@media(max-width:480px){
+  .brandbar{
+    gap:10px;
+    margin-bottom:14px;
+  }
+
+  .brand-event-logo{
+    width:54px;
+    height:54px;
+  }
+
+  .brand-copy span{
+    font-size:.72rem;
+  }
+
+  .brand-copy strong{
+    font-size:.92rem;
+  }
+
+  .welcome-partners{
+    gap:9px;
+    margin-top:14px;
+  }
+
+  .welcome-partners .brand-logo{
+    width:58px;
+    height:58px;
+    border-radius:16px;
+  }
+
+  .welcome-partners .brand-plus{
+    width:26px;
+    height:26px;
+    font-size:1rem;
+  }
+}
