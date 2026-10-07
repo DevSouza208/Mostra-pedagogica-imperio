@@ -533,6 +533,37 @@ function renderReviews(reviews,projects=[]){
     card.className="review-project-picker-card";
     card.setAttribute("aria-label",`Ver avaliações de ${project.title}`);
 
+    const thumbWrap=document.createElement("div");
+    thumbWrap.className="review-project-picker-thumb-wrap";
+
+    const thumb=document.createElement("div");
+    thumb.className="review-project-picker-thumb";
+
+    const images=Array.isArray(project.image_urls)&&project.image_urls.length
+      ? project.image_urls.filter(Boolean)
+      : (project.image_url?[project.image_url]:[]);
+
+    if(images.length){
+      const img=document.createElement("img");
+      img.src=images[0];
+      img.alt=`Miniatura do projeto ${project.title||"Projeto"}`;
+      thumb.appendChild(img);
+
+      if(images.length>1){
+        const more=document.createElement("span");
+        more.className="review-project-picker-thumb-more";
+        more.textContent=`+${images.length-1}`;
+        thumb.appendChild(more);
+      }
+    }else{
+      const placeholder=document.createElement("div");
+      placeholder.className="review-project-picker-thumb-placeholder";
+      placeholder.textContent="💡";
+      thumb.appendChild(placeholder);
+    }
+
+    thumbWrap.appendChild(thumb);
+
     const title=document.createElement("strong");
     title.textContent=project.title||"Projeto";
 
@@ -542,7 +573,7 @@ function renderReviews(reviews,projects=[]){
       ? `<b>${projectAverage}</b><span aria-hidden="true">★</span>`
       : `<b>—</b><span aria-hidden="true">★</span>`;
 
-    card.append(title,score);
+    card.append(thumbWrap,title,score);
     card.onclick=()=>renderProjectReviewDetails(project,projectReviews,reviews,projects);
     list.appendChild(card);
   });
