@@ -690,3 +690,35 @@ body.splash-lock{
     font-size:.62rem;
   }
 }
+
+
+/* Logo da Mostra no cabeçalho do admin */
+.admin-title-wrap{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+
+.admin-event-logo{
+  width:56px;
+  height:56px;
+  flex:0 0 auto;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 18px rgba(13,119,184,.10));
+}
+
+.admin-title-copy{
+  min-width:0;
+}
+
+@media(max-width:780px){
+  .admin-title-wrap{
+    gap:10px;
+  }
+
+  .admin-event-logo{
+    width:46px;
+    height:46px;
+  }
+}
