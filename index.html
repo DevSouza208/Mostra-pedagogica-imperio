@@ -52,9 +52,15 @@
       </div>
 
       <article class="project-card">
-        <div class="project-photo-wrap">
+        <div id="projectPhotoWrap" class="project-photo-wrap">
           <img id="projectPhoto" class="project-photo" alt="" />
           <div id="projectPlaceholder" class="project-placeholder">💡</div>
+
+          <button id="projectPhotoPrev" class="project-photo-nav project-photo-nav--prev hidden" type="button" aria-label="Foto anterior">‹</button>
+          <button id="projectPhotoNext" class="project-photo-nav project-photo-nav--next hidden" type="button" aria-label="Próxima foto">›</button>
+
+          <div id="projectPhotoDots" class="project-photo-dots hidden" aria-label="Fotos do projeto"></div>
+          <span id="projectPhotoCount" class="project-photo-count hidden"></span>
           <span id="projectClass" class="class-pill"></span>
         </div>
 
