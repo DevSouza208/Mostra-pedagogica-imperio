@@ -2022,3 +2022,249 @@ body.transition-lock{
     transform:none;
   }
 }
+
+
+/* Fluxo guiado da visita */
+.flow-card{
+  padding:30px 24px;
+  border:1px solid rgba(160,209,232,.55);
+  border-radius:26px;
+  background:rgba(255,255,255,.95);
+  box-shadow:var(--shadow);
+}
+
+.flow-card>h1{
+  margin:12px 0 10px;
+  font-size:clamp(1.75rem,6vw,2.5rem);
+  line-height:1.06;
+  letter-spacing:-.035em;
+}
+
+.flow-intro{
+  margin:0 0 20px;
+  color:var(--muted);
+  font-size:.92rem;
+  line-height:1.55;
+}
+
+.notice-list{
+  display:grid;
+  gap:10px;
+  margin:20px 0 22px;
+}
+
+.notice-item{
+  display:grid;
+  grid-template-columns:40px minmax(0,1fr);
+  gap:11px;
+  align-items:start;
+  padding:13px;
+  border:1px solid #dcebf3;
+  border-radius:16px;
+  background:#f9fdff;
+}
+
+.notice-icon{
+  display:grid;
+  place-items:center;
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:#e8f7fd;
+  color:#0d77b8;
+  font-size:1rem;
+  font-weight:800;
+}
+
+.notice-item strong{
+  display:block;
+  margin:1px 0 4px;
+  font-size:.83rem;
+}
+
+.notice-item p{
+  margin:0;
+  color:#718795;
+  font-size:.74rem;
+  line-height:1.45;
+}
+
+.tutorial-steps{
+  display:grid;
+  gap:10px;
+  margin:18px 0 22px;
+}
+
+.tutorial-steps article{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  gap:11px;
+  padding:13px;
+  border:1px solid #dcebf3;
+  border-radius:16px;
+  background:#f9fdff;
+}
+
+.tutorial-steps article>span{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#0878b8,#13a7d5);
+  color:#fff;
+  font-size:.78rem;
+  font-weight:800;
+}
+
+.tutorial-steps strong{
+  display:block;
+  margin-bottom:4px;
+  font-size:.84rem;
+}
+
+.tutorial-steps p{
+  margin:0;
+  color:#718795;
+  font-size:.75rem;
+  line-height:1.45;
+}
+
+.review-back-btn{
+  width:auto;
+  margin:0 0 9px;
+  padding:7px 10px;
+  border:1px solid #d5e7f0;
+  border-radius:10px;
+  background:rgba(255,255,255,.78);
+  color:#567588;
+  font-size:.72rem;
+  font-weight:800;
+}
+
+.family-summary-card{
+  padding-bottom:22px;
+}
+
+.family-review-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  margin:18px 0 20px;
+}
+
+.family-review-item{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:space-between;
+  min-width:0;
+  min-height:108px;
+  padding:13px;
+  border:1px solid #d9e8f1;
+  border-radius:16px;
+  background:linear-gradient(180deg,#fff,#f7fcfe);
+  color:var(--ink);
+  text-align:left;
+  box-shadow:0 7px 18px rgba(15,67,102,.05);
+}
+
+.family-review-item strong{
+  display:-webkit-box;
+  overflow:hidden;
+  width:100%;
+  font-size:.82rem;
+  line-height:1.23;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+
+.family-review-stars{
+  margin-top:12px;
+  color:#d99b00;
+  font-size:1rem;
+  font-weight:800;
+}
+
+.family-review-item small{
+  margin-top:5px;
+  color:#8498a5;
+  font-size:.6rem;
+  font-weight:700;
+}
+
+.done-actions{
+  display:grid;
+  gap:9px;
+  width:100%;
+}
+
+.text-action-btn{
+  width:100%;
+  padding:11px 12px;
+  border:0;
+  background:transparent;
+  color:#648195;
+  font-size:.78rem;
+  font-weight:800;
+}
+
+body.visit-mode .teacher-access,
+body.visit-mode .site-footer{
+  display:none!important;
+}
+
+@media(max-width:480px){
+  .flow-card{
+    padding:24px 18px;
+    border-radius:23px;
+  }
+
+  .flow-card>h1{
+    font-size:1.72rem;
+  }
+
+  .notice-list,
+  .tutorial-steps{
+    gap:8px;
+    margin:16px 0 19px;
+  }
+
+  .notice-item{
+    grid-template-columns:36px minmax(0,1fr);
+    gap:9px;
+    padding:11px;
+    border-radius:14px;
+  }
+
+  .notice-icon{
+    width:36px;
+    height:36px;
+    border-radius:11px;
+  }
+
+  .notice-item strong,
+  .tutorial-steps strong{
+    font-size:.78rem;
+  }
+
+  .notice-item p,
+  .tutorial-steps p{
+    font-size:.7rem;
+  }
+
+  .family-review-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+
+  .family-review-item{
+    min-height:100px;
+    padding:11px;
+    border-radius:14px;
+  }
+
+  .family-review-item strong{
+    font-size:.76rem;
+  }
+}
