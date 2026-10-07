@@ -1,4 +1,4 @@
-const CACHE_NAME = "mostra-pedagogica-v2";
+const CACHE_NAME = "mostra-pedagogica-v3";
 
 const APP_SHELL = [
   "./",
@@ -10,10 +10,12 @@ const APP_SHELL = [
   "./admin.js",
   "./pwa.js",
   "./zoom-lock.js",
+  "./splash.js",
   "./manifest.webmanifest",
   "./Imperio.png",
   "./logo_imperio.png",
-  "./logo_codifica.png"
+  "./logo_codifica.png",
+  "./logo_mostra pedagogica_bgoff.png"
 ];
 
 self.addEventListener("install", event => {
