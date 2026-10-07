@@ -205,14 +205,84 @@ async function uploadImage(file){
   });
 }
 
+async function dataUrlToFile(dataUrl,index=0){
+  const response=await fetch(dataUrl);
+  const blob=await response.blob();
+  const extension=(blob.type.split("/")[1]||"jpg").replace("jpeg","jpg");
+  return new File([blob],`foto-migrada-${Date.now()}-${index}.${extension}`,{
+    type:blob.type||"image/jpeg"
+  });
+}
+
+async function migrateLegacyProjects(remoteItems){
+  let legacy=[];
+  try{legacy=JSON.parse(localStorage.getItem("mostra_projects")||"[]")}catch{}
+  if(!Array.isArray(legacy)||!legacy.length)return remoteItems;
+
+  const normalized=value=>String(value||"").trim().toLowerCase();
+  const merged=[...remoteItems];
+  let migratedAny=false;
+
+  for(const project of legacy){
+    const duplicate=merged.some(item=>
+      normalized(item.title)===normalized(project.title)&&
+      normalized(item.class_name)===normalized(project.class_name)
+    );
+    if(duplicate)continue;
+
+    try{
+      const sources=Array.isArray(project.image_urls)&&project.image_urls.length
+        ? project.image_urls
+        : (project.image_url?[project.image_url]:[]);
+      const imageKeys=[];
+
+      for(let i=0;i<sources.length;i++){
+        const source=sources[i];
+        if(typeof source!=="string"||!source.startsWith("data:image/"))continue;
+        const file=await dataUrlToFile(source,i);
+        const uploaded=await uploadImage(file);
+        if(uploaded?.key)imageKeys.push(uploaded.key);
+      }
+
+      const result=await api("/projects",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          title:String(project.title||"").trim(),
+          class_name:String(project.class_name||"").trim(),
+          description:String(project.description||"").trim(),
+          image_keys:imageKeys
+        })
+      });
+
+      if(result?.project){
+        merged.unshift(result.project);
+        migratedAny=true;
+      }
+    }catch(error){
+      console.warn("Não foi possível migrar um projeto antigo.",error);
+    }
+  }
+
+  if(migratedAny||legacy.every(project=>merged.some(item=>
+    normalized(item.title)===normalized(project.title)&&
+    normalized(item.class_name)===normalized(project.class_name)
+  ))){
+    localStorage.removeItem("mostra_projects");
+  }
+
+  return merged;
+}
+
 async function loadProjects(){
   const list=$("#projectList");
   const count=$("#projectCount");
   list.innerHTML='<div class="admin-empty-state"><strong>Carregando...</strong></div>';
 
   try{
-    const items=await api("/projects");
-    renderProjects(Array.isArray(items)?items:[]);
+    const remote=await api("/projects");
+    const items=await migrateLegacyProjects(Array.isArray(remote)?remote:[]);
+    renderProjects(items);
   }catch(error){
     console.error(error);
     count.textContent="0 projetos";
@@ -226,10 +296,11 @@ function renderProjects(items){
 
   count.textContent=`${items.length} ${items.length===1?"projeto":"projetos"}`;
   list.innerHTML="";
+  list.classList.add("project-admin-grid");
 
   if(!items.length){
     list.innerHTML=`
-      <div class="admin-empty-state">
+      <div class="admin-empty-state project-admin-empty">
         <span>📚</span>
         <strong>Nenhum projeto cadastrado.</strong>
       </div>
@@ -238,44 +309,72 @@ function renderProjects(items){
   }
 
   items.forEach(project=>{
-    const el=document.createElement("div");
-    el.className="admin-item";
+    const card=document.createElement("article");
+    card.className="project-admin-card";
+
+    const media=document.createElement("div");
+    media.className="project-admin-media";
 
     if(project.image_url){
       const img=document.createElement("img");
-      img.className="admin-thumb";
       img.src=project.image_url;
-      img.alt="";
-      el.appendChild(img);
+      img.alt=`Foto do projeto ${project.title}`;
+      media.appendChild(img);
     }else{
       const placeholder=document.createElement("div");
-      placeholder.className="admin-thumb admin-thumb--placeholder";
+      placeholder.className="project-admin-placeholder";
       placeholder.textContent="💡";
-      el.appendChild(placeholder);
+      media.appendChild(placeholder);
     }
 
-    const meta=document.createElement("div");
-    meta.className="admin-meta";
+    const photoTotal=Array.isArray(project.image_urls)?project.image_urls.length:(project.image_url?1:0);
+    if(photoTotal>1){
+      const photoBadge=document.createElement("span");
+      photoBadge.className="project-admin-photo-count";
+      photoBadge.textContent=`${photoTotal} fotos`;
+      media.appendChild(photoBadge);
+    }
 
-    const title=document.createElement("strong");
+    const body=document.createElement("div");
+    body.className="project-admin-card-body";
+
+    const meta=document.createElement("div");
+    meta.className="project-admin-card-meta";
+
+    const classBadge=document.createElement("span");
+    classBadge.className="project-admin-class";
+    classBadge.textContent=project.class_name||"Sem turma";
+    meta.appendChild(classBadge);
+
+    const title=document.createElement("h3");
     title.textContent=project.title;
 
-    const className=document.createElement("span");
-    className.textContent=project.class_name||"Sem turma";
+    const description=document.createElement("p");
+    description.textContent=project.description||"";
+    if(!description.textContent)description.classList.add("hidden");
 
-    meta.append(title,className);
+    const footer=document.createElement("div");
+    footer.className="project-admin-card-footer";
 
     const removeBtn=document.createElement("button");
-    removeBtn.className="danger-btn";
+    removeBtn.className="project-admin-delete";
     removeBtn.type="button";
-    removeBtn.textContent="Excluir";
+    removeBtn.setAttribute("aria-label",`Excluir ${project.title}`);
+    removeBtn.innerHTML=`
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9 10v6M15 10v6M5 7h14M10 4h4l1 2H9l1-2ZM8 20h8a1.5 1.5 0 0 0 1.5-1.5V7h-11v11.5A1.5 1.5 0 0 0 8 20Z"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Excluir</span>
+    `;
     removeBtn.onclick=()=>removeProject(project.id);
 
-    el.append(meta,removeBtn);
-    list.appendChild(el);
+    footer.appendChild(removeBtn);
+    body.append(meta,title,description,footer);
+    card.append(media,body);
+    list.appendChild(card);
   });
 }
-
 async function removeProject(id){
   if(!confirm("Excluir este projeto?"))return;
 
