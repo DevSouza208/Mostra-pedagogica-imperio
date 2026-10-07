@@ -13,7 +13,6 @@ if(!staffSession?.username){
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
 
-$("#staffBadge").textContent=`${staffSession.role} · ${staffSession.username}`;
 $("#logoutBtn").onclick=()=>{
   sessionStorage.removeItem("mostra_staff_user");
   window.location.replace("./");
