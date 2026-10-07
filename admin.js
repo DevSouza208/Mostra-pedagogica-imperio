@@ -1,22 +1,34 @@
-const STAFF_SESSION_KEY="mostra_staff_session";
-let staffSession=null;
-try{staffSession=JSON.parse(sessionStorage.getItem(STAFF_SESSION_KEY)||"null")}catch{}
-if(!staffSession?.username){
+const CONFIG=window.MOSTRA_CONFIG||{};
+const API_URL=String(CONFIG.apiUrl||"").replace(/\/$/,"");
+const STAFF_TOKEN_KEY="mostra_staff_token";
+const staffToken=sessionStorage.getItem(STAFF_TOKEN_KEY);
+if(!staffToken){
   window.location.replace("./");
   throw new Error("Sessão de equipe ausente.");
 }
 
-const CONFIG=window.MOSTRA_CONFIG||{};
-const HAS_SUPABASE=Boolean(CONFIG.supabaseUrl&&CONFIG.supabaseAnonKey);
-let supabase=null;
-if(HAS_SUPABASE){const {createClient}=await import("https://esm.sh/@supabase/supabase-js@2");supabase=createClient(CONFIG.supabaseUrl,CONFIG.supabaseAnonKey)}
+async function verifyStaffSession(){
+  const response=await fetch(`${API_URL}/auth/me`,{
+    headers:{Authorization:`Bearer ${staffToken}`}
+  });
+  if(!response.ok){
+    sessionStorage.removeItem(STAFF_TOKEN_KEY);
+    window.location.replace("./");
+    throw new Error("Sessão inválida.");
+  }
+  return response.json();
+}
+const staffSession=await verifyStaffSession();
+
 const $=s=>document.querySelector(s);
 $("#staffBadge").textContent=`${staffSession.role} · ${staffSession.username}`;
-$("#logoutBtn").onclick=()=>{sessionStorage.removeItem(STAFF_SESSION_KEY);window.location.replace("./")};
+$("#logoutBtn").onclick=async()=>{
+  try{await fetch(`${API_URL}/auth/logout`,{method:"POST",headers:{Authorization:`Bearer ${staffToken}`}})}catch{}
+  sessionStorage.removeItem(STAFF_TOKEN_KEY);
+  window.location.replace("./");
+};
 
-$("#modeNote").textContent=HAS_SUPABASE
-  ?"Supabase conectado. Os projetos são compartilhados entre todos os dispositivos."
-  :"Modo local de demonstração: os projetos ficam apenas neste navegador. Configure config.js + Supabase antes da mostra.";
+$("#modeNote").textContent="Cloudflare conectado: autenticação via Worker + D1.";
 
 let selectedPhotoFile=null;
 
