@@ -1919,3 +1919,106 @@ body.review-mode .site-footer{
     font-size:1.02rem;
   }
 }
+
+
+/* Splash de transição entre etapas */
+.transition-splash{
+  position:fixed;
+  inset:0;
+  z-index:4900;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 44%,rgba(102,199,236,.24),transparent 34%),
+    linear-gradient(180deg,#eaf8ff 0%,#f8fcff 100%);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .2s ease,visibility .2s ease;
+}
+
+.transition-splash.is-active{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+.transition-splash.is-leaving{
+  opacity:0;
+}
+
+.transition-splash-glow{
+  position:absolute;
+  width:min(70vw,420px);
+  aspect-ratio:1;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.98) 0%,rgba(224,247,255,.72) 46%,rgba(224,247,255,0) 73%);
+  transform:scale(.9);
+  opacity:.8;
+}
+
+.transition-splash-content{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  transform:translateY(5px) scale(.97);
+  opacity:0;
+}
+
+.transition-splash.is-active .transition-splash-content{
+  animation:transitionSplashIn .28s cubic-bezier(.2,.75,.22,1) forwards;
+}
+
+.transition-splash-logo{
+  width:min(38vw,180px);
+  max-height:180px;
+  object-fit:contain;
+  filter:drop-shadow(0 14px 30px rgba(11,74,114,.13));
+}
+
+.transition-splash-text{
+  margin:0;
+  color:#175f86;
+  font-size:.9rem;
+  font-weight:800;
+  letter-spacing:.01em;
+  text-align:center;
+}
+
+body.transition-lock{
+  overflow:hidden!important;
+}
+
+@keyframes transitionSplashIn{
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+@media(max-width:480px){
+  .transition-splash-logo{
+    width:min(44vw,160px);
+  }
+
+  .transition-splash-text{
+    font-size:.84rem;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .transition-splash,
+  .transition-splash-content{
+    transition:none!important;
+    animation:none!important;
+  }
+
+  .transition-splash.is-active .transition-splash-content{
+    opacity:1;
+    transform:none;
+  }
+}
