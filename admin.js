@@ -1,5 +1,7 @@
 const CONFIG=window.MOSTRA_CONFIG||{};
 const API_URL=String(CONFIG.apiUrl||"").replace(/\/$/,"");
+const HAS_SUPABASE=false;
+let supabase=null;
 const STAFF_TOKEN_KEY="mostra_staff_token";
 const staffToken=sessionStorage.getItem(STAFF_TOKEN_KEY);
 if(!staffToken){
