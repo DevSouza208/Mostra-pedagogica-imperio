@@ -2372,3 +2372,78 @@ body.visit-mode .site-footer{
     font-size:.68rem;
   }
 }
+
+
+/* Contagem de elogios nas avaliações */
+.review-praise-section{
+  margin:0 0 12px;
+  padding:12px;
+  border:1px solid #e0edf4;
+  border-radius:15px;
+  background:#f9fdff;
+}
+
+.review-praise-title{
+  display:block;
+  margin-bottom:9px;
+  color:#395e72;
+  font-size:.72rem;
+  font-weight:800;
+}
+
+.review-praise-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.review-praise-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  padding:7px 9px;
+  border:1px solid #cfe6f1;
+  border-radius:999px;
+  background:#eef9fe;
+  color:#176f9a;
+  font-size:.68rem;
+  font-weight:700;
+  line-height:1;
+}
+
+.review-praise-chip b{
+  display:inline-grid;
+  place-items:center;
+  min-width:25px;
+  height:22px;
+  padding:0 6px;
+  border-radius:999px;
+  background:#fff;
+  color:#0d77b8;
+  font-size:.64rem;
+  box-shadow:0 2px 7px rgba(15,67,102,.07);
+}
+
+@media(max-width:560px){
+  .review-praise-section{
+    padding:10px;
+    border-radius:13px;
+  }
+
+  .review-praise-title{
+    font-size:.68rem;
+  }
+
+  .review-praise-chip{
+    gap:6px;
+    padding:6px 8px;
+    font-size:.63rem;
+  }
+
+  .review-praise-chip b{
+    min-width:23px;
+    height:20px;
+    font-size:.6rem;
+  }
+}
