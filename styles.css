@@ -2447,3 +2447,116 @@ body.visit-mode .site-footer{
     font-size:.6rem;
   }
 }
+
+
+/* Mini polaroids da revisão final */
+.family-review-item{
+  justify-content:flex-start!important;
+  min-height:178px!important;
+}
+
+.family-review-photo-wrap{
+  display:flex;
+  justify-content:flex-start;
+  width:100%;
+  margin-bottom:11px;
+}
+
+.family-review-photo-frame{
+  position:relative;
+  width:82px;
+  height:94px;
+  padding:6px 6px 18px;
+  border:1px solid rgba(195,216,227,.72);
+  border-radius:7px;
+  background:#fff;
+  box-shadow:
+    0 10px 20px rgba(15,67,102,.13),
+    0 2px 6px rgba(15,67,102,.07);
+  transform:rotate(-2.5deg);
+  transform-origin:center;
+  transition:transform .16s ease,box-shadow .16s ease;
+}
+
+.family-review-item:hover .family-review-photo-frame{
+  transform:rotate(-1deg) translateY(-1px);
+  box-shadow:
+    0 12px 24px rgba(15,67,102,.15),
+    0 3px 7px rgba(15,67,102,.08);
+}
+
+.family-review-photo{
+  display:block;
+  width:100%;
+  height:100%;
+  border-radius:3px;
+  object-fit:cover;
+  background:#eaf7fd;
+}
+
+.family-review-photo-placeholder{
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  border-radius:3px;
+  background:linear-gradient(145deg,#e8f8ff,#d8f1fb);
+  font-size:1.45rem;
+}
+
+.family-review-photo-more{
+  position:absolute;
+  right:4px;
+  bottom:4px;
+  display:grid;
+  place-items:center;
+  min-width:24px;
+  height:20px;
+  padding:0 6px;
+  border-radius:999px;
+  background:#eaf7fd;
+  color:#0d77b8;
+  font-size:.58rem;
+  font-weight:800;
+  line-height:1;
+}
+
+.family-review-item .family-review-stars{
+  margin-top:9px;
+}
+
+.family-review-item small{
+  margin-top:5px;
+}
+
+@media(max-width:480px){
+  .family-review-item{
+    min-height:164px!important;
+    padding:10px!important;
+  }
+
+  .family-review-photo-wrap{
+    margin-bottom:9px;
+  }
+
+  .family-review-photo-frame{
+    width:72px;
+    height:84px;
+    padding:5px 5px 16px;
+    border-radius:6px;
+  }
+
+  .family-review-photo-more{
+    right:3px;
+    bottom:3px;
+    min-width:22px;
+    height:18px;
+    padding:0 5px;
+    font-size:.54rem;
+  }
+
+  .family-review-item .family-review-stars{
+    margin-top:8px;
+    font-size:.92rem;
+  }
+}
