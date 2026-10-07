@@ -22,9 +22,13 @@
       </div>
 
       <div class="admin-header-actions">
-        <span id="staffBadge" class="staff-badge"></span>
-        <button id="logoutBtn" class="logout-btn" type="button">Sair</button>
-        <a href="./" class="secondary-btn admin-open-evaluation">Abrir avaliação</a>
+        <button id="logoutBtn" class="logout-btn" type="button" aria-label="Sair do painel">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M10 5H6.8A2.8 2.8 0 0 0 4 7.8v8.4A2.8 2.8 0 0 0 6.8 19H10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M14 8l4 4-4 4M18 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Sair</span>
+        </button>
       </div>
     </header>
 
