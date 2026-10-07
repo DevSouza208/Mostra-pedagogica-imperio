@@ -114,14 +114,14 @@
             </div>
 
             <input id="cameraInput" class="hidden-file-input" type="file" accept="image/*" capture="environment" />
-            <input id="uploadInput" class="hidden-file-input" type="file" accept="image/*" />
+            <input id="uploadInput" class="hidden-file-input" type="file" accept="image/*" multiple />
 
             <div id="photoPreviewWrap" class="photo-preview-wrap hidden">
-              <img id="photoPreview" class="photo-preview" alt="Prévia da foto da maquete" />
-              <div class="photo-preview-info">
-                <strong id="photoFileName">Imagem selecionada</strong>
-                <button id="removePhotoBtn" class="photo-remove-btn" type="button">Remover</button>
+              <div class="photo-preview-header">
+                <strong>Fotos anexadas</strong>
+                <span id="photoCount" class="photo-count">0 fotos</span>
               </div>
+              <div id="photoPreviewGrid" class="photo-preview-grid"></div>
             </div>
           </div>
 
