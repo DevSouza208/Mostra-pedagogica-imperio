@@ -18,6 +18,35 @@ $("#modeNote").textContent=HAS_SUPABASE
   ?"Supabase conectado. Os projetos são compartilhados entre todos os dispositivos."
   :"Modo local de demonstração: os projetos ficam apenas neste navegador. Configure config.js + Supabase antes da mostra.";
 
+let selectedPhotoFile=null;
+
+const cameraInput=$("#cameraInput");
+const uploadInput=$("#uploadInput");
+const photoPreviewWrap=$("#photoPreviewWrap");
+const photoPreview=$("#photoPreview");
+const photoFileName=$("#photoFileName");
+
+function setSelectedPhoto(file){
+  selectedPhotoFile=file||null;
+  if(!selectedPhotoFile){
+    photoPreview.removeAttribute("src");
+    photoPreviewWrap.classList.add("hidden");
+    photoFileName.textContent="Imagem selecionada";
+    cameraInput.value="";
+    uploadInput.value="";
+    return;
+  }
+  const url=URL.createObjectURL(selectedPhotoFile);
+  photoPreview.src=url;
+  photoFileName.textContent=selectedPhotoFile.name||"Foto da maquete";
+  photoPreviewWrap.classList.remove("hidden");
+}
+$("#cameraBtn").onclick=()=>cameraInput.click();
+$("#uploadBtn").onclick=()=>uploadInput.click();
+cameraInput.onchange=e=>setSelectedPhoto(e.target.files?.[0]);
+uploadInput.onchange=e=>setSelectedPhoto(e.target.files?.[0]);
+$("#removePhotoBtn").onclick=()=>setSelectedPhoto(null);
+
 async function fileToDataUrl(file){
   if(!file)return null;
   return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)});
@@ -55,7 +84,7 @@ async function remove(id,imagePath){
 $("#projectForm").onsubmit=async e=>{
   e.preventDefault();
   const btn=e.submitter;btn.disabled=true;btn.textContent="Salvando...";
-  const file=$("#photo").files[0];
+  const file=selectedPhotoFile;
   let image_url=null,image_path=null;
   if(HAS_SUPABASE&&file){
     image_path=`${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
@@ -71,6 +100,6 @@ $("#projectForm").onsubmit=async e=>{
   }else{
     const items=JSON.parse(localStorage.getItem("mostra_projects")||"[]");items.unshift(project);localStorage.setItem("mostra_projects",JSON.stringify(items));
   }
-  e.target.reset();btn.disabled=false;btn.textContent="Cadastrar projeto";load();
+  e.target.reset();setSelectedPhoto(null);btn.disabled=false;btn.textContent="Cadastrar projeto";load();
 };
 load();
