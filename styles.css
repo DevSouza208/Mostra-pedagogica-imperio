@@ -190,7 +190,11 @@ body.modal-open{overflow:hidden}
 .admin-section-heading h2{margin:4px 0 0;font-size:1.5rem;letter-spacing:-.025em}
 .admin-section-kicker{display:block;color:#1780ad;font-size:.68rem;font-weight:800;letter-spacing:.13em}
 .admin-count-badge{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border-radius:999px;background:#eef8fd;color:#126991;font-size:.76rem;font-weight:800}
-.project-form{max-width:680px}
+.project-form{
+  max-width:1020px;
+  width:100%;
+  margin:0 auto;
+}
 
 .admin-empty-state{display:grid;place-items:center;min-height:230px;padding:30px;text-align:center;border:1px dashed #c8dfe9;border-radius:18px;background:#fafdff;color:#728895}
 .admin-empty-state>span{font-size:2.2rem;margin-bottom:8px}
@@ -541,5 +545,36 @@ body.splash-lock{
 @media(max-width:480px){
   .app-splash-logo{
     width:min(72vw,300px);
+  }
+}
+
+
+/* Centralizar a tela de cadastro de projeto */
+#adminViewCreate .admin-content-panel{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+#adminViewCreate .admin-section-heading,
+#adminViewCreate .project-form{
+  width:100%;
+  max-width:1020px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+#adminViewCreate .admin-section-heading{
+  justify-content:flex-start;
+}
+
+#adminViewCreate .project-form{
+  width:min(100%,1020px);
+}
+
+@media(max-width:780px){
+  #adminViewCreate .admin-section-heading,
+  #adminViewCreate .project-form{
+    max-width:100%;
   }
 }
