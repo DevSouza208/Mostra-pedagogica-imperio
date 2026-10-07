@@ -254,3 +254,54 @@ body.camera-open{overflow:hidden}
   .camera-stage{aspect-ratio:3/4}
   .camera-modal-actions{grid-template-columns:1fr}
 }
+
+
+/* Correção de alinhamento dos ícones de foto */
+.photo-field .photo-action-icon{
+  display:grid!important;
+  place-items:center!important;
+  align-items:center!important;
+  justify-items:center!important;
+  align-self:center!important;
+  width:56px;
+  height:56px;
+  margin:0!important;
+  padding:0!important;
+  line-height:0!important;
+}
+
+.photo-field .photo-action-icon svg{
+  display:block!important;
+  width:26px;
+  height:26px;
+  margin:0!important;
+  padding:0!important;
+  align-self:center!important;
+  justify-self:center!important;
+}
+
+.photo-field .photo-action-copy{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-self:center!important;
+  margin:0!important;
+}
+
+.photo-field .photo-action-copy strong,
+.photo-field .photo-action-copy small{
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+@media(max-width:480px){
+  .photo-field .photo-action-icon{
+    width:50px;
+    height:50px;
+  }
+
+  .photo-field .photo-action-icon svg{
+    width:23px;
+    height:23px;
+  }
+}
