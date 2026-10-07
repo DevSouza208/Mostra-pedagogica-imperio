@@ -162,15 +162,18 @@ staffLoginForm?.addEventListener("submit",async e=>{
   submit.textContent="Entrando...";
 
   try{
-    const response=await fetch(`${API_URL}/auth/login`,{
+    const response=await fetch(`${API_URL}/login`,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({username,password})
     });
     const data=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error(data.error||"Usuário ou senha incorretos.");
+    if(!response.ok || !data.ok) throw new Error(data.error||"Usuário ou senha incorretos.");
 
-    sessionStorage.setItem("mostra_staff_token",data.token);
+    sessionStorage.setItem("mostra_staff_user",JSON.stringify({
+      username:data.username,
+      role:data.role
+    }));
     window.location.href="./admin.html";
   }catch(error){
     loginError.textContent=error.message||"Não foi possível entrar.";
