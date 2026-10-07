@@ -40,17 +40,13 @@ function markCompleted(id){
   localStorage.setItem("mostra_completed",JSON.stringify([...ids]));
 }
 async function loadProjects(){
-  if(API_URL){
-    try{
-      const response=await fetch(`${API_URL}/projects`);
-      if(response.ok){
-        const data=await response.json();
-        if(Array.isArray(data)&&data.length) return data;
-      }
-    }catch(error){console.warn("API indisponível; usando dados locais.",error)}
-  }
-  const local=JSON.parse(localStorage.getItem("mostra_projects")||"[]");
-  return local.length?local:DEMO_PROJECTS;
+  if(!API_URL) throw new Error("API não configurada.");
+
+  const response=await fetch(`${API_URL}/projects`);
+  if(!response.ok) throw new Error("Não foi possível carregar os projetos.");
+
+  const data=await response.json();
+  return Array.isArray(data)?data:[];
 }
 function resetRating(){
   rating=0;selectedSuggestion="";$("#comment").value="";$("#charCount").textContent="0/240";
@@ -184,11 +180,31 @@ function finish(){
   show("done");
 }
 $("#startBtn").onclick=async()=>{
-  projects=await loadProjects();
-  const done=new Set(completedIds());
-  const pending=projects.filter(p=>!done.has(p.id));
-  queue=shuffle(pending.length?pending:projects);
-  index=0;show("review");render();
+  const startBtn=$("#startBtn");
+  startBtn.disabled=true;
+  startBtn.textContent="Carregando...";
+
+  try{
+    projects=await loadProjects();
+
+    if(!projects.length){
+      alert("Nenhum projeto cadastrado ainda.");
+      return;
+    }
+
+    const done=new Set(completedIds());
+    const pending=projects.filter(p=>!done.has(p.id));
+    queue=shuffle(pending.length?pending:projects);
+    index=0;
+    show("review");
+    render();
+  }catch(error){
+    console.error(error);
+    alert("Não foi possível carregar os projetos agora.");
+  }finally{
+    startBtn.disabled=false;
+    startBtn.textContent="Começar a visita →";
+  }
 };
 $("#restartBtn").onclick=()=>{localStorage.removeItem("mostra_completed");show("welcome")};
 document.querySelectorAll("#stars button").forEach(b=>b.onclick=()=>setRating(Number(b.dataset.value)));
