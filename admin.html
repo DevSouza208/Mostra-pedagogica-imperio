@@ -150,10 +150,17 @@
 
     <section id="adminViewReviews" class="admin-view" data-view="reviews">
       <div class="panel admin-content-panel">
-        <div class="admin-section-heading">
+        <div class="admin-section-heading review-heading-actions">
           <div>
             <h2>Avaliações recebidas</h2>
           </div>
+          <button id="openPdfBuilderBtn" class="admin-pdf-open-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 4v10m0 0 4-4m-4 4-4-4M5 17.5V20h14v-2.5"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Exportar PDF</span>
+          </button>
         </div>
 
         <div class="review-summary">
@@ -180,6 +187,42 @@
       </div>
     </section>
   </main>
+
+  <div id="pdfBuilderModal" class="pdf-builder-modal" aria-hidden="true">
+    <div class="pdf-builder-backdrop" data-close-pdf-builder></div>
+    <section class="pdf-builder-card" role="dialog" aria-modal="true" aria-labelledby="pdfBuilderTitle">
+      <button class="pdf-builder-close" type="button" aria-label="Fechar" data-close-pdf-builder>×</button>
+
+      <div class="pdf-builder-heading">
+        <span class="eyebrow">PORTFÓLIO DA MOSTRA</span>
+        <h2 id="pdfBuilderTitle">Montar PDF do projeto</h2>
+        <p>Escolha o projeto e marque os comentários que devem aparecer no arquivo.</p>
+      </div>
+
+      <label class="pdf-builder-field">
+        <span>Projeto</span>
+        <select id="pdfProjectSelect">
+          <option value="">Carregando projetos...</option>
+        </select>
+      </label>
+
+      <div id="pdfProjectPreview" class="pdf-project-preview"></div>
+
+      <div class="pdf-builder-comments-head">
+        <div>
+          <strong>Comentários em destaque</strong>
+          <span id="pdfSelectedCount">0 selecionados</span>
+        </div>
+        <button id="pdfSelectAllBtn" class="pdf-select-all" type="button">Selecionar todos</button>
+      </div>
+
+      <div id="pdfCommentsList" class="pdf-comments-list"></div>
+
+      <button id="generateProjectPdfBtn" class="primary-btn pdf-generate-btn" type="button" disabled>
+        Gerar PDF do projeto
+      </button>
+    </section>
+  </div>
 
   <div id="deleteProjectModal" class="delete-project-modal" aria-hidden="true">
     <div class="delete-project-backdrop" data-close-delete-project></div>
@@ -240,6 +283,8 @@
   <script src="./zoom-lock.js"></script>
   <script src="./pwa.js"></script>
   <script src="./config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script type="module" src="./admin.js"></script>
+  <script src="./pdf-export.js"></script>
 </body>
 </html>
