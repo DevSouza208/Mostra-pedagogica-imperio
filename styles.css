@@ -134,7 +134,9 @@ textarea:focus{border-color:#5bbbe0;box-shadow:0 0 0 3px rgba(91,187,224,.13)}
 .login-error{min-height:20px;margin:-2px 0 10px;color:#b92845;font-size:.82rem;font-weight:700}
 body.modal-open{overflow:hidden}
 .staff-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#edf7fc;color:#126991;font-size:.78rem;font-weight:800}
-.logout-btn{border:0;background:#fff0f2;color:#b92845;padding:9px 12px;border-radius:10px;font-weight:800}
+.logout-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(86,119,139,.14);background:rgba(255,255,255,.5);color:#607b8c;padding:8px 10px;border-radius:12px;font-size:.78rem;font-weight:700;box-shadow:0 4px 14px rgba(15,67,102,.05);transition:.18s ease}
+.logout-btn:hover{background:#fff;color:#b92845;border-color:rgba(185,40,69,.12)}
+.logout-btn svg{width:17px;height:17px;display:block}
 
 .photo-field>span{display:block;font-weight:800;font-size:.86rem;margin-bottom:10px}
 .photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -166,7 +168,7 @@ body.modal-open{overflow:hidden}
 
 
 /* Painel administrativo */
-.admin-header{align-items:flex-start}
+.admin-header{position:relative;align-items:flex-start}
 .admin-header h1{margin:8px 0 4px;font-size:2rem;letter-spacing:-.03em}
 .admin-subtitle{margin:0;color:var(--muted);font-size:.92rem;line-height:1.5}
 .admin-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
@@ -215,8 +217,8 @@ body.modal-open{overflow:hidden}
 .review-admin-body p{margin:4px 0 0;color:var(--muted);font-size:.8rem;line-height:1.5}
 
 @media(max-width:780px){
-  .admin-header{flex-direction:column}
-  .admin-header-actions{justify-content:flex-start}
+  .admin-header{flex-direction:row;align-items:flex-start}
+  .admin-header-actions{justify-content:flex-end;margin-left:auto}
   .admin-menu{grid-template-columns:1fr}
   .admin-menu-card{min-height:88px}
   .review-summary{grid-template-columns:1fr}
@@ -225,8 +227,7 @@ body.modal-open{overflow:hidden}
 @media(max-width:480px){
   .admin-shell{padding:16px 12px 40px}
   .admin-header h1{font-size:1.7rem}
-  .admin-header-actions{width:100%}
-  .admin-open-evaluation{flex:1;text-align:center}
+  .admin-header-actions{width:auto;margin-left:auto}
   .admin-menu{gap:10px}
   .admin-menu-card{padding:14px;border-radius:18px}
   .admin-menu-icon{width:42px;height:42px;border-radius:13px;font-size:1.2rem}
