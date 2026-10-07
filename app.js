@@ -23,7 +23,11 @@ const screens={welcome:$("#welcome"),review:$("#review"),done:$("#done")};
 let projects=[], queue=[], index=0, rating=0, selectedSuggestion="";
 let projectImages=[], projectImageIndex=0;
 
-function show(name){Object.values(screens).forEach(s=>s.classList.remove("screen--active"));screens[name].classList.add("screen--active")}
+function show(name){
+  Object.values(screens).forEach(s=>s.classList.remove("screen--active"));
+  screens[name].classList.add("screen--active");
+  document.body.classList.toggle("review-mode",name==="review");
+}
 function shuffle(items){return [...items].sort(()=>Math.random()-.5)}
 function visitorId(){
   let id=localStorage.getItem("mostra_visitor_id");
