@@ -624,6 +624,13 @@ $("#reviewBackBtn").onclick=()=>{
   render();
 };
 
+$("#backToHomeBtn").onclick=()=>{
+  $("#startBtn").textContent=myReviews.size||completedIds().length
+    ?"Continuar visita →"
+    :"Começar a visita →";
+  show("welcome");
+};
+
 $("#finishVisitBtn").onclick=async()=>{
   const result=await checkForNewProjects();
   const next=firstPendingIndex(0);
