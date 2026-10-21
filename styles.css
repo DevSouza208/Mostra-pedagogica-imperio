@@ -3654,3 +3654,8 @@ body:not(.review-mode):not(.visit-mode) .site-footer{
     padding-top:6px;
   }
 }
+
+/* Voltar ao início sem interromper a visita ou apagar avaliações */
+.review-home-footer{display:flex;justify-content:center;margin:16px auto 0;padding:0 8px 12px}
+.review-home-btn{min-height:44px;padding:10px 18px;border:1px solid rgba(13,119,184,.2);border-radius:999px;background:rgba(255,255,255,.75);color:#286e92;font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;transition:background .18s ease,color .18s ease}
+.review-home-btn:hover,.review-home-btn:focus-visible{background:#e5f6fe;color:#0d77b8}
